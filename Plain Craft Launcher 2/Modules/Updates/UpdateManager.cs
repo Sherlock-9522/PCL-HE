@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using PCL.Core.App;
@@ -12,16 +12,12 @@ public static class UpdateManager
 {
     public static bool isUpdateWaitingRestart;
 
-    public static UpdatesWrapperModel remoteServer = new(new List<IUpdateSource>
-    {
-        new UpdatesMirrorChyanModel(),
-        new UpdatesRandomModel(new[]
-        {
-            new UpdatesMinioModel("https://s3.pysio.online/pcl2-ce/", "Pysio"),
-            new UpdatesMinioModel("https://staticassets.naids.com/resources/pclce/", "Naids")
-        }),
-        new UpdatesMinioModel("https://github.com/PCL-Community/PCL2_CE_Server/raw/main/", "GitHub")
-    });
+    /// <summary>
+    ///     PCL-DSH 是独立发行的版本，不从任何上游启动器更新服务拉取版本、公告或本体。
+    ///     这里刻意留空：所有取版本 / 公告 / 下载的调用都会走到「所有源都不可用」分支，
+    ///     由调用方的 try/catch 兜住，不会产生任何对外网络请求。
+    /// </summary>
+    public static UpdatesWrapperModel remoteServer = new(new List<IUpdateSource>());
 
     public static bool IsCurrentVersionBeta
     {
@@ -32,135 +28,24 @@ public static class UpdateManager
             return (int)Config.Update.UpdateChannel == 1;
         }
     }
-    
+
+    /// <summary>
+    ///     PCL-DSH 不与上游更新服务通信，因此永远报告为最新版本。
+    /// </summary>
     public static UpdateEnums.VersionStatus GetVersionStatus()
     {
-        try
-        {
-            if (IsCurrentVersionBeta && (int)Config.Update.UpdateChannel != 1)
-            {
-                var isNewerThanStable = remoteServer.IsLatest(UpdateChannel.stable,
-                    SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, SemVer.Parse(ModBase.versionBaseName),
-                    ModBase.versionCode);
-                var isBetaLatest = remoteServer.IsLatest(UpdateChannel.beta,
-                    SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, SemVer.Parse(ModBase.versionBaseName),
-                    ModBase.versionCode);
-                return isNewerThanStable && isBetaLatest
-                    ? UpdateEnums.VersionStatus.Latest
-                    : UpdateEnums.VersionStatus.NotLatest;
-            }
-
-            return remoteServer.IsLatest(
-                IsCurrentVersionBeta ? UpdateChannel.beta : UpdateChannel.stable,
-                SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, SemVer.Parse(ModBase.versionBaseName),
-                ModBase.versionCode)
-                ? UpdateEnums.VersionStatus.Latest
-                : UpdateEnums.VersionStatus.NotLatest;
-        }
-        catch (Exception ex)
-        {
-            ModBase.Log(
-                ex,
-                Lang.Text("Update.Check.Failed"),
-                ModBase.LogLevel.Hint,
-                userSummary: Lang.Text("Update.Check.Failed"));
-            return UpdateEnums.VersionStatus.Unknown;
-        }
+        return UpdateEnums.VersionStatus.Latest;
     }
-    
+
     public static ModLoader.LoaderCombo<JsonObject> updateLoader;
 
+    /// <summary>
+    ///     PCL-DSH 是独立发行的版本，不提供经由上游服务器的自动更新。
+    ///     保留此入口仅为兼容既有调用点，调用后不会产生任何下载行为。
+    /// </summary>
     public static void UpdateStart(UpdateEnums.UpdateType type, string receivedKey = null, bool forceValidated = false)
     {
-        var dlTargetPath = ModBase.exePath + @"PCL\Plain Craft Launcher Community Edition.exe";
-        ModBase.RunInNewThread(() =>
-        {
-            try
-            {
-                var version = remoteServer.GetLatestVersion(
-                    IsCurrentVersionBeta ? UpdateChannel.beta : UpdateChannel.stable,
-                    SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64
-                );
-
-                ModBase.WriteFile($"{ModBase.pathTemp}CEUpdateLog.md", version.Changelog);
-                ModBase.Log($"[Update] 远程最新版本: {version.VersionName}, 当前版本: {ModBase.versionBaseName}");
-                if (!(SemVer.Parse(version.VersionName) > SemVer.Parse(ModBase.versionBaseName)))
-                    return;
-                if (type == UpdateEnums.UpdateType.PromptOnly)
-                {
-                    ModBase.RunInUi(() =>
-                    {
-                        if (ModMain.MyMsgBox(
-                                Lang.Text("Update.Available", ModBase.versionBaseName, version.VersionName),
-                                Lang.Text("Update.Title"),
-                                Lang.Text("Update.Action"),
-                                Lang.Text("Common.Action.Cancel")
-                            ) == 1)
-                            ModMain.frmMain.PageChange(FormMain.PageType.Setup, FormMain.PageSubType.SetupUpdate);
-                    });
-                    return;
-                    // 构造步骤加载器
-                }
-
-                var loaders = new List<ModLoader.LoaderBase>();
-                // 下载
-                loaders.AddRange(remoteServer.GetDownloadLoader(
-                    IsCurrentVersionBeta ? UpdateChannel.beta : UpdateChannel.stable,
-                    SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, dlTargetPath));
-                loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.Check"), _ =>
-                {
-                    var curHash = ModBase.GetFileSHA256(dlTargetPath);
-                    if ((curHash ?? "") != (version.Sha256 ?? ""))
-                        throw new Exception(Lang.Text("Update.Error.Sha256Mismatch", version.Sha256, curHash));
-                }));
-                if (type == UpdateEnums.UpdateType.UpdateNow)
-                    loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.Install"), _ => UpdateRestart(true)));
-                else if (type == UpdateEnums.UpdateType.Silent)
-                    loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.Prepare"), _ => isUpdateWaitingRestart = true));
-                else if (type == UpdateEnums.UpdateType.DownloadAndPrompt)
-                    loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.ShowButton"), _ =>
-                    {
-                        isUpdateWaitingRestart = true;
-                        ModBase.RunInUi(() =>
-                        {
-                            ModMain.frmMain.BtnExtraUpdateRestart.ToolTip =
-                                Lang.Text("Main.Extra.UpdateRestart.ToolTipWithVersion", ModBase.versionBaseName, version.VersionName);
-                            ModMain.frmMain.BtnExtraUpdateRestart.ShowRefresh();
-                            ModMain.frmMain.BtnExtraUpdateRestart.Ribble();
-                        });
-                    })
-                    {
-                        show = false
-                    });
-                loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.RefreshSettings"), _ =>
-                {
-                    if (ModMain.frmSetupUpdate is not null)
-                        ModBase.RunInUi(() =>
-                        {
-                            ModMain.frmSetupUpdate.BtnUpdate.Text = Lang.Text("Update.Task.RestartInstall");
-                            ModMain.frmSetupUpdate.BtnUpdate.IsEnabled = true;
-                        });
-                })
-                {
-                    show = false
-                });
-                // 启动
-                updateLoader = new ModLoader.LoaderCombo<JsonObject>(Lang.Text("Update.Title"), loaders);
-                updateLoader.Start();
-                if (type == UpdateEnums.UpdateType.UpdateNow)
-                {
-                    ModLoader.LoaderTaskbarAdd(updateLoader);
-                    ModMain.frmMain.BtnExtraDownload.ShowRefresh();
-                    ModMain.frmMain.BtnExtraDownload.Ribble();
-                }
-            }
-            catch (Exception ex)
-            {
-                ModBase.Log(ex, "[Update] 获取启动器更新失败");
-                if (type != UpdateEnums.UpdateType.Silent)
-                    HintService.Hint(Lang.Text("Update.Error.FetchFailed"), HintType.Error);
-            }
-        });
+        ModBase.Log("[Update] PCL-DSH 不提供自动更新，已忽略更新请求");
     }
 
     public static void UpdateRestart(bool triggerRestartAndByEnd, bool triggerRestart = true)
@@ -200,34 +85,13 @@ public static class UpdateManager
     }
 
     /// <summary>
-    ///     确保 PathTemp 下的 Latest.exe 是最新正式版的 PCL，它会被用于整合包打包。
-    ///     如果不是，则下载一个。
+    ///     确保 PathTemp 下的 Latest.exe 可用，它会被用于整合包打包。
+    ///     PCL-DSH 不从网络下载启动器本体，直接复用当前正在运行的可执行文件。
     /// </summary>
     internal static void DownloadLatestPCL(ModLoader.LoaderBase loaderToSyncProgress = null)
     {
-        // 注意：如果要自行实现这个功能，请换用另一个文件路径，以免与官方版本冲突
         var latestPCLPath = Path.Combine(ModBase.pathTemp, "CE-Latest.exe");
-        var target = remoteServer.GetLatestVersion(UpdateChannel.stable,
-            SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
-        if (target is null)
-            throw new Exception(Lang.Text("Update.Error.UnableToGetUpdate"));
-        if (File.Exists(latestPCLPath) && (ModBase.GetFileSHA256(latestPCLPath) ?? "") == (target.Sha256 ?? ""))
-        {
-            ModBase.Log("[System] 最新版 PCL 已存在，跳过下载");
-            return;
-        }
-
-        if ((ModBase.GetFileSHA256(Basics.ExecutablePath) ?? "") == (target.Sha256 ?? "")) // 正在使用的版本符合要求，直接拿来用
-        {
-            ModBase.CopyFile(Basics.ExecutablePath, latestPCLPath);
-            return;
-        }
-
-        var loaders = remoteServer.GetDownloadLoader(UpdateChannel.stable,
-            SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, latestPCLPath);
-        var loader = new ModLoader.LoaderCombo<int>(Lang.Text("Update.Task.DownloadLatestStable"), loaders);
-        loader.Start();
-        loader.WaitForExit();
+        ModBase.CopyFile(Basics.ExecutablePath, latestPCLPath);
     }
 
     public static ModLoader.LoaderTask<int, int> serverLoader =
@@ -237,31 +101,8 @@ public static class UpdateManager
 
     private static void LoadOnlineInfo()
     {
-        ScheduleBasedOnConfig();
-        AnnouncementService.Load();
-    }
-
-    private static void ScheduleBasedOnConfig()
-    {
-        switch (Config.Update.UpdateMode)
-        {
-            case LauncherAutoUpdateBehavior.DownloadAndInstall:
-                ModBase.Log("[Update] 更新设置: 自动下载并安装更新");
-                if (GetVersionStatus() != UpdateEnums.VersionStatus.Latest)
-                    UpdateStart(UpdateEnums.UpdateType.Silent);
-                break;
-            case LauncherAutoUpdateBehavior.DownloadAndAnnounce:
-                ModBase.Log("[Update] 更新设置: 自动下载并提示更新");
-                UpdateStart(UpdateEnums.UpdateType.DownloadAndPrompt);
-                break;
-            case LauncherAutoUpdateBehavior.AnnounceOnly:
-                ModBase.Log("[Update] 更新设置: 提示更新");
-                UpdateStart(UpdateEnums.UpdateType.PromptOnly);
-                break;
-            default:
-                ModBase.Log("[Update] 更新设置: 不自动检查更新");
-                return;
-        }
+        // PCL-DSH 不拉取上游公告，也不按上游策略检查更新。
+        ModBase.Log("[Update] PCL-DSH 不检查更新、不拉取公告");
     }
 
     /// <summary>

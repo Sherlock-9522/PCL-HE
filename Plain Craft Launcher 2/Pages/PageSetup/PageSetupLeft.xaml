@@ -131,7 +131,8 @@
                                Check="PageCheck"
                                Height="36" VerticalAlignment="Top" Title="{DynamicResource Setup.Left.Item.Update}" Type="RadioBox"
                               SvgIcon="lucide/refresh-cw" />
-            <local:MyListItem x:Name="ItemFeedback" IsScaleAnimationEnabled="False" Type="RadioBox" Tag="6"
+            <!-- PCL-DSH 没有面向上游社区存储库的反馈通道，此页隐藏。 -->
+            <local:MyListItem x:Name="ItemFeedback" IsScaleAnimationEnabled="False" Type="RadioBox" Tag="6" Visibility="Collapsed"
                                Check="PageCheck"
                                MinPaddingRight="35" Height="36" VerticalAlignment="Top" Title="{DynamicResource Setup.Left.Item.Feedback}"
                               LogoScale="0.9"

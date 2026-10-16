@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -34,12 +34,8 @@ public partial class PageLaunchRight : IRefreshable
         PanBack.ScrollToHome();
         PanScroll = PanBack; // 不知道为啥不能在 XAML 设置
         PanLog.Visibility = ModBase.modeDebug ? Visibility.Visible : Visibility.Collapsed;
-        // 社区版提示
-        PanHint.Visibility = States.Hint.CEMessage
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-        LabHint1.Text = Lang.Text("Launch.Right.CommunityHint.Message");
-        LabHint2.Text = Lang.Text("Launch.Right.CommunityHint.HidePrompt");
+        // PCL-DSH 是独立版本，不再显示 PCL CE 的「社区版」提示横幅。
+        PanHint.Visibility = Visibility.Collapsed;
         _EnsureHomepageLiveWatcher();
     }
 
@@ -229,9 +225,9 @@ public partial class PageLaunchRight : IRefreshable
                     break;
                 
                 case 14:
-                    LogWrapper.Info("[Page] 主页预设：PCL CE 公告栏");
-                    url = "https://s3.pysio.online/pcl2-ce/apiv2/pages/announce.xaml";
-                    content = LoadFromNetwork(url);
+                    // PCL-DSH 是独立版本，不再连接 PCL CE 的在线公告服务。
+                    LogWrapper.Info("[Page] 主页预设：公告栏（PCL-DSH 未提供在线公告）");
+                    content = "";
                     break;
                 
                 case 15:
