@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Plain Craft Launcher DSH Edition"
-        Width="420" Height="248"
+        Width="420" Height="280"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
         WindowStartupLocation="CenterScreen"
@@ -21,7 +21,7 @@
     -->
     <Grid x:Name="RootGrid" Opacity="0">
         <Grid.RenderTransform>
-            <ScaleTransform x:Name="RootScale" ScaleX="0.96" ScaleY="0.96" CenterX="210" CenterY="124" />
+            <ScaleTransform x:Name="RootScale" ScaleX="0.96" ScaleY="0.96" CenterX="210" CenterY="140" />
         </Grid.RenderTransform>
 
         <!-- 轻量背景板：使用主题背景色而非硬编码深色。
@@ -29,6 +29,7 @@
              则保证它不会与主界面产生「一深一浅」的割裂感。 -->
         <Border x:Name="Card" Margin="6" CornerRadius="10"
                 Background="{DynamicResource ColorBrushBg1}">
+        <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <!-- PCL-DSH 虎鲸标识，带品牌蓝辉光 -->
             <Viewbox x:Name="LogoBox" Width="104" Height="76" Opacity="0"
@@ -52,11 +53,15 @@
                        HorizontalAlignment="Center" Margin="0,8,0,0"
                        FontSize="10" FontWeight="Bold" Opacity="0"
                        Foreground="{DynamicResource ColorBrush3}" />
+        </StackPanel>
 
-            <!-- 底部光带进度指示 -->
+            <!-- 底部光带进度指示。
+                 刻意放在 StackPanel 之外、以 VerticalAlignment=Bottom 贴底定位：
+                 若与标识文字同处一个居中 StackPanel，它会随内容增高而被挤出可视区。 -->
             <Grid x:Name="ProgressTrack" Width="200" Height="3" Opacity="0"
-                  HorizontalAlignment="Center" Margin="0,26,0,0" ClipToBounds="True">
-                <Border Background="{DynamicResource ColorBrush7}" CornerRadius="1.5" />
+                  HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                  Margin="0,0,0,30" ClipToBounds="True">
+                <Border Background="{DynamicResource ColorBrush5}" Opacity="0.6" CornerRadius="1.5" />
                 <Border Width="86" HorizontalAlignment="Left" CornerRadius="1.5">
                     <Border.RenderTransform>
                         <TranslateTransform x:Name="ProgressShift" X="-100" />
@@ -70,7 +75,7 @@
                     </Border.Background>
                 </Border>
             </Grid>
-        </StackPanel>
+        </Grid>
         </Border>
     </Grid>
 </Window>
