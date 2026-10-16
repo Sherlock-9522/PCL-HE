@@ -119,11 +119,16 @@
                                               MouseLeftButtonDown="FormDragMove"
                                               WindowChrome.IsHitTestVisibleInChrome="True"
                                               BackgroundBrush="{DynamicResource ColorBrush3}">
-                    <!-- <Grid.Background> -->
-                    <!--     <LinearGradientBrush EndPoint="1,0" StartPoint="0,0"> -->
-                    <!--         <GradientStop Color="{StaticResource ColorObject4}" Offset="0"/> -->
-                    <!--     </LinearGradientBrush> -->
-                    <!-- </Grid.Background> -->
+                    <!-- 顶部高光与底部暗线，让纯色标题栏有微弱的立体层次 -->
+                    <Rectangle IsHitTestVisible="False" VerticalAlignment="Top" Height="26">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#2CFFFFFF" Offset="0" />
+                                <GradientStop Color="#00FFFFFF" Offset="1" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle IsHitTestVisible="False" VerticalAlignment="Bottom" Height="1" Fill="#22000000" />
                     <local:MyImage x:Name="ImgTitle" IsHitTestVisible="False" Stretch="UniformToFill" IsEnabled="False" RenderOptions.BitmapScalingMode="LowQuality" />
                     <local:MyIconButton x:Name="BtnTitleClose" HorizontalAlignment="Right" Height="28" VerticalAlignment="Center" Width="28" Margin="0,0,12,0" Theme="White" Click="BtnTitleClose_Click"
                                         SvgIcon="lucide/x" />
