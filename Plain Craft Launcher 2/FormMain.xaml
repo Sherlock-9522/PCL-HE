@@ -22,7 +22,7 @@
             CaptionHeight="0"
             UseAeroCaptionButtons="False"
             ResizeBorderThickness="0"
-            CornerRadius="16"
+            CornerRadius="6"
             GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
     <Grid SnapsToDevicePixels="True" UseLayoutRounding="True">
@@ -102,7 +102,7 @@
         </Rectangle>
         <Border x:Name="PanBack">
             <Border.Clip>
-                <RectangleGeometry x:Name="RectForm" RadiusX="16" RadiusY="16" />
+                <RectangleGeometry x:Name="RectForm" RadiusX="6" RadiusY="6" />
             </Border.Clip>
             <Grid x:Name="PanForm" SnapsToDevicePixels="False" UseLayoutRounding="False">
                 <Grid.RowDefinitions>
