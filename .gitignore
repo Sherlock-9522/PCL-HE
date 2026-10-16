@@ -346,3 +346,6 @@ MaskFiles/
 # macOS
 
 **/.DS_Store
+# 本地第三方二进制与素材，仅用于开发期验证，不随仓库分发
+_vendor/
+_assets/
