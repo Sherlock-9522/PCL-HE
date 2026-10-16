@@ -1476,7 +1476,7 @@
     <sys:String x:Key="Launch.Error.Title">Launch failed</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.HidePrompt">To permanently hide this notice, enter the correct PCL-DSH development organisation name.</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.InputTitle">Enter the PCL-DSH development organisation name</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.Message">You are using PCL-DSH (PCL Community Edition)! This version is independently developed and maintained, and differs from the original version in its development path and user experience.&#xA;&#xA;If you downloaded the PCL-DSH by accident, we strongly recommend downloading the original PCL version for long-term use, as this distribution may not be user-friendly for newcomers.&#xA;Additionally, please submit PCL-DSH issues to the PCL-DSH repository, and do not report PCL-DSH issues to the original repository!</sys:String>
+    <sys:String x:Key="Launch.Right.CommunityHint.Message">PCL-DSH is an independently maintained third-party derivative of PCL, with PCL Community Edition as its direct upstream. It is not affiliated with, and is not supported by, the official teams of PCL or PCL Community Edition.&#xA;Please report issues with this build to the PCL-DSH repository, not to the upstream one.</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Title">PCL-DSH notice</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.WrongInput">Not quite right...</sys:String>
     <sys:String x:Key="Launch.Right.Log.Title">Launch log</sys:String>
@@ -2525,7 +2525,7 @@
 
     <!-- Setup.About.Legal -->
 
-    <sys:String x:Key="Setup.About.Legal.CommunitySource">PCL CE source code</sys:String>
+    <sys:String x:Key="Setup.About.Legal.CommunitySource">Upstream PCL CE source</sys:String>
     <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © PCL Community &amp; LTCat (龙腾猫跃) 2026.&#xD;PCL-DSH is an independent third-party derivative work based on PCL, maintained by Sherlock-9522, and is not affiliated with the official PCL or PCL Community Edition teams.&#xD;NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</sys:String>
     <sys:String x:Key="Setup.About.Legal.DeveloperHome">Developer profile</sys:String>
     <sys:String x:Key="Setup.About.Legal.OtherInfo">Other information</sys:String>
@@ -2537,8 +2537,8 @@
 
     <sys:String x:Key="Setup.About.SpecialThanks.GoBlog">Blog</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Bmclapi">Provided BMCLAPI mirror and Forge installation tool. Details at https://bmclapi.bangbang93.com</sys:String>
-    <sys:String x:Key="Setup.About.SpecialThanks.Info.Cloud">Provided cloud services for PCL CE.</sys:String>
-    <sys:String x:Key="Setup.About.SpecialThanks.Info.IconDesign">Designed and created the PCL CE icon.</sys:String>
+    <sys:String x:Key="Setup.About.SpecialThanks.Info.Cloud">Provided cloud services for upstream PCL CE.</sys:String>
+    <sys:String x:Key="Setup.About.SpecialThanks.Info.IconDesign">Designed the upstream PCL CE icon.</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.LinkModule">Provided the multiplayer module!</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Mcim">Provided MCIM community resource mirrors and image hosting services for the help centre!</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Mcmod">Provided Chinese translation of mods and more related information!</sys:String>

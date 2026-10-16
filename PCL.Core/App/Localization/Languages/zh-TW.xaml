@@ -1476,7 +1476,7 @@
     <sys:String x:Key="Launch.Error.Title">啟動失敗</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.HidePrompt">若要永久隱藏此提示，請輸入正確的 PCL-DSH 開發組織名稱。</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.InputTitle">輸入 PCL-DSH 開發組織名稱</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.Message">你正在使用 PCL-DSH（PCL 社群版）！此版本為獨立開發和維護，與原版維護路線不同，體驗有所出入。&#xA;&#xA;如果你是意外下載到了 PCL-DSH ，我們十分建議您下載原版 PCL 長期使用，此發行版本對新手使用者體驗可能不友好。&#xA;此外， PCL-DSH 的問題請向 PCL-DSH 的儲存庫提交 Issue，不要向官方儲存庫回饋 PCL-DSH 的問題哦！</sys:String>
+    <sys:String x:Key="Launch.Right.CommunityHint.Message">PCL-DSH 是第三方基於 PCL 獨立維護的衍生版，以 PCL Community Edition 為直接上游，與 PCL、PCL Community Edition 的官方團隊之間沒有隸屬關係，也不由官方提供支援。&#xA;本版的問題請提交到 PCL-DSH 的儲存庫，不要向上游儲存庫回饋。</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Title">PCL-DSH 提示</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.WrongInput">不太對哦……</sys:String>
     <sys:String x:Key="Launch.Right.Log.Title">啟動日誌</sys:String>
@@ -2525,7 +2525,7 @@
 
     <!-- Setup.About.Legal -->
 
-    <sys:String x:Key="Setup.About.Legal.CommunitySource">PCL CE 開放原始碼</sys:String>
+    <sys:String x:Key="Setup.About.Legal.CommunitySource">上游 PCL CE 原始碼</sys:String>
     <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © 2026 PCL Community &amp; 龙腾猫跃.&#xD;PCL-DSH 是第三方基於 PCL 獨立進行二次創作的產物，由 Sherlock-9522 獨立維護，與 PCL、PCL Community Edition 的官方團隊之間沒有隸屬關係。&#xD;非 MINECRAFT 官方產品。未經 MOJANG 或 MICROSOFT 批准，也不與 MOJANG 或 MICROSOFT 關聯。</sys:String>
     <sys:String x:Key="Setup.About.Legal.DeveloperHome">開發者主頁</sys:String>
     <sys:String x:Key="Setup.About.Legal.OtherInfo">其他資訊</sys:String>
@@ -2537,8 +2537,8 @@
 
     <sys:String x:Key="Setup.About.SpecialThanks.GoBlog">轉到部落格</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Bmclapi">提供 BMCLAPI 鏡像來源和 Forge 安裝工具，詳見 https://bmclapi.bangbang93.com</sys:String>
-    <sys:String x:Key="Setup.About.SpecialThanks.Info.Cloud">提供了 PCL CE 的相關雲服務</sys:String>
-    <sys:String x:Key="Setup.About.SpecialThanks.Info.IconDesign">設計並製作了 PCL CE 的圖示</sys:String>
+    <sys:String x:Key="Setup.About.SpecialThanks.Info.Cloud">為上游 PCL CE 提供了雲端服務</sys:String>
+    <sys:String x:Key="Setup.About.SpecialThanks.Info.IconDesign">設計了上游 PCL CE 的圖示</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.LinkModule">提供了連線模組</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Mcim">提供了 MCIM 社群資源鏡像來源和幫助庫圖床！</sys:String>
     <sys:String x:Key="Setup.About.SpecialThanks.Info.Mcmod">提供了模組名稱的中文翻譯和更多相關資訊！</sys:String>

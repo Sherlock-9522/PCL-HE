@@ -34,27 +34,25 @@ public partial class PageLaunchRight : IRefreshable
         PanBack.ScrollToHome();
         PanScroll = PanBack; // 不知道为啥不能在 XAML 设置
         PanLog.Visibility = ModBase.modeDebug ? Visibility.Visible : Visibility.Collapsed;
-        // PCL-DSH 是独立版本，不再显示 PCL CE 的「社区版」提示横幅。
-        PanHint.Visibility = Visibility.Collapsed;
-        _EnsureHomepageLiveWatcher();
-    }
-
-    // 暂时关闭快照版提示
-    private void BtnHintClose_Click(object sender, EventArgs e)
-    {
-        var input = ModMain.MyMsgBoxInput(Lang.Text("Launch.Right.CommunityHint.InputTitle"));
-        if (string.IsNullOrWhiteSpace(input))
-            return;
-        input = new string(input.Where(char.IsAsciiLetter).ToArray()).ToLower();
-        if (input.Contains("pclcommunity"))
+        // PCL-DSH 是第三方衍生版：按 PCL 分发有限许可的要求说明自身身份，用户确认一次后不再显示。
+        if (States.Hint.CEMessage)
         {
-            ModAnimation.AniDispose(PanHint, true);
-            States.Hint.CEMessage = false;
+            LabHint1.Text = Lang.Text("Launch.Right.CommunityHint.Message");
+            LabHint2.Visibility = Visibility.Collapsed;
+            PanHint.Visibility = Visibility.Visible;
         }
         else
         {
-            HintService.Hint(Lang.Text("Launch.Right.CommunityHint.WrongInput"));
+            PanHint.Visibility = Visibility.Collapsed;
         }
+        _EnsureHomepageLiveWatcher();
+    }
+
+    // 关闭第三方身份提示；关闭后写回配置，之后不再显示
+    private void BtnHintClose_Click(object sender, EventArgs e)
+    {
+        ModAnimation.AniDispose(PanHint, true);
+        States.Hint.CEMessage = false;
     }
 
     #region 主页
