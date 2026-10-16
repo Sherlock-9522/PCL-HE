@@ -103,6 +103,86 @@
                         Text="{DynamicResource Setup.About.SourceCode}" />
                 </Grid>
             </local:MyCard>
+            <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Setup.About.Inspiration.Title}">
+                <Grid Margin="21,40,21,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="45" />
+                        <RowDefinition Height="45" />
+                        <RowDefinition Height="45" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="150" />
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        Grid.Row="0"
+                        Margin="3"
+                        Source="/Plain Craft Launcher 2;component/Images/Heads/LTCat.jpg">
+                        <Image.Clip>
+                            <EllipseGeometry Center="17 17" RadiusX="17" RadiusY="17" />
+                        </Image.Clip>
+                    </Image>
+                    <local:MyListItem
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="-5,0,15,0"
+                        Info="{DynamicResource Setup.About.Inspiration.Pcl.Info}"
+                        IsHitTestVisible="False"
+                        Title="{DynamicResource Setup.About.Inspiration.Pcl.Name}" />
+                    <local:MyButton
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Height="35"
+                        local:CustomEventService.EventData="https://ifdian.net/a/LTCat"
+                        local:CustomEventService.EventType="OpenUrl"
+                        Text="{DynamicResource Setup.About.Inspiration.Pcl.Action}" />
+                    <Image
+                        Grid.Row="1"
+                        Margin="3"
+                        Source="/Plain Craft Launcher 2;component/Images/Heads/PCL-Community.png">
+                        <Image.Clip>
+                            <EllipseGeometry Center="17 17" RadiusX="17" RadiusY="17" />
+                        </Image.Clip>
+                    </Image>
+                    <local:MyListItem
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="-5,0,15,0"
+                        Info="{DynamicResource Setup.About.Inspiration.Ce.Info}"
+                        IsHitTestVisible="False"
+                        Title="{DynamicResource Setup.About.Inspiration.Ce.Name}" />
+                    <local:MyButton
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Height="35"
+                        local:CustomEventService.EventData="https://github.com/PCL-Community/PCL2-CE"
+                        local:CustomEventService.EventType="OpenUrl"
+                        Text="{DynamicResource Setup.About.Inspiration.Ce.Action}" />
+                    <Image
+                        Grid.Row="2"
+                        Margin="3"
+                        Source="/Plain Craft Launcher 2;component/Images/Heads/HMCL.png">
+                        <Image.Clip>
+                            <EllipseGeometry Center="17 17" RadiusX="17" RadiusY="17" />
+                        </Image.Clip>
+                    </Image>
+                    <local:MyListItem
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="-5,0,15,0"
+                        Info="{DynamicResource Setup.About.Inspiration.Hmcl.Info}"
+                        IsHitTestVisible="False"
+                        Title="{DynamicResource Setup.About.Inspiration.Hmcl.Name}" />
+                    <local:MyButton
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Height="35"
+                        local:CustomEventService.EventData="https://hmcl.huangyuhui.net/"
+                        local:CustomEventService.EventType="OpenUrl"
+                        Text="{DynamicResource Setup.About.Inspiration.Hmcl.Action}" />
+                </Grid>
+            </local:MyCard>
             <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Setup.About.SpecialThanks.Title}">
                 <Grid Margin="21,40,21,16">
                     <Grid.RowDefinitions>

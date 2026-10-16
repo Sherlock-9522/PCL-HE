@@ -2516,6 +2516,16 @@
     <sys:String x:Key="Setup.About.Contributors.ViewMore">View more</sys:String>
     <sys:String x:Key="Setup.About.Error.LoadContributorsFailed">Failed to load contributor information</sys:String>
     <sys:String x:Key="Setup.About.GitHubHome">GitHub page</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Title">Design references</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Name">Plain Craft Launcher</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Info">The overall architecture, page framework and visual language follow PCL2, by LTCat.</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Action">Sponsor the author</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Name">PCL Community Edition</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Info">The direct upstream base of PCL-DSH, continued by the PCL community on top of PCL2.</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Action">Upstream repository</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Name">Hello Minecraft! Launcher</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Info">Some feature and interaction ideas were inspired by HMCL, by huanghongxun.</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Action">Visit website</sys:String>
     <sys:String x:Key="Setup.About.Licenses.Title">Licenses and copyrights</sys:String>
     <sys:String x:Key="Setup.About.Licenses.ViewLicense">License document</sys:String>
     <sys:String x:Key="Setup.About.Licenses.ViewWebsite">Source website</sys:String>

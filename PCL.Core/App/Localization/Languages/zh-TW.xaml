@@ -2469,6 +2469,16 @@
     <sys:String x:Key="Setup.About.Contributors.ViewMore">檢視更多</sys:String>
     <sys:String x:Key="Setup.About.Error.LoadContributorsFailed">載入貢獻者資訊失敗</sys:String>
     <sys:String x:Key="Setup.About.GitHubHome">GitHub 首頁</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Title">開發參考</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Name">Plain Craft Launcher</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Info">啟動器的整體架構、頁面框架與視覺語言參考了 PCL2，由龍騰貓躍開發。</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Pcl.Action">贊助原作者</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Name">PCL Community Edition</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Info">PCL-DSH 的直接上游基礎，由 PCL 社群在 PCL2 之上繼續開發。</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Ce.Action">上游倉庫</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Name">Hello Minecraft! Launcher</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Info">部分功能設計與互動思路參考了 HMCL，由 huanghongxun 開發。</sys:String>
+    <sys:String x:Key="Setup.About.Inspiration.Hmcl.Action">造訪官網</sys:String>
     <sys:String x:Key="Setup.About.Licenses.Title">許可與版權宣告</sys:String>
     <sys:String x:Key="Setup.About.Licenses.ViewLicense">檢視許可檔案</sys:String>
     <sys:String x:Key="Setup.About.Licenses.ViewWebsite">檢視來源網站</sys:String>
