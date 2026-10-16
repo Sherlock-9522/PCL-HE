@@ -288,26 +288,50 @@ public static class TerracottaProcess
 
         // 官方发布的是 tar.gz 包，解开后含主程序与 VCRUNTIME140.DLL 两个文件。
         var archive = Path.Combine(directory, $"terracotta-{Version}-windows-{ArchTag}-pkg.tar.gz");
-        var url = "https://github.com/burningtnt/Terracotta/releases/download/" +
-                  $"v{Version}/terracotta-{Version}-windows-{ArchTag}-pkg.tar.gz";
+        var relative = $"burningtnt/Terracotta/releases/download/v{Version}/" +
+                       $"terracotta-{Version}-windows-{ArchTag}-pkg.tar.gz";
 
-        LogWrapper.Info(Tag, "正在下载陶瓦: " + url);
-        try
+        // GitHub 在国内多数网络下无法直连，因此按「直连 → 公共反代」顺序回退。
+        var urls = new[]
         {
-            await DownloadAsync(url, archive, ct).ConfigureAwait(false);
-            ExtractArchive(archive, directory);
-        }
-        finally
+            "https://github.com/" + relative,
+            "https://gh-proxy.com/https://github.com/" + relative,
+            "https://ghfast.top/https://github.com/" + relative
+        };
+
+        Exception? lastError = null;
+        var downloaded = false;
+        foreach (var url in urls)
         {
+            ct.ThrowIfCancellationRequested();
+            LogWrapper.Info(Tag, "正在下载陶瓦: " + url);
             try
             {
-                if (File.Exists(archive)) File.Delete(archive);
+                await DownloadAsync(url, archive, ct).ConfigureAwait(false);
+                ExtractArchive(archive, directory);
+                downloaded = true;
+                break;
             }
-            catch
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // 忽略清理失败。
+                lastError = ex;
+                LogWrapper.Warn(Tag, $"下载源不可用（{url}）：{ex.Message}");
+            }
+            finally
+            {
+                try
+                {
+                    if (File.Exists(archive)) File.Delete(archive);
+                }
+                catch
+                {
+                    // 忽略清理失败。
+                }
             }
         }
+
+        if (!downloaded)
+            throw new IOException("所有陶瓦下载源均不可用，请检查网络连接。", lastError);
 
         // 压缩包内的主程序名与版本号绑定，这里统一改名为本类约定的名字，
         // 这样升级版本时只需改动 Version 常量。
