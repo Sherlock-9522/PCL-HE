@@ -56,7 +56,8 @@ public partial class PageToolsGameLink
                 HintAnnounce.Theme = MyHint.Themes.Blue;
                 HintAnnounce.Text = Lang.Text("Tools.GameLink.Loading.ConnectingServer");
             })));
-            loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Link.Mod.Task.FetchAnnouncement"), _ => GetAnnouncement()) { ProgressWeight = 0.5d });
+            // PCL-DSH 不接入 PCL-CE 的联机大厅服务器，因此不再拉取社区公告。
+            // （Secrets.LinkServers 在无社区密钥的构建中为空，拉取会抛 InvalidOperationException。）
             lobbyAnnouncementLoader = new ModLoader.LoaderCombo<int>("Lobby Announcement", loaders) { show = false };
         }
     }

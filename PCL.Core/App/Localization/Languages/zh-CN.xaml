@@ -3380,7 +3380,7 @@
     <sys:String x:Key="Tools.GameLink.Link.Privacy">大厅隐私协议</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Report">违法违规举报</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Terms">Natayark Network 用户协议与隐私政策</sys:String>
-    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在连接到大厅服务器...</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在准备陶瓦（Terracotta）联机环境...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">正在创建大厅</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">下载联机模块中……</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Hosting">正在建立联机房间</sys:String>

@@ -3324,7 +3324,7 @@
     <sys:String x:Key="Tools.GameLink.Link.Privacy">Lobby Privacy Policy</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Report">Report violation</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Terms">Natayark OpenID ToS</sys:String>
-    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">Connecting to lobby server...</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">Preparing the Terracotta link environment...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">Creating lobby</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">Downloading lobby module</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">Lobby members ({0} total)</sys:String>

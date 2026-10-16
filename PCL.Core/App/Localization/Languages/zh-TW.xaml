@@ -3324,7 +3324,7 @@
     <sys:String x:Key="Tools.GameLink.Link.Privacy">大廳隱私協議</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Report">違法違規檢舉</sys:String>
     <sys:String x:Key="Tools.GameLink.Link.Terms">Natayark Network 使用者協議與隱私政策</sys:String>
-    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在連線到大廳伺服器...</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在準備陶瓦（Terracotta）聯機環境...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">正在建立大廳</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">下載連線模組中……</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">大廳成員清單（共 {0} 人）</sys:String>
