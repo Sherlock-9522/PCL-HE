@@ -3096,6 +3096,8 @@
     <sys:String x:Key="Setup.Ui.Basic.LockWindow">锁定启动器大小</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Opacity">不透明度</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Opacity2">不透明度</sys:String>
+    <sys:String x:Key="Setup.Ui.Basic.ProfileOpacity">档案区不透明度</sys:String>
+    <sys:String x:Key="Setup.Ui.Basic.ProfileOpacity.ToolTip">调整主界面左侧玩家档案区的背景不透明度，调低可以让壁纸从档案区透出来。&#xD;此设置与「启动器不透明度」相互独立，只影响档案区，不会让整个窗口变淡。</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.ShowLogo">打开启动器时显示 PCL-DSH 图标</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.ShowTriviaHint">在启动游戏时显示"你知道吗"</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Title">基础</sys:String>

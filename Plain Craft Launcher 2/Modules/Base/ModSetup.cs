@@ -53,6 +53,8 @@ public class ModSetup
         // UI - Background Image
         Config.Preference.Background.WallpaperOpacityConfig.Observe(new ConfigObserver(ConfigEvent.Changed,
             e => UiBackgroundOpacity((int)e.Value!)));
+        Config.Preference.Background.ProfileOpacityConfig.Observe(new ConfigObserver(ConfigEvent.Changed,
+            e => UiProfileOpacity((int)e.Value!)));
         Config.Preference.Background.WallpaperBlurRadiusConfig.Observe(new ConfigObserver(ConfigEvent.Changed,
             e => UiBackgroundBlur((int)e.Value!)));
         Config.Preference.Background.WallpaperSuitModeConfig.Observe(new ConfigObserver(ConfigEvent.Changed,
@@ -129,6 +131,7 @@ public class ModSetup
 
         // UI - Background Image
         UiBackgroundOpacity(Config.Preference.Background.WallpaperOpacity);
+        UiProfileOpacity(Config.Preference.Background.ProfileOpacity);
         UiBackgroundBlur(Config.Preference.Background.WallpaperBlurRadius);
         UiBackgroundSuit(Config.Preference.Background.WallpaperSuitMode);
 
@@ -227,6 +230,29 @@ public class ModSetup
     public static void UiLauncherTransparent(int value)
     {
         ModMain.frmMain.Opacity = value / 1000d + 0.4d;
+    }
+
+    /// <summary>
+    ///     主界面左侧档案区背景的不透明度（千分比）。0 为完全透明，1000 为完全不透明。
+    ///     PCL-DSH 新增：与启动器整体透明度独立，方便玩家把壁纸透出来。
+    /// </summary>
+    public static void UiProfileOpacity(int value)
+    {
+        var alpha = (byte)Math.Clamp(Math.Round(value * 255d / 1000d), 0d, 255d);
+        if (Application.Current?.Resources["ColorBrushTransparentBackground"] is not SolidColorBrush brush)
+            return;
+
+        var color = Color.FromArgb(alpha, brush.Color.R, brush.Color.G, brush.Color.B);
+        if (brush.IsFrozen)
+        {
+            var unfrozen = brush.Clone();
+            unfrozen.Color = color;
+            Application.Current.Resources["ColorBrushTransparentBackground"] = unfrozen;
+        }
+        else
+        {
+            brush.Color = color;
+        }
     }
 
     public static void UiLauncherTheme(int value)

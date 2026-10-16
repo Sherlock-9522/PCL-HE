@@ -322,6 +322,12 @@ public static partial class Config
             [ConfigItem<int>("UiBackgroundOpacity", 1000, ConfigSource.Local)] public partial int WallpaperOpacity { get; set; }
 
             /// <summary>
+            /// 主界面左侧档案区背景的不透明度。调低它可以让壁纸从档案区透出来，
+            /// 与「启动器整体透明度」相互独立。
+            /// </summary>
+            [ConfigItem<int>("UiProfileOpacity", 824, ConfigSource.Local)] public partial int ProfileOpacity { get; set; }
+
+            /// <summary>
             /// 旋转。
             /// </summary>
             [ConfigItem<int>("UiBackgroundCarousel", 1000, ConfigSource.Local)] public partial int WallpaperCarousel { get; set; }

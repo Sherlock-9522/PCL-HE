@@ -3040,6 +3040,8 @@
     <sys:String x:Key="Setup.Ui.Basic.LockWindow">Lock launcher size</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Opacity">Opacity</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Opacity2">Opacity</sys:String>
+    <sys:String x:Key="Setup.Ui.Basic.ProfileOpacity">Profile Panel Opacity</sys:String>
+    <sys:String x:Key="Setup.Ui.Basic.ProfileOpacity.ToolTip">Adjusts the background opacity of the player profile panel on the home page. Lower values let the wallpaper show through.&#xD;Independent of the overall launcher opacity: only the profile panel is affected.</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.ShowLogo">Display the PCL-DSH logo whilst opening the launcher</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.ShowTriviaHint">Show 'Trivia' when launching the game</sys:String>
     <sys:String x:Key="Setup.Ui.Basic.Title">Basics</sys:String>

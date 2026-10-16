@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -69,6 +69,7 @@ public partial class PageSetupUI
 
             // 背景图片
             SliderBackgroundOpacity.Value = Config.Preference.Background.WallpaperOpacity;
+            SliderProfileOpacity.Value = Config.Preference.Background.ProfileOpacity;
             SliderBackgroundBlur.Value = Config.Preference.Background.WallpaperBlurRadius;
             ComboBackgroundSuit.SelectedIndex = Config.Preference.Background.WallpaperSuitMode;
             CheckBackgroundColorful.Checked = Config.Preference.Background.BackgroundColorful;
