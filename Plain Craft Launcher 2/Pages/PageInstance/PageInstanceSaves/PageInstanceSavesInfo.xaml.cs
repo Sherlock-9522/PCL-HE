@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using Humanizer;
 using PCL.Core.App.Localization;
@@ -273,15 +273,16 @@ public partial class PageInstanceSavesInfo : IRefreshable
             };
             contentStack.Children.Add(seedBtn);
 
-            var chunkbaseBtn = new MyIconButton
+            var chunkbasePanel = new StackPanel
             {
-                SvgIcon = "lucide/external-link",
-                Width = 22d,
-                Height = 22d,
-                ToolTip = Lang.Text("Instance.Saves.Info.Chunkbase.ToolTip"),
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0d, 2d, 0d, 2d),
             };
-            chunkbaseBtn.Click += (_, _) => OpenChunkbase(content, versionName);
-            contentStack.Children.Add(chunkbaseBtn);
+            chunkbasePanel.Children.Add(CreateChunkbaseButton("seed-map", "Instance.Saves.Info.Chunkbase.SeedMap", content, versionName));
+            chunkbasePanel.Children.Add(CreateChunkbaseButton("stronghold-finder", "Instance.Saves.Info.Chunkbase.Stronghold", content, versionName));
+            chunkbasePanel.Children.Add(CreateChunkbaseButton("nether-fortress-finder", "Instance.Saves.Info.Chunkbase.NetherFortress", content, versionName));
+            chunkbasePanel.Children.Add(CreateChunkbaseButton("end-city-finder", "Instance.Saves.Info.Chunkbase.EndCity", content, versionName));
+            contentStack.Children.Add(chunkbasePanel);
         }
         else
         {
@@ -314,7 +315,30 @@ public partial class PageInstanceSavesInfo : IRefreshable
         PanSettingsList.RowDefinitions.Add(new RowDefinition { Height = new GridLength(8d, GridUnitType.Pixel) });
     }
 
-    private static void OpenChunkbase(string seed, string? versionName)
+    /// <summary>
+    ///     创建一个 Chunkbase 入口按钮。app 为 Chunkbase 的应用标识。
+    /// </summary>
+    private static MyIconButton CreateChunkbaseButton(string app, string tooltipKey, string seed, string? versionName)
+    {
+        var btn = new MyIconButton
+        {
+            SvgIcon = app switch
+            {
+                "seed-map" => "lucide/map",
+                "stronghold-finder" => "lucide/landmark",
+                "nether-fortress-finder" => "lucide/flame",
+                _ => "lucide/sparkles"
+            },
+            Width = 22d,
+            Height = 22d,
+            Margin = new Thickness(0d, 0d, 4d, 0d),
+            ToolTip = Lang.Text(tooltipKey)
+        };
+        btn.Click += (_, _) => OpenChunkbase(app, seed, versionName);
+        return btn;
+    }
+
+    private static void OpenChunkbase(string app, string seed, string? versionName)
     {
         try
         {
@@ -341,8 +365,10 @@ public partial class PageInstanceSavesInfo : IRefreshable
                 : versionName.Contains('.')
                     ? string.Join("_", versionName.Split('.').Take(2))
                     : versionName.Replace(".", "_");
-            ModBase.OpenWebsite(
-                $"https://www.chunkbase.com/apps/seed-map#seed={seed}&platform=java_{usedVersion}&dimension=overworld");
+            var url = $"https://www.chunkbase.com/apps/{app}#seed={seed}&platform=java_{usedVersion}";
+            // 只有种子地图需要指定维度，其余三个应用各自固定维度。
+            if (app == "seed-map") url += "&dimension=overworld";
+            ModBase.OpenWebsite(url);
         }
         catch (Exception ex)
         {

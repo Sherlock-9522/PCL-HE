@@ -1328,6 +1328,10 @@
     <sys:String x:Key="Instance.Saves.Info.AllowCommands.Allowed">Allowed</sys:String>
     <sys:String x:Key="Instance.Saves.Info.AllowCommands.NotAllowed">Not allowed</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.PreviewVersion">Save version '{0}' may be a preview version, unsupported, cannot open in Chunkbase</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.SeedMap">View seed map in Chunkbase</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.Stronghold">Find strongholds in Chunkbase</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.NetherFortress">Find nether fortresses in Chunkbase</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.EndCity">Find end cities in Chunkbase</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.ToolTip">Open in Chunkbase</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.UnknownVersion">Unable to determine save version, cannot open in Chunkbase</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Details.Title">Save details</sys:String>

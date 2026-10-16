@@ -1328,6 +1328,10 @@
     <sys:String x:Key="Instance.Saves.Info.AllowCommands.Allowed">允许</sys:String>
     <sys:String x:Key="Instance.Saves.Info.AllowCommands.NotAllowed">不允许</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.PreviewVersion">当前存档版本 '{0}' 可能是预览版，不受支持，无法跳转到 Chunkbase</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.SeedMap">在 Chunkbase 查看种子地图</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.Stronghold">在 Chunkbase 查找要塞</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.NetherFortress">在 Chunkbase 查找下界要塞</sys:String>
+    <sys:String x:Key="Instance.Saves.Info.Chunkbase.EndCity">在 Chunkbase 查找末地城</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.ToolTip">跳转到 Chunkbase</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Chunkbase.UnknownVersion">当前存档版本无法确定，因此无法跳转到 Chunkbase</sys:String>
     <sys:String x:Key="Instance.Saves.Info.Details.Title">存档详细信息</sys:String>
