@@ -984,6 +984,7 @@
     <sys:String x:Key="Instance.Overall.Shortcuts.InstanceFolder">Instance folder</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.ModsFolder">Mods folder</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.SavesFolder">Saves folder</sys:String>
+    <sys:String x:Key="Instance.Overall.Shortcuts.SchematicsFolder">Schematics folder</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.Title">Shortcuts</sys:String>
     <sys:String x:Key="Instance.Overall.Unfavorite">Unfavorite</sys:String>
 

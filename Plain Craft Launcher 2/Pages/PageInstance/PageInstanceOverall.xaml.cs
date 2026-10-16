@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +40,7 @@ public partial class PageInstanceOverall
         BtnFolderVersion.Click += BtnFolderVersion_Click;
         BtnFolderSaves.Click += BtnFolderSaves_Click;
         BtnFolderMods.Click += BtnFolderMods_Click;
+        BtnFolderSchematics.Click += BtnFolderSchematics_Click;
         BtnManageScript.Click += BtnManageScript_Click;
         BtnManageCheck.Click += BtnManageCheck_Click;
         BtnManageRestore.Click += BtnManageRestore_Click;
@@ -527,6 +528,14 @@ public partial class PageInstanceOverall
     private void BtnFolderMods_Click(object sender, MouseButtonEventArgs mouseButtonEventArgs)
     {
         var folderPath = PageInstanceLeft.McInstance.PathIndie + @"mods\";
+        Directory.CreateDirectory(folderPath);
+        ModBase.OpenExplorer(folderPath);
+    }
+
+    // 蓝图文件夹（Litematica / WorldEdit 的投影与结构文件）
+    private void BtnFolderSchematics_Click(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+    {
+        var folderPath = PageInstanceLeft.McInstance.PathIndie + @"schematics\";
         Directory.CreateDirectory(folderPath);
         ModBase.OpenExplorer(folderPath);
     }

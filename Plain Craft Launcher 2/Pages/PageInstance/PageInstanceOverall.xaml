@@ -92,6 +92,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Button" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Button" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Button" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Button" />
                         </Grid.ColumnDefinitions>
                         <local:MyButton x:Name="BtnFolderVersion" Text="{DynamicResource Instance.Overall.Shortcuts.InstanceFolder}" MinWidth="140" Padding="13,0"
                                         Margin="0,0,20,0" />
@@ -99,6 +100,8 @@
                                         Margin="0,0,20,0" Grid.Column="1" />
                         <local:MyButton x:Name="BtnFolderMods" Text="{DynamicResource Instance.Overall.Shortcuts.ModsFolder}" MinWidth="140" Padding="13,0"
                                         Margin="0,0,20,0" Grid.Column="2" />
+                        <local:MyButton x:Name="BtnFolderSchematics" Text="{DynamicResource Instance.Overall.Shortcuts.SchematicsFolder}" MinWidth="140" Padding="13,0"
+                                        Margin="0,0,20,0" Grid.Column="3" />
                     </Grid>
                 </StackPanel>
             </local:MyCard>

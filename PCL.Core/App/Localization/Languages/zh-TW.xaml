@@ -975,6 +975,7 @@
     <sys:String x:Key="Instance.Overall.Shortcuts.InstanceFolder">實例資料夾</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.ModsFolder">模組資料夾</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.SavesFolder">存檔資料夾</sys:String>
+    <sys:String x:Key="Instance.Overall.Shortcuts.SchematicsFolder">藍圖資料夾</sys:String>
     <sys:String x:Key="Instance.Overall.Shortcuts.Title">捷徑</sys:String>
     <sys:String x:Key="Instance.Overall.Unfavorite">從我的最愛中移除</sys:String>
 
