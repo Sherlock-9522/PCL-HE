@@ -806,7 +806,7 @@ public partial class PageToolsGameLink
         try
         {
             BtnInputPort.IsEnabled = false;
-            if (!ModLink.LobbyPrecheck()) return;
+            // PCL-DSH：陶瓦模式下无需 PCL CE 的大厅预检（Natayark 登录与 EasyTier 下载）。
             var input = ModMain.MyMsgBoxInput(Lang.Text("Tools.GameLink.Create.EnterPort"),
                 validateRules: [new IntValidator(65535,1024)]);
             int port;
