@@ -3533,7 +3533,7 @@
     <sys:String x:Key="Update.Action">更新</sys:String>
     <sys:String x:Key="Update.Available">啟動器有新版本可用（{0} -&gt; {1}）&#xA;是否立即更新？</sys:String>
     <sys:String x:Key="Update.Check.Failed">無法取得最新版本資訊，請檢查網路連線</sys:String>
-    <sys:String x:Key="Update.CommunityNotice.Body">你正在使用來自 PCL-Community 的 PCL-DSH，遇到問題請不要向原版儲存庫回饋！&#xA;PCL-Community 及其成員與龍騰貓躍無從屬關係，且均不會為您的使用做擔保。&#xA;&#xA;如果你是意外下載的 PCL-DSH，建議下載原版 PCL 使用。&#xA;如果你是意外下載的 PCL-DSH，建議下載原版 PCL 使用。&#xA;如果你是意外下載的 PCL-DSH，建議下載原版 PCL 使用。&#xA;&#xA;該版本與原版的特性區別：&#xA;- 主題切換：僅部分固定藍色系主題，沒有計劃新增其他主題。&#xA;- 百寶箱：缺失部分原版中的內容（回聲洞、千萬別點）。&#xA;&#xA;此提示會在啟動器更新後展示一次。</sys:String>
+    <sys:String x:Key="Update.CommunityNotice.Body">PCL-DSH 是第三方基於 PCL Community Edition 獨立維護的衍生版本，與 PCL、PCL Community Edition 的官方團隊之間沒有隸屬關係，也不由官方提供支援。&#xA;遇到問題請提交到 PCL-DSH 的儲存庫，不要向上游儲存庫回饋。&#xA;&#xA;本版與上游的主要區別：&#xA;- 已切斷與上游更新服務、帳號體系相關的連網行為，功能均在本機完成。&#xA;- 連線功能由陶瓦（Terracotta）與 EasyTier 提供，以獨立行程方式執行。&#xA;- 介面與品牌標識已按獨立發行的版本重新設計。</sys:String>
     <sys:String x:Key="Update.CommunityNotice.Confirm">我知道了</sys:String>
     <sys:String x:Key="Update.CommunityNotice.Title">PCL-DSH 版本說明</sys:String>
     <sys:String x:Key="Update.Error.FetchFailed">取得啟動器更新失敗，請檢查網路連線</sys:String>

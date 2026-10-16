@@ -3603,7 +3603,7 @@
     <sys:String x:Key="Update.Action">更新</sys:String>
     <sys:String x:Key="Update.Available">启动器有新版本可用（{0} -&gt; {1}）&#xA;是否立即更新？</sys:String>
     <sys:String x:Key="Update.Check.Failed">无法获取最新版本信息，请检查网络连接</sys:String>
-    <sys:String x:Key="Update.CommunityNotice.Body">你正在使用来自 PCL-Community 的 PCL-DSH，遇到问题请不要向原版仓库反馈！&#xA;PCL-Community 及其成员与龙腾猫跃无从属关系，且均不会为您的使用做担保。&#xA;&#xA;如果你是意外下载的 PCL-DSH，建议下载原版 PCL 使用。&#xA;如果你是意外下载的 PCL-DSH，建议下载原版 PCL 使用。&#xA;如果你是意外下载的 PCL-DSH，建议下载原版 PCL 使用。&#xA;&#xA;该版本与原版的特性区别：&#xA;- 主题切换：仅部分固定蓝色系主题，没有计划新增其它主题。&#xA;- 百宝箱：缺失部分原版中的内容（回声洞、千万别点）。&#xA;&#xA;此提示会在启动器更新后展示一次。</sys:String>
+    <sys:String x:Key="Update.CommunityNotice.Body">PCL-DSH 是第三方基于 PCL Community Edition 独立维护的衍生版本，与 PCL、PCL Community Edition 的官方团队之间没有隶属关系，也不由官方提供支持。&#xA;遇到问题请提交到 PCL-DSH 的仓库，不要向上游仓库反馈。&#xA;&#xA;本版与上游的主要区别：&#xA;- 已切断与上游更新服务、账号体系相关的联网行为，功能均在本机完成。&#xA;- 联机功能由陶瓦（Terracotta）与 EasyTier 提供，以独立进程方式运行。&#xA;- 界面与品牌标识已按独立发行的版本重新设计。</sys:String>
     <sys:String x:Key="Update.CommunityNotice.Confirm">我知道了</sys:String>
     <sys:String x:Key="Update.CommunityNotice.Title">PCL-DSH 版本说明</sys:String>
     <sys:String x:Key="Update.Error.FetchFailed">获取启动器更新失败，请检查网络连接</sys:String>

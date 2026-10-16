@@ -34,7 +34,8 @@ public class MyBitmap
             try
             {
                 filePathOrResourceName =
-                    filePathOrResourceName.Replace("pack://application:,,,/images/", ModBase.pathImage);
+                    filePathOrResourceName.Replace("pack://application:,,,/images/", ModBase.pathImage,
+                        StringComparison.OrdinalIgnoreCase);
                 if (filePathOrResourceName.StartsWithF(ModBase.pathImage))
                 {
                     if (_Cache.ContainsKey(filePathOrResourceName))
