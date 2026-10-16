@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
@@ -498,14 +498,15 @@ public class ModSetup
 
                 break;
             }
-            case 1: // 默认
+            case 1: // 默认（PCL-DSH 虎鲸标识）
             {
-                ModMain.frmMain.ShapeTitleLogo.Visibility = Visibility.Visible;
+                ModMain.frmMain.ShapeTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.BtnTitleHelp.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Collapsed;
-                ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Collapsed;
-                ModMain.frmMain.CELogo.Visibility = Visibility.Visible;
+                ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Visible;
+                ModMain.frmMain.ImageTitleLogo.Source = "pack://application:,,,/images/whale.png";
+                ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
                 if (ModMain.frmSetupUI is not null)
                 {
                     ModMain.frmSetupUI.CheckLogoLeft.Visibility = Visibility.Collapsed;
@@ -522,7 +523,7 @@ public class ModSetup
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Visible;
                 ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Collapsed;
-                ModMain.frmMain.CELogo.Visibility = Visibility.Visible;
+                ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
                 if (ModMain.frmSetupUI is not null)
                 {
                     ModMain.frmSetupUI.CheckLogoLeft.Visibility = Visibility.Collapsed;
@@ -540,7 +541,7 @@ public class ModSetup
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Visible;
-                ModMain.frmMain.CELogo.Visibility = Visibility.Visible;
+                ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
                 if (ModMain.frmSetupUI is not null)
                 {
                     ModMain.frmSetupUI.CheckLogoLeft.Visibility = Visibility.Collapsed;

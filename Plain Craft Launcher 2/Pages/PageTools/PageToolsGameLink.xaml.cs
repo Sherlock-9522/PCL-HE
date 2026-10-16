@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +10,7 @@ using PCL.Core.Link.McPing;
 using PCL.Core.Link.Natayark;
 using PCL.Core.Link.Scaffolding.Client.Models;
 using PCL.Core.Link.Scaffolding.EasyTier;
+using PCL.Core.Link.Terracotta;
 using PCL.Core.Logging;
 using PCL.Core.Utils.Validate;
 using PCL.Network;
@@ -43,14 +44,8 @@ public partial class PageToolsGameLink
         // 注册自定义的 OnStateChanged
         initLoader.OnStateChangedUi += OnLoadStateChanged;
 
-        LobbyService.OnNeedDownloadEasyTier += () => ModLink.DownloadEasyTier();
-        LobbyService.DiscoveredWorlds.CollectionChanged += OnDiscoveredWorldsChanged;
-        LobbyService.Players.CollectionChanged += OnPlayersChanged;
-        LobbyService.OnUserStopGame += OnUserStopGame;
-        LobbyService.OnClientPing += OnClientPingHandler;
-        LobbyService.OnServerShutDown += OnServerShuttedDownHandler;
-        LobbyService.OnServerStarted += OnServerStartedHandler;
-        LobbyService.OnServerException += OnServerExceptionHandler;
+        // PCL-DSH 以陶瓦（Terracotta）作为联机底座，不再订阅 PCL CE 的 Scaffolding 大厅事件。
+        // 陶瓦自己负责扫描世界、端口转发与玩家广播，这里只需要驱动它的 HTTP 接口。
 
         if (lobbyAnnouncementLoader is null)
         {
@@ -108,7 +103,8 @@ public partial class PageToolsGameLink
         await Dispatcher.BeginInvoke(new Action(async () =>
             await _LinkAnnounceUpdateAsync())); // 我实在不理解为啥 BeginInvoke 这个委托要 MustBeInherit
 
-        await LobbyService.InitializeAsync().ConfigureAwait(false);
+        // PCL-DSH：用陶瓦后台进程取代 PCL CE 的大厅初始化。
+        await EnsureTerracottaReadyAsync().ConfigureAwait(false);
     }
 
     private void BtnAgreeEula_Click(object sender, MouseButtonEventArgs e)
@@ -798,10 +794,11 @@ public partial class PageToolsGameLink
 
     #region PanSelect | 种类选择页面
 
-    // 刷新按钮
+    // 刷新按钮：陶瓦会自行扫描局域网内的世界，这里只需给出提示。
     private void BtnRefresh_Click(object sender, MouseButtonEventArgs e)
     {
-        var lobby = LobbyService.DiscoverWorldAsync();
+        ModBase.Log("[Terracotta] 世界列表由陶瓦自动扫描，忽略手动刷新");
+        HintService.Hint(Lang.Text("Tools.GameLink.Loading.Scanning"));
     }
 
     private async void BtnInputPort_Click(object sender, MouseButtonEventArgs e)
@@ -832,28 +829,123 @@ public partial class PageToolsGameLink
     // 创建大厅
     private async void BtnCreate_Click(object sender, MouseButtonEventArgs e)
     {
-        if (ComboWorldList.SelectedItem is null)
-        {
-            HintService.Hint(Lang.Text("Tools.GameLink.Create.NoWorld"));
-            return;
-        }
-
         BtnCreate.IsEnabled = false;
 
-        if (!ModLink.LobbyPrecheck())
-        {
-            BtnCreate.IsEnabled = true;
-            return;
-        }
-
-        var port = (int)((MyComboBoxItem)ComboWorldList.SelectedItem).Tag;
+        // PCL-DSH：世界交由陶瓦自动扫描，因此不再要求先在下拉框中选择。
+        var port = ComboWorldList.SelectedItem is null
+            ? 0
+            : (int)((MyComboBoxItem)ComboWorldList.SelectedItem).Tag;
         await CreateLobbyAsync(port);
     }
 
+    #region 陶瓦（Terracotta）驱动
+
+    private static TerracottaClient? _tcClient;
+
+    /// <summary>
+    ///     确保陶瓦后台进程已就绪，并取得可用的控制客户端。
+    /// </summary>
+    private static async Task<bool> EnsureTerracottaReadyAsync()
+    {
+        try
+        {
+            _tcClient = await TerracottaProcess.EnsureRunningAsync().ConfigureAwait(true);
+            return _tcClient is not null;
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Terracotta] 启动陶瓦后台进程失败");
+            return false;
+        }
+    }
+
+    /// <summary>
+    ///     轮询陶瓦状态，直到满足条件、出错或超时。
+    /// </summary>
+    private async Task<TerracottaState?> PollTerracottaAsync(Func<TerracottaState, bool> until, int timeoutSeconds)
+    {
+        if (_tcClient is null) return null;
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+        var lastIndex = ulong.MaxValue;
+        while (DateTime.UtcNow < deadline)
+        {
+            TerracottaState? state;
+            try
+            {
+                state = await _tcClient.GetStateAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "[Terracotta] 读取状态失败");
+                await Task.Delay(300).ConfigureAwait(true);
+                continue;
+            }
+
+            if (state is not null)
+            {
+                if (state.Index != lastIndex)
+                {
+                    lastIndex = state.Index;
+                    ModBase.Log("[Terracotta] 状态：" + state.State);
+                    ReportTerracottaState(state);
+                }
+
+                if (state.IsException || until(state)) return state;
+            }
+
+            await Task.Delay(300).ConfigureAwait(true);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    ///     把陶瓦状态映射到界面上的进度提示。
+    /// </summary>
+    private static void ReportTerracottaState(TerracottaState state)
+    {
+        var text = state.State switch
+        {
+            TerracottaStates.HostScanning => Lang.Text("Tools.GameLink.Loading.Scanning"),
+            TerracottaStates.HostStarting => Lang.Text("Tools.GameLink.Loading.Hosting"),
+            TerracottaStates.GuestConnecting => Lang.Text("Tools.GameLink.Loading.Joining"),
+            TerracottaStates.GuestStarting => Lang.Text("Tools.GameLink.Loading.Joining"),
+            _ => null
+        };
+
+        if (text is null) return;
+
+        SetLoadDesc(text, text);
+        ModBase.RunInUi(() =>
+        {
+            if (ModMain.frmToolsGameLink is null) return;
+            ModMain.frmToolsGameLink.LabLoadDesc.Text = text;
+        });
+    }
+
+    /// <summary>
+    ///     把陶瓦的错误类型翻译成可读提示。
+    /// </summary>
+    private static string DescribeTerracottaError(TerracottaState? state)
+    {
+        return state?.GetErrorType() switch
+        {
+            TerracottaErrorType.PingHostFail => Lang.Text("Tools.GameLink.Terracotta.Error.PingHostFail"),
+            TerracottaErrorType.PingHostRst => Lang.Text("Tools.GameLink.Terracotta.Error.PingHostRst"),
+            TerracottaErrorType.GuestEasytierCrash => Lang.Text("Tools.GameLink.Terracotta.Error.GuestCrash"),
+            TerracottaErrorType.HostEasytierCrash => Lang.Text("Tools.GameLink.Terracotta.Error.HostCrash"),
+            TerracottaErrorType.PingServerRst => Lang.Text("Tools.GameLink.Terracotta.Error.PingServerRst"),
+            TerracottaErrorType.ScaffoldingInvalidResponse =>
+                Lang.Text("Tools.GameLink.Terracotta.Error.InvalidResponse"),
+            _ => Lang.Text("Tools.GameLink.Terracotta.Failed")
+        };
+    }
+
+    #endregion
+
     private async Task CreateLobbyAsync(int port)
     {
-        ModBase.Log("[Link] 创建大厅，端口：" + port);
-
+        ModBase.Log("[Link] 创建陶瓦房间（本地端口 " + port + "，世界由陶瓦自动扫描）");
 
         var username = LobbyInfoProvider.GetUsername();
 
@@ -867,33 +959,69 @@ public partial class PageToolsGameLink
             StackPlayerList.Children.Clear();
             LabConnectUserName.Text = username;
             LabConnectUserType.Text = Lang.Text("Tools.GameLink.Finish.Host");
-            LabFinishId.Text = LobbyService.CurrentLobbyCode;
+            LabFinishId.Text = "-";
             BtnFinishCopyIp.Visibility = Visibility.Collapsed;
             BtnCreate.IsEnabled = true;
             BtnFinishExit.Text = Lang.Text("Tools.GameLink.Finish.CloseLobby");
             CurrentSubpage = Subpages.PanFinish;
         });
 
-        var res = await LobbyService.CreateLobbyAsync(port, username).ConfigureAwait(true);
-
-        if (!res)
+        if (!await EnsureTerracottaReadyAsync())
+        {
             ModBase.RunInUi(() =>
             {
-                CardPlayerList.Title = Lang.Text("Tools.GameLink.Member.ListLoading");
-                StackPlayerList.Children.Clear();
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
                 CurrentSubpage = Subpages.PanSelect;
             });
+            return;
+        }
+
+        try
+        {
+            await _tcClient!.StartHostingAsync(username).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Terracotta] 发起建房失败");
+            ModBase.RunInUi(() =>
+            {
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
+                CurrentSubpage = Subpages.PanSelect;
+            });
+            return;
+        }
+
+        var state = await PollTerracottaAsync(s => s.IsHostReady, 120);
+
+        ModBase.RunInUi(() =>
+        {
+            if (state is { IsHostReady: true })
+            {
+                LabFinishId.Text = state.Room ?? "-";
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.HostReady"));
+            }
+            else
+            {
+                HintService.Hint(DescribeTerracottaError(state), HintType.Error);
+                CurrentSubpage = Subpages.PanSelect;
+            }
+        });
     }
 
     // 加入大厅
     private async void BtnJoin_Click(object sender, MouseButtonEventArgs e)
     {
-        if (!ModLink.LobbyPrecheck())
+        var raw = TextJoinLobbyId.Text;
+
+        // 先在本地校验邀请码格式，格式不对就没必要去打扰陶瓦。
+        if (!TerracottaInviteCode.TryParse(raw, out var inviteCode))
+        {
+            HintService.Hint(Lang.Text("Tools.GameLink.Join.InvalidText"));
             return;
+        }
 
-        ModBase.Log("Start to join lobby.");
+        ModBase.Log("[Link] 加入陶瓦房间：" + inviteCode);
 
-        var id = TextJoinLobbyId.Text;
         var username = LobbyInfoProvider.GetUsername();
 
         ModBase.RunInUi(() =>
@@ -906,20 +1034,48 @@ public partial class PageToolsGameLink
             StackPlayerList.Children.Clear();
             LabConnectUserName.Text = username;
             LabConnectUserType.Text = Lang.Text("Tools.GameLink.Finish.Guest");
-            LabFinishId.Text = id;
+            LabFinishId.Text = inviteCode;
             BtnFinishCopyIp.Visibility = Visibility.Visible;
             CurrentSubpage = Subpages.PanFinish;
         });
 
-        var res = await LobbyService.JoinLobbyAsync(id, username).ConfigureAwait(true);
-
-        if (!res)
+        if (!await EnsureTerracottaReadyAsync())
+        {
             ModBase.RunInUi(() =>
             {
-                CardPlayerList.Title = Lang.Text("Tools.GameLink.Member.ListLoading");
-                StackPlayerList.Children.Clear();
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
                 CurrentSubpage = Subpages.PanSelect;
             });
+            return;
+        }
+
+        try
+        {
+            await _tcClient!.JoinAsync(inviteCode, username).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Terracotta] 加入房间失败");
+            ModBase.RunInUi(() =>
+            {
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
+                CurrentSubpage = Subpages.PanSelect;
+            });
+            return;
+        }
+
+        var state = await PollTerracottaAsync(s => s.IsGuestReady, 120);
+
+        ModBase.RunInUi(() =>
+        {
+            if (state is { IsGuestReady: true })
+                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.GuestReady"));
+            else
+            {
+                HintService.Hint(DescribeTerracottaError(state), HintType.Error);
+                CurrentSubpage = Subpages.PanSelect;
+            }
+        });
     }
 
     private void TextJoinLobbyId_KeyDown(object sender, KeyEventArgs e)
@@ -1015,9 +1171,7 @@ public partial class PageToolsGameLink
     private async void BtnFinishExit_Click(object sender, ModBase.RouteEventArgs routeEventArgs)
     {
         if (ModMain.MyMsgBox(
-                Lang.Text(LobbyService.IsHost
-                    ? "Tools.GameLink.Exit.ConfirmMessageWithHost"
-                    : "Tools.GameLink.Exit.ConfirmMessage"),
+                Lang.Text("Tools.GameLink.Exit.ConfirmMessage"),
                 Lang.Text("Tools.GameLink.Exit.ConfirmTitle"),
                 Lang.Text("Common.Action.Confirm"),
                 Lang.Text("Common.Action.Cancel"),
@@ -1026,7 +1180,14 @@ public partial class PageToolsGameLink
         {
             CurrentSubpage = Subpages.PanSelect;
             BtnFinishExit.Text = Lang.Text("Tools.GameLink.Finish.Exit");
-            await LobbyService.LeaveLobbyAsync().ConfigureAwait(true);
+            try
+            {
+                if (_tcClient is not null) await _tcClient.ResetAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "[Terracotta] 退出房间失败");
+            }
         }
     }
 

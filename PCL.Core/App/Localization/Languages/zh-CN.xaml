@@ -3376,6 +3376,19 @@
     <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在连接到大厅服务器...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">正在创建大厅</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">下载联机模块中……</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Hosting">正在建立联机房间</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Joining">正在连接房主的房间</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Scanning">正在扫描局域网内的 Minecraft 世界</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Copyright">联机功能由陶瓦（Terracotta）提供，以独立进程方式调用，其版权归陶瓦项目所有。</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.GuestCrash">本机联机组件崩溃，请重试</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.HostCrash">房主侧联机组件崩溃</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.InvalidResponse">陶瓦的认证服务返回了无效响应</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostFail">无法连接到房主，请确认编号是否正确、房主是否仍在房间中</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostRst">与房主的连接被中断</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingServerRst">与中继服务器的连接被中断，请检查网络</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Failed">陶瓦未能完成本次联机，请重试</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.GuestReady">已加入房间，回到游戏中直接进入即可</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.HostReady">房间已建立，把上面的编号发给朋友即可加入</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">大厅成员列表（共 {0} 人）</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListLoading">大厅成员列表（正在获取信息）</sys:String>
     <sys:String x:Key="Tools.GameLink.Nat.Failed">测试失败</sys:String>
@@ -3391,13 +3404,14 @@
     <!-- Tools.GameLink.Agreement -->
 
     <sys:String x:Key="Tools.GameLink.Agreement.Accept">我已阅读并同意</sys:String>
-    <sys:String x:Key="Tools.GameLink.Agreement.Body">使用大厅功能即代表你同意下列条款：&#xA;&#xA;我承诺严格遵守中国大陆相关法律法规，不会将大厅功能用于违法违规用途。&#xA;我承诺使用大厅功能带来的一切风险自行承担。&#xA;我已知晓并同意 PCL-DSH 收集经处理的本机识别码、Natayark ID 与其他信息并在必要时提供给执法部门。&#xA;为保护未成年人个人信息，使用联机大厅前，我确认我已满十四周岁。&#xA;&#xA;另外，你还需要同意 PCL-DSH 大厅相关隐私政策及《Natayark OpenID 服务条款》。</sys:String>
-    <sys:String x:Key="Tools.GameLink.Agreement.Description">此处列出了 PCL-DSH 大厅使用的相关服务文档及介绍</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.Body">使用联机功能即代表你同意下列条款：&#xA;&#xA;我承诺严格遵守中国大陆相关法律法规，不会将联机功能用于违法违规用途。&#xA;我承诺使用联机功能带来的一切风险自行承担。&#xA;我已知晓联机功能由陶瓦（Terracotta）在本机以独立进程方式提供，不经过 PCL-DSH 的服务器，PCL-DSH 不会为此收集或上传任何个人信息。&#xA;为保护未成年人个人信息，使用联机功能前，我确认我已满十四周岁。</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.Description">此处列出了 PCL-DSH 联机功能所使用的开源项目与相关说明</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.EasyTierInfo">了解 EasyTier 开源组网项目</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTerms">Natayark OpenID 服务条款</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTermsInfo">查看 Natayark OpenID 服务条款</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.PrivacyPolicy">PCL-DSH 大厅相关隐私政策</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.PrivacyPolicyInfo">了解 PCL-DSH 如何处理您的个人信息</sys:String>
-    <sys:String x:Key="Tools.GameLink.Agreement.Title">PCL-DSH 联机大厅说明与条款</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.Title">PCL-DSH 联机功能说明与条款</sys:String>
 
     <!-- Tools.GameLink.Finish -->
 
