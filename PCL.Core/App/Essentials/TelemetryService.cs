@@ -153,6 +153,10 @@ public sealed partial class TelemetryService
     [LifecycleStart]
     private static async Task _StartAsync()
     {
+        // PCL-DSH：已完全切断遥测。PCL-DSH 不收集、不上报任何使用数据。
+        await Task.CompletedTask.ConfigureAwait(false);
+        return;
+#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         if (!Config.System.Telemetry) return;
         _InitSentry();
         
