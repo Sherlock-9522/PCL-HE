@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="Plain Craft Launcher 2/Images/icon.ico" alt="Logo" width="80" height="80">
+<img src="Plain%20Craft%20Launcher%202/Images/icon.png" alt="Logo" width="80" height="80">
 
 # PCL-DSH
 
