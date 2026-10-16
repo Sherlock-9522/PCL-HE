@@ -1474,11 +1474,8 @@
     <sys:String x:Key="Launch.Error.ExportScriptTitle">匯出啟動指令碼失敗</sys:String>
     <sys:String x:Key="Launch.Error.OperationFailed">啟動頁操作失敗。請檢視錯誤詳情。</sys:String>
     <sys:String x:Key="Launch.Error.Title">啟動失敗</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.HidePrompt">若要永久隱藏此提示，請輸入正確的 PCL-DSH 開發組織名稱。</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.InputTitle">輸入 PCL-DSH 開發組織名稱</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Message">PCL-DSH 是第三方基於 PCL 獨立維護的衍生版，以 PCL Community Edition 為直接上游，與 PCL、PCL Community Edition 的官方團隊之間沒有隸屬關係，也不由官方提供支援。&#xA;本版的問題請提交到 PCL-DSH 的儲存庫，不要向上游儲存庫回饋。</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Title">PCL-DSH 提示</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.WrongInput">不太對哦……</sys:String>
     <sys:String x:Key="Launch.Right.Log.Title">啟動日誌</sys:String>
 
     <!-- Launch.Account -->

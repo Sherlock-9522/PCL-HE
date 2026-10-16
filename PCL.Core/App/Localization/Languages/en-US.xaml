@@ -1518,11 +1518,8 @@
     <sys:String x:Key="Launch.Error.ExportScriptTitle">Failed to export launch script</sys:String>
     <sys:String x:Key="Launch.Error.OperationFailed">A launch page operation failed. See the details below.</sys:String>
     <sys:String x:Key="Launch.Error.Title">Launch failed</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.HidePrompt">To permanently hide this notice, enter the correct PCL-DSH development organization name.</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.InputTitle">Enter the PCL-DSH development organization name</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Message">PCL-DSH is an independently maintained third-party derivative of PCL, with PCL Community Edition as its direct upstream. It is not affiliated with, and is not supported by, the official teams of PCL or PCL Community Edition.&#xA;Please report issues with this build to the PCL-DSH repository, not to the upstream one.</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Title">PCL-DSH notice</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.WrongInput">Not quite right...</sys:String>
     <sys:String x:Key="Launch.Right.Log.Title">Launch log</sys:String>
 
     <!-- Launch.Account -->

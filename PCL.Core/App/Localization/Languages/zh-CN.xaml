@@ -1518,11 +1518,8 @@
     <sys:String x:Key="Launch.Error.ExportScriptTitle">导出启动脚本失败</sys:String>
     <sys:String x:Key="Launch.Error.OperationFailed">启动页操作失败。请查看错误详情。</sys:String>
     <sys:String x:Key="Launch.Error.Title">启动失败</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.HidePrompt">若要永久隐藏此提示，请输入正确的 PCL-DSH 开发组织名称。</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.InputTitle">输入 PCL-DSH 开发组织名称</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Message">PCL-DSH 是第三方基于 PCL 独立维护的衍生版，以 PCL Community Edition 为直接上游，与 PCL、PCL Community Edition 的官方团队之间没有隶属关系，也不由官方提供支持。&#xA;本版的问题请提交到 PCL-DSH 的仓库，不要向上游仓库反馈。</sys:String>
     <sys:String x:Key="Launch.Right.CommunityHint.Title">PCL-DSH 提示</sys:String>
-    <sys:String x:Key="Launch.Right.CommunityHint.WrongInput">不太对哦……</sys:String>
     <sys:String x:Key="Launch.Right.Log.Title">启动日志</sys:String>
 
     <!-- Launch.Account -->
