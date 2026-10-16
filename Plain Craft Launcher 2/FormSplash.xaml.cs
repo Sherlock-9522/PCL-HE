@@ -54,17 +54,14 @@ public partial class FormSplash
         {
             var speed = GetAnimationSpeed();
 
-            // 卡片整体淡入 + 轻微放大（「弹入」）
-            Anim(RootGrid, UIElement.OpacityProperty, 0d, 1d, 240d, 0d, speed, EaseKind.OutCubic);
-            Anim(RootScale, ScaleTransform.ScaleXProperty, 0.94d, 1d, 360d, 0d, speed, EaseKind.OutBack);
-            Anim(RootScale, ScaleTransform.ScaleYProperty, 0.94d, 1d, 360d, 0d, speed, EaseKind.OutBack);
-
-            // 蓝色辉光浮现
-            Anim(GlowLayer, UIElement.OpacityProperty, 0d, 1d, 520d, 120d, speed, EaseKind.OutCubic);
+            // 整体淡入 + 轻微放大（柔和，不使用回弹，避免「砸」出来的突兀感）
+            Anim(RootGrid, UIElement.OpacityProperty, 0d, 1d, 260d, 0d, speed, EaseKind.OutCubic);
+            Anim(RootScale, ScaleTransform.ScaleXProperty, 0.96d, 1d, 420d, 0d, speed, EaseKind.OutCubic);
+            Anim(RootScale, ScaleTransform.ScaleYProperty, 0.96d, 1d, 420d, 0d, speed, EaseKind.OutCubic);
 
             // Logo 上浮 + 淡入
-            Anim(LogoBox, UIElement.OpacityProperty, 0d, 1d, 380d, 180d, speed, EaseKind.OutCubic);
-            Anim(LogoShift, TranslateTransform.YProperty, 12d, 0d, 480d, 180d, speed, EaseKind.OutBack);
+            Anim(LogoBox, UIElement.OpacityProperty, 0d, 1d, 400d, 140d, speed, EaseKind.OutCubic);
+            Anim(LogoShift, TranslateTransform.YProperty, 10d, 0d, 520d, 140d, speed, EaseKind.OutCubic);
 
             // 主标题、副标题依次浮现
             Anim(LabTitle, UIElement.OpacityProperty, 0d, 1d, 320d, 380d, speed, EaseKind.OutCubic);
@@ -74,8 +71,8 @@ public partial class FormSplash
             Anim(ProgressTrack, UIElement.OpacityProperty, 0d, 1d, 300d, 620d, speed, EaseKind.OutCubic);
             ProgressShift.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation
             {
-                From = -140d,
-                To = 280d,
+                From = -100d,
+                To = 200d,
                 Duration = new Duration(TimeSpan.FromMilliseconds(1400d / speed)),
                 BeginTime = TimeSpan.FromMilliseconds(700d / speed),
                 RepeatBehavior = RepeatBehavior.Forever
@@ -87,7 +84,6 @@ public partial class FormSplash
             TryDumpIntroFailure(ex);
             // 兜底：至少让窗口可见，不影响启动流程
             RootGrid.Opacity = 1d;
-            GlowLayer.Opacity = 1d;
             LogoBox.Opacity = 1d;
             LabTitle.Opacity = 1d;
             LabSub.Opacity = 1d;
@@ -188,7 +184,7 @@ public partial class FormSplash
         try
         {
             File.AppendAllText(Path.Combine(dir, "props.txt"),
-                $"{ms}ms root={RootGrid.Opacity:F3} glow={GlowLayer.Opacity:F3} " +
+                $"{ms}ms root={RootGrid.Opacity:F3} " +
                 $"logo={LogoBox.Opacity:F3} shiftY={LogoShift.Y:F2} title={LabTitle.Opacity:F3} " +
                 $"sub={LabSub.Opacity:F3} track={ProgressTrack.Opacity:F3} win={Opacity:F3} " +
                 $"fading={_isFading}" + Environment.NewLine);
