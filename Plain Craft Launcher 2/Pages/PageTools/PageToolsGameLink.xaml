@@ -119,7 +119,8 @@
                             </StackPanel>
                         </local:MyCard>
 
-                        <local:MyCard x:Name="BtnNatayarkUserName">
+                        <!-- PCL-DSH：Natayark 账户体系属 PCL-CE 后端依赖，陶瓦联机不需要，已停用 -->
+                        <local:MyCard x:Name="BtnNatayarkUserName" Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal"
                                         Background="{StaticResource ColorBrushSemiTransparent}"
                                         ToolTip="{DynamicResource Tools.GameLink.Natayark.Account}"

@@ -514,34 +514,9 @@ public partial class PageToolsGameLink
 
                 #endregion
 
-                #region 处理账户登录状态显示
-
-                if (string.IsNullOrWhiteSpace(States.Link.NaidRefreshToken))
-                {
-                    ModBase.RunInUi(() => LabNatayarkUserName.Text = Lang.Text("Tools.GameLink.Natayark.Login"));
-                }
-                else
-                {
-                    ModBase.RunInUi(() => LabNatayarkUserName.Text = Lang.Text("Tools.GameLink.Natayark.Loading"));
-                    if (string.IsNullOrEmpty(NatayarkProfileManager.NaidProfile.Username))
-                        ReloadNaidData();
-                    else
-                        ModBase.RunInUi(() =>
-                        {
-                            if (NatayarkProfileManager.NaidProfile.Status == 0)
-                            {
-                                LabNatayarkUserName.Text = NatayarkProfileManager.NaidProfile.Username;
-                                LabNatayarkUserName.Opacity = 1;
-                            }
-                            else
-                            {
-                                LabNatayarkUserName.Text = $"{NatayarkProfileManager.NaidProfile.Username} {Lang.Text("Tools.GameLink.Natayark.Abnormal")}";
-                                LabNatayarkUserName.Opacity = 0.6;
-                            }
-                        });
-                }
-
-                #endregion
+                // PCL-DSH：联机已改用陶瓦（Terracotta），不再需要 Natayark 账户体系。
+                // 原此处会在 NaidRefreshToken 非空时调用 ReloadNaidData() 访问 account.naids.com，
+                // 属 PCL-CE 的后端依赖，已整体移除。
 
                 ModBase.RunInUi(() =>
                 {
@@ -629,6 +604,9 @@ public partial class PageToolsGameLink
 
     private void ReloadNaidData()
     {
+        // PCL-DSH：Natayark 账户体系已停用（联机改用陶瓦，全程不访问 account.naids.com）。
+        return;
+#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         ModBase.RunInNewThread(() =>
         {
             try
@@ -704,6 +682,9 @@ public partial class PageToolsGameLink
 
     private void LabNatayarkUserName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
+        // PCL-DSH：Natayark 登录入口已停用（不访问 account.naids.com）。
+        return;
+#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         // If Not IsLobbyAvailable Then
         // Hint("大厅功能暂不可用，请稍后再试", HintType.Critical)
         // Exit Sub

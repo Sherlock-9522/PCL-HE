@@ -214,6 +214,10 @@ public sealed class LobbyController
 
     private static async Task<bool> _SendTelemetryAsync(bool isHost)
     {
+        // PCL-DSH：不再向 PCL-CE 的联机统计服务上报本机标识（LauncherId）与 Natayark 账户信息。
+        LogWrapper.Info("Link", "PCL-DSH 不上报联机遥测数据，已跳过。");
+        return await Task.FromResult(false).ConfigureAwait(false);
+#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         LogWrapper.Info("Link", "开始发送联机数据");
         var servers = Config.Link.CustomRelayServer;
         var serverType = Config.Link.ServerType;
