@@ -347,6 +347,7 @@ public static class ModLaunch
                     { ProgressWeight = 15d, show = false },
                 new ModLoader.LoaderTask<string, List<ModLibrary.McLibToken>>(Lang.Text("Minecraft.Launch.Stage.GetArguments"), McLaunchArgumentMain)
                     { ProgressWeight = 2d },
+                new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.MemoryCheck"), McLaunchMemoryCheck) { ProgressWeight = 1d },
                 new ModLoader.LoaderTask<List<ModLibrary.McLibToken>, int>(Lang.Text("Minecraft.Launch.Stage.ExtractNatives"), McLaunchNatives)
                     { ProgressWeight = 2d },
                 new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.PreLaunch"), _ => McLaunchPrerun()) { ProgressWeight = 1d },
@@ -2092,6 +2093,48 @@ public static class ModLaunch
     #endregion
 
     #region 解压 Natives
+
+    /// <summary>
+    /// 启动前的内存诊断。<br/>
+    /// 只读取系统状态并记录结论；当判断内存不足时提前给出提示，让用户在游戏启动前就知道结果，
+    /// 而不是等到 JVM 分配堆失败或系统因换页而失去响应。<br/>
+    /// 本方法不会调整任何进程的工作集，因此不存在影响系统稳定性的风险。
+    /// </summary>
+    private static void McLaunchMemoryCheck(ModLoader.LoaderTask<int, int> loader)
+    {
+        try
+        {
+            var requestedGb = PageInstanceSetup.GetRam(ModInstanceList.McMcInstanceSelected,
+                !mcLaunchJavaSelected.Installation.Is64Bit);
+            var requestedBytes = (ulong)Math.Max(0d, requestedGb) * 1073741824UL;
+            var report = MemoryDiagnostics.EvaluateForLaunch(requestedBytes);
+
+            McLaunchLog("");
+            foreach (var line in MemoryDiagnostics.Describe(report)) McLaunchLog(line);
+
+            switch (report.Verdict)
+            {
+                case MemoryVerdict.Insufficient:
+                    HintService.Hint(
+                        Lang.Text("Minecraft.Launch.Memory.Insufficient", report.RequestedGb, report.CommitAvailableGb),
+                        HintType.Error);
+                    break;
+                case MemoryVerdict.Tight when report.PageFileLooksDisabled:
+                    HintService.Hint(Lang.Text("Minecraft.Launch.Memory.PageFileDisabled"), HintType.Info);
+                    break;
+                case MemoryVerdict.Tight:
+                    HintService.Hint(
+                        Lang.Text("Minecraft.Launch.Memory.Tight", report.RequestedGb, report.AvailablePhysicalGb),
+                        HintType.Info);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // 诊断本身失败绝不能阻断启动
+            McLaunchLog("内存诊断失败（已跳过）：" + ex.Message);
+        }
+    }
 
     private static void McLaunchNatives(ModLoader.LoaderTask<List<ModLibrary.McLibToken>, int> loader)
     {

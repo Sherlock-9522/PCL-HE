@@ -2335,6 +2335,10 @@
     <sys:String x:Key="Minecraft.Launch.Stage.End">结束处理</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.ExtractNatives">解压文件</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetArguments">获取启动参数</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Stage.MemoryCheck">内存诊断</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Insufficient">内存可能不足：游戏请求 {0} GiB，但系统仅剩 {1} GiB 可提交。启动可能失败，建议先关闭部分程序，或把游戏内存调小一些。</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Tight">内存偏紧：游戏请求 {0} GiB，当前可用物理内存仅 {1} GiB。游戏可以启动，但可能较为卡顿。</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.PageFileDisabled">检测到页面文件可能已被禁用或过小，这会让游戏在内存不足时缺少回旋空间。建议在系统设置中启用页面文件。</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetJava">获取 Java</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.Login">登录</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.PreLaunch">预启动处理</sys:String>

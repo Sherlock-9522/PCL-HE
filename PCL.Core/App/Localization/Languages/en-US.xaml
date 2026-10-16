@@ -2335,6 +2335,10 @@
     <sys:String x:Key="Minecraft.Launch.Stage.End">End processing</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.ExtractNatives">Extract natives</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetArguments">Get launch arguments</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Stage.MemoryCheck">Memory check</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Insufficient">Not enough memory: the game requests {0} GiB but only {1} GiB can still be committed. Launching may fail — close some programs or lower the allocated memory.</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Tight">Memory is tight: the game requests {0} GiB while only {1} GiB of physical memory is free. It can still launch, but may stutter.</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.PageFileDisabled">The page file appears to be disabled or too small, leaving no headroom when memory runs short. Consider enabling it in the system settings.</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetJava">Get Java</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.Login">Login</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.PreLaunch">Pre-launch processing</sys:String>

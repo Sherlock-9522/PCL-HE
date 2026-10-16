@@ -2288,6 +2288,10 @@
     <sys:String x:Key="Minecraft.Launch.Stage.End">結束處理</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.ExtractNatives">解壓縮檔</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetArguments">取得啟動參數</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Stage.MemoryCheck">記憶體診斷</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Insufficient">記憶體可能不足：遊戲請求 {0} GiB，但系統僅剩 {1} GiB 可提交。啟動可能失敗，建議先關閉部分程式，或把遊戲記憶體調小一些。</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.Tight">記憶體偏緊：遊戲請求 {0} GiB，目前可用實體記憶體僅 {1} GiB。遊戲可以啟動，但可能較為卡頓。</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Memory.PageFileDisabled">偵測到分頁檔可能已被停用或過小，這會讓遊戲在記憶體不足時缺少迴旋空間。建議在系統設定中啟用分頁檔。</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.GetJava">取得 Java</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.Login">登入</sys:String>
     <sys:String x:Key="Minecraft.Launch.Stage.PreLaunch">預啟動處理</sys:String>
