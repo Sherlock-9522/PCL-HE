@@ -214,97 +214,15 @@ public sealed class LobbyController
 
     private static async Task<bool> _SendTelemetryAsync(bool isHost)
     {
-        // PCL-DSH：不再向 PCL-CE 的联机统计服务上报本机标识（LauncherId）与 Natayark 账户信息。
+        // PCL-DSH：本方法不向任何服务器上报数据，恒返回 false，
+        // 调用方会按「跳过上报」继续联机流程。
+        //
+        // 上游 PCL-CE 在此收集 LauncherId、Natayark 账户 ID / 邮箱 / 最近登录 IP
+        // 以及中继服务器列表，并 POST 到其联机统计服务。那套实现已整体移除：它与本项目
+        // 「不经过任何自有服务器、不收集个人信息」的联机说明直接冲突，保留在源码里也
+        // 有被误启用的风险。
+        _ = isHost;
         LogWrapper.Info("Link", "PCL-DSH 不上报联机遥测数据，已跳过。");
         return await Task.FromResult(false).ConfigureAwait(false);
-#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
-        LogWrapper.Info("Link", "开始发送联机数据");
-        var servers = Config.Link.CustomRelayServer;
-        var serverType = Config.Link.ServerType;
-
-        if (Config.Link.ServerType != 2)
-        {
-            servers = (
-                from relay in ETRelay.RelayList
-                where (relay.Type == ETRelayType.Selfhosted && serverType != 2) || (relay.Type == ETRelayType.Community && serverType == 1)
-                select relay
-            ).Aggregate(servers, (current, relay) => current + $"{relay.Url};");
-        }
-
-        JsonObject data = new()
-        {
-            ["Tag"] = "Link",
-            ["Id"] = Identify.LauncherId,
-            ["NaidId"] = NaidProfile.Id,
-            ["NaidEmail"] = NaidProfile.Email,
-            ["NaidLastIp"] = NaidProfile.LastIp,
-            ["CustomName"] = Config.Link.Username,
-            ["Servers"] = servers,
-            ["IsHost"] = isHost
-        };
-        JsonObject sendData = new() { ["data"] = data };
-
-        try
-        {
-            HttpContent httpContent = new StringContent(sendData.ToJsonString(), Encoding.UTF8, "application/json");
-            var key = EnvironmentInterop.GetSecret("TelemetryKey");
-            if (key is null)
-            {
-                if (RequiresLogin)
-                {
-                    LogWrapper.Error("Link", "联机数据发送失败，未设置 TelemetryKey");
-                    return false;
-                }
-                LogWrapper.Warn("Link", "联机数据发送失败，未设置 TelemetryKey，跳过发送");
-            }
-            else
-            {
-                using var response = await HttpRequest
-                    .CreatePost("https://pcl2ce.pysio.online/post")
-                    .WithContent(httpContent)
-                    .WithBearerToken(key)
-                    .SendAsync()
-                    .ConfigureAwait(false);
-
-                if (!response.IsSuccess)
-                {
-                    if (RequiresLogin)
-                    {
-                        LogWrapper.Error("Link", "联机数据发送失败，响应内容为空");
-                        return false;
-                    }
-                    LogWrapper.Warn("Link", "联机数据发送失败，响应内容为空，跳过发送");
-                }
-                else
-                {
-                    var result = await response.AsStringAsync().ConfigureAwait(false);
-                    if (result.Contains("数据已成功保存"))
-                    {
-                        LogWrapper.Info("Link", "联机数据已发送");
-                    }
-                    else
-                    {
-                        if (RequiresLogin)
-                        {
-                            LogWrapper.Error("Link", "联机数据发送失败，响应内容: " + result);
-                            return false;
-                        }
-                        LogWrapper.Warn("Link", "联机数据发送失败，跳过发送，响应内容: " + result);
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            if (RequiresLogin)
-            {
-                LogWrapper.Error(ex, "Link",
-                    ex.Message.Contains("429") ? "联机数据发送失败，请求过于频繁" : "联机数据发送失败");
-                return false;
-            }
-            LogWrapper.Warn(ex, "Link", "联机数据发送失败，跳过发送");
-        }
-
-        return true;
     }
 }
