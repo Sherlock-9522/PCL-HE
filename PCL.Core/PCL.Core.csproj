@@ -3,10 +3,10 @@
     <PropertyGroup>
         <AssemblyTitle>PCL.Core</AssemblyTitle>
         <AssemblyName>PCL.Core</AssemblyName>
-        <Description>PCL Community 为 PCL 开发的启动器核心库</Description>
-        <Company>PCL Community</Company>
+        <Description>PCL-DSH 的启动器核心库（基于 PCL Community Edition 的 PCL.Core 二次开发；原作 龙腾猫跃）</Description>
+        <Company>PCL-DSH Project</Company>
         <Product>PCL.Core</Product>
-        <Copyright>Copyright © PCL Community</Copyright>
+        <Copyright>Copyright © 龙腾猫跃 2016. Modified by the PCL-DSH Project (independent third-party modifications). All Rights Reserved.</Copyright>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
         <FileVersion>1.0.0.0</FileVersion>
     </PropertyGroup>

@@ -39,11 +39,6 @@ jobs:
           PCL_WRITE_SECRET: '1'
           PCL_MS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
           PCL_CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          PCL_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          PCL_NAID_CLIENT_ID: ${{ secrets.NAID_CLIENT_ID }}
-          PCL_NAID_CLIENT_SECRET: ${{ secrets.NAID_CLIENT_SECRET }}
-          PCL_LINK_SERVER_ROOT: ${{ secrets.LINK_SERVER_ROOTS }}
-          PCL_LOBBY_DEFAULT_SECRET: ${{ secrets.LOBBY_DEFAULT_SECRET }}
           PCL_GITHUB_SHA: ${{ github.sha }}
         run: |
           dotnet publish "Plain Craft Launcher 2/Plain Craft Launcher 2.csproj" \
@@ -53,5 +48,5 @@ jobs:
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: PCL2_CE_${{ inputs.configuration }}_${{ inputs.architecture }}
+          name: PCL_DSH_${{ inputs.configuration }}_${{ inputs.architecture }}
           path: artifact/**

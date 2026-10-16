@@ -8,8 +8,14 @@
   },
   "licenses": [
     {
+      "name": "PCL-DSH",
+      "info": "本发行版由 PCL-DSH Project 基于 PCL Community Edition 独立进行二次开发并维护，与上游官方团队之间没有隶属关系。原作 Copyright © 龙腾猫跃 2016.",
+      "website": "https://github.com/Sherlock-9522/PCL-DSH",
+      "license": "https://github.com/Sherlock-9522/PCL-DSH/blob/main/Plain Craft Launcher 2/LICENCE"
+    },
+    {
       "name": "PCL.Core",
-      "info": "Copyright © PCL Community",
+      "info": "上游核心库 Copyright © PCL Community",
       "website": "https://github.com/PCL-Community/PCL-CE/tree/dev/PCL.Core",
       "license": "https://github.com/PCL-Community/PCL-CE/blob/dev/LICENSE"
     },
