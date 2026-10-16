@@ -40,8 +40,6 @@ public partial class PageSetupUI
         isLoaded = true;
 
         SliderLoad();
-
-        PanLauncherHide.Visibility = Visibility.Visible;
     }
 
     public void Reload()
@@ -666,12 +664,6 @@ public partial class PageSetupUI
         var sender = (MyComboBox)senderRaw;
         SetByTag(sender.Tag?.ToString(), sender.SelectedIndex);
         ThemeManager.ThemeRefresh();
-    }
-
-    // 赞助
-    private void BtnLauncherDonate_Click(object sender, MouseButtonEventArgs e)
-    {
-        ModBase.OpenWebsite("https://afdian.com/a/LTCat");
     }
 
     // 滑动条
