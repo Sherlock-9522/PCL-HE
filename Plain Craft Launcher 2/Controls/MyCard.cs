@@ -123,7 +123,8 @@ public class MyCard : AnimatedBackgroundGrid
             MainTextBlock = new TextBlock
             {
                 HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(15d, 12d, 0d, 0d), FontWeight = FontWeights.Bold, FontSize = 13d,
+                Margin = new Thickness(15d, 12d, 0d, 0d), FontWeight = FontWeights.Bold, FontSize = 14d,
+                FontFamily = new FontFamily("Microsoft YaHei, Microsoft YaHei UI, Segoe UI"),
                 IsHitTestVisible = false
             };
             MainTextBlock.SetResourceReference(TextBlock.ForegroundProperty, "ColorBrush1");
