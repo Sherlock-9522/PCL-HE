@@ -498,15 +498,14 @@ public class ModSetup
 
                 break;
             }
-            case 1: // 默认（PCL-DSH 虎鲸标识）
+            case 1: // 默认（PCL 字形 + DSH 徽标；玩家可用下面两个分支自定义为文字或图片）
             {
-                ModMain.frmMain.ShapeTitleLogo.Visibility = Visibility.Collapsed;
+                ModMain.frmMain.ShapeTitleLogo.Visibility = Visibility.Visible;
                 ModMain.frmMain.BtnTitleHelp.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Collapsed;
-                ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Visible;
-                ModMain.frmMain.ImageTitleLogo.Source = "pack://application:,,,/images/whale.png";
-                ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
+                ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Collapsed;
+                ModMain.frmMain.CELogo.Visibility = Visibility.Visible;
                 if (ModMain.frmSetupUI is not null)
                 {
                     ModMain.frmSetupUI.CheckLogoLeft.Visibility = Visibility.Collapsed;
