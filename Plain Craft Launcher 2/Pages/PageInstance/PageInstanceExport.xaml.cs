@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.Compression;
 using System.Windows;
 using System.Windows.Controls;
@@ -874,7 +874,7 @@ public partial class PageInstanceExport : IRefreshable
                 loader =>
                 {
                     UpdateManager.DownloadLatestPCL(loader);
-                    ModBase.CopyFile(Path.Combine(ModBase.pathTemp, "CE-Latest.exe"),
+                    ModBase.CopyFile(Path.Combine(ModBase.pathTemp, "HE-Latest.exe"),
                         Path.Combine(cacheFolder, "Plain Craft Launcher.exe"));
                 })
             {

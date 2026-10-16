@@ -48,40 +48,13 @@ public static class UpdateManager
         ModBase.Log("[Update] PCL-HE 不提供自动更新，已忽略更新请求");
     }
 
+    /// <summary>
+    ///     PCL-HE 不提供自动更新，也就没有「更新已完成、切换新版本」这一步。
+    ///     旧实现会去启动同目录下上游 PCL-CE 的 exe，这里直接忽略。
+    /// </summary>
     public static void UpdateRestart(bool triggerRestartAndByEnd, bool triggerRestart = true)
     {
-        try
-        {
-            var fileName = ModBase.exePath + @"PCL\Plain Craft Launcher Community Edition.exe";
-            if (!File.Exists(fileName))
-            {
-                ModBase.Log("[System] 更新失败：未找到更新文件");
-                return;
-            }
-
-            // id old new restart
-            var text =
-                $"update {Process.GetCurrentProcess().Id} \"{Basics.ExecutablePath}\" \"{fileName}\" {(triggerRestart ? "true" : "false")}";
-            ModBase.Log("[System] 更新程序启动，参数：" + text);
-            Process.Start(new ProcessStartInfo(fileName)
-                { WindowStyle = ProcessWindowStyle.Hidden, CreateNoWindow = true, Arguments = text });
-            if (triggerRestartAndByEnd)
-            {
-                ModMain.frmMain.EndProgram(false, true);
-                ModBase.Log("[System] 已由于更新强制结束程序");
-            }
-        }
-        catch (Win32Exception ex)
-        {
-            ModBase.Log(ex, "自动更新时触发 Win32 错误，疑似被拦截");
-            ModMain.MyMsgBox(
-                Lang.Text("Update.Error.UpdateBlockedMessage", ModBase.exePath),
-                Lang.Text("Update.Error.UpdateBlocked"),
-                Lang.Text("Common.Action.Confirm"),
-                "",
-                "",
-                true);
-        }
+        ModBase.Log("[Update] PCL-HE 不提供自动更新，已忽略更新重启请求");
     }
 
     /// <summary>
@@ -90,7 +63,7 @@ public static class UpdateManager
     /// </summary>
     internal static void DownloadLatestPCL(ModLoader.LoaderBase loaderToSyncProgress = null)
     {
-        var latestPCLPath = Path.Combine(ModBase.pathTemp, "CE-Latest.exe");
+        var latestPCLPath = Path.Combine(ModBase.pathTemp, "HE-Latest.exe");
         ModBase.CopyFile(Basics.ExecutablePath, latestPCLPath);
     }
 

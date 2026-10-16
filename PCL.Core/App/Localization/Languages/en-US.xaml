@@ -3599,7 +3599,7 @@
     <sys:String x:Key="Update.Error.Sha256Mismatch">Update file SHA256 mismatch. Expected: {0}, actual: {1}</sys:String>
     <sys:String x:Key="Update.Error.UnableToGetUpdate">Unable to get update information</sys:String>
     <sys:String x:Key="Update.Error.UpdateBlocked">Update failed</sys:String>
-    <sys:String x:Key="Update.Error.UpdateBlockedMessage">PCL-HE cannot update because it was blocked by Windows Security or does not have sufficient permissions.&#xA;Please add the PCL-HE folder to the exclusion list, or manually replace the current file with {0}PCL\Plain Craft Launcher Community Edition.exe!</sys:String>
+    <sys:String x:Key="Update.Error.UpdateBlockedMessage">PCL-HE cannot update because it was blocked by Windows Security or does not have sufficient permissions.&#xA;Please add the PCL-HE folder to the exclusion list, or manually replace the current file with {0}PCL\Plain Craft Launcher 2.exe!</sys:String>
     <sys:String x:Key="Update.Service.PclCe">PCL-HE service</sys:String>
     <sys:String x:Key="Update.Title">Launcher update</sys:String>
 

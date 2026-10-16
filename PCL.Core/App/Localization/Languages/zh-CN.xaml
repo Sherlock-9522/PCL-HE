@@ -3613,7 +3613,7 @@
     <sys:String x:Key="Update.Error.Sha256Mismatch">更新文件 SHA256 不正确，应该为 {0}，实际为 {1}</sys:String>
     <sys:String x:Key="Update.Error.UnableToGetUpdate">无法获取更新</sys:String>
     <sys:String x:Key="Update.Error.UpdateBlocked">更新失败</sys:String>
-    <sys:String x:Key="Update.Error.UpdateBlockedMessage">由于被 Windows 安全中心拦截，或者存在权限问题，导致 PCL-HE 无法更新。&#xA;请将 PCL-HE 所在文件夹加入白名单，或者手动用 {0}PCL\Plain Craft Launcher Community Edition.exe 替换当前文件！</sys:String>
+    <sys:String x:Key="Update.Error.UpdateBlockedMessage">由于被 Windows 安全中心拦截，或者存在权限问题，导致 PCL-HE 无法更新。&#xA;请将 PCL-HE 所在文件夹加入白名单，或者手动用 {0}PCL\Plain Craft Launcher 2.exe 替换当前文件！</sys:String>
     <sys:String x:Key="Update.Service.PclCe">PCL-HE 服务</sys:String>
     <sys:String x:Key="Update.Title">启动器更新</sys:String>
 
