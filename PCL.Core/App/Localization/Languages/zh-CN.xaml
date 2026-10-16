@@ -2573,7 +2573,8 @@
     <!-- Setup.About.Legal -->
 
     <sys:String x:Key="Setup.About.Legal.CommunitySource">PCL CE 开源代码</sys:String>
-    <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © 2026 PCL Community &amp; 龙腾猫跃.&#xD;PCL-DSH 是第三方基于 PCL 独立进行二次创作的产物，与 PCL、PCL Community Edition 的官方团队之间没有隶属关系。&#xD;非 MINECRAFT 官方产品。未经 MOJANG 或 MICROSOFT 批准，也不与 MOJANG 或 MICROSOFT 关联。</sys:String>
+    <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © 2026 PCL Community &amp; 龙腾猫跃.&#xD;PCL-DSH 是第三方基于 PCL 独立进行二次创作的产物，由 Sherlock-9522 独立维护，与 PCL、PCL Community Edition 的官方团队之间没有隶属关系。&#xD;非 MINECRAFT 官方产品。未经 MOJANG 或 MICROSOFT 批准，也不与 MOJANG 或 MICROSOFT 关联。</sys:String>
+    <sys:String x:Key="Setup.About.Legal.DeveloperHome">开发者主页</sys:String>
     <sys:String x:Key="Setup.About.Legal.OtherInfo">其他信息</sys:String>
     <sys:String x:Key="Setup.About.Legal.PrivacyNotice">隐私说明</sys:String>
     <sys:String x:Key="Setup.About.Legal.PrivacyText">本软件的 User Agent 中包含启动器的版本号，以统计各版本的用户数量。&#xD;除此之外，本软件不会向开发者上传任何其他信息。&#xD;* 联机与软硬件调查相关功能遵循其自身的隐私政策，与上述说明不通用。</sys:String>

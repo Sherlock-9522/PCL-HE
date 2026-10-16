@@ -459,6 +459,12 @@
                             local:CustomEventService.EventType="OpenUrl"
                             Padding="13,0"
                             Text="{DynamicResource Setup.About.Legal.CommunitySource}" />
+                        <local:MyButton
+                            Margin="0,0,20,0"
+                            local:CustomEventService.EventData="https://github.com/Sherlock-9522"
+                            local:CustomEventService.EventType="OpenUrl"
+                            Padding="13,0"
+                            Text="{DynamicResource Setup.About.Legal.DeveloperHome}" />
                     </StackPanel>
                 </StackPanel>
             </local:MyCard>
