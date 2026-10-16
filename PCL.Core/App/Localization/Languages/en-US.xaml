@@ -3555,7 +3555,7 @@
     <sys:String x:Key="Tools.Test.Luck.MsgboxTitle">Today's luck - {0}</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating0">(It's on a 0-100 scale)</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating10">No way!</sys:String>
-    <sys:String x:Key="Tools.Test.Luck.Rating100">100! 100!&#xA;Hidden theme... oh wait, CE probably doesn't have this...</sys:String>
+    <sys:String x:Key="Tools.Test.Luck.Rating100">100! 100!&#xA;Hidden theme... I asked the orca, it says PCL-DSH doesn't have one.</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating30">Aww...</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating40">Barely okay...</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating60">Not bad, not bad</sys:String>

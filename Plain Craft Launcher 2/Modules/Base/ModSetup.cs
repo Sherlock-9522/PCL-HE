@@ -595,6 +595,9 @@ public class ModSetup
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Visible;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Collapsed;
+                // PCL-DSH：其他分支都会同步这个 DSH 徽标，此处原先漏了，
+                // 从默认模式切到 HMCL 模式时会把 DSH 徽标留在 HMCL 字形旁边。
+                ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.BtnTitleHelp.Visibility = Visibility.Visible;
                 if (ModMain.frmSetupUI is not null) 
                 {

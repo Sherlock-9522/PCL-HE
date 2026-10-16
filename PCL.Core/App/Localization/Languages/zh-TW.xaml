@@ -3499,7 +3499,7 @@
     <sys:String x:Key="Tools.Test.Luck.MsgboxTitle">今日人品 - {0}</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating0">（是百分制哦）</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating10">不會吧！</sys:String>
-    <sys:String x:Key="Tools.Test.Luck.Rating100">100！100！&#xA;隱藏主題 歐皇…… 不對，社群版應該沒有這東西……</sys:String>
+    <sys:String x:Key="Tools.Test.Luck.Rating100">100！100！&#xA;隱藏主題 歐皇…… 我問了下虎鯨，牠說 PCL-DSH 沒有這東西。</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating30">嗚...</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating40">勉強還行吧...</sys:String>
     <sys:String x:Key="Tools.Test.Luck.Rating60">還行啦，還行啦</sys:String>
