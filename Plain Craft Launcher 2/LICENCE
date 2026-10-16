@@ -64,14 +64,15 @@
 
 —————————————————————————————————————
 
-【PCL-DSH 补充说明】
+【PCL-HE 补充说明】
 
-PCL-DSH 是第三方基于 Plain Craft Launcher 独立进行二次创作的产物，
-以 PCL Community Edition（PCL-CE）作为直接的上游基础继续开发，
+PCL-HE（Plain Craft Launcher - Harness Edition）是第三方基于 Plain Craft Launcher
+独立进行二次创作的产物，以 PCL Community Edition（PCL-CE）作为直接的上游基础继续开发，
 由 Sherlock-9522（https://github.com/Sherlock-9522）独立维护。
 
-· 本发行版与成都瓜皮龙科技有限公司、PCL 官方团队、PCL Community 官方团队
-  之间不存在隶属关系，也不代表其立场或受到其背书。
+· 名称中的「HE」为「Harness Edition」的缩写，表示其为第三方修改版，
+  与 PCL 官方发布的任何版本无关；本发行版与成都瓜皮龙科技有限公司、PCL 官方团队、
+  PCL Community 官方团队之间不存在隶属关系，也不代表其立场或受到其背书。
 · 本发行版不以任何形式向接收者收费，仅提供原样副本的获取与再分发。
 · 上文《PCL 分发有限许可》与《PCL 存储库合理使用指南》继续适用于本发行版，
   本补充说明不修改、不替代其中任何条款。
