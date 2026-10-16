@@ -27,7 +27,7 @@ PCL-HE is an independent third-party derivative work based on [Plain Craft Launc
 | **Multiplayer** | The networking backend is [Terracotta](https://github.com/burningtnt/Terracotta), which runs as a separate local process and never goes through an intermediate server. Terracotta bundles EasyTier, so nothing extra needs downloading |
 | **Privacy** | Telemetry is fully severed: no usage data is collected or uploaded. The Natayark account system and the upstream lobby service are disabled |
 | **Updates** | As an independent distribution, it never fetches versions, announcements, or binaries from any upstream update service |
-| **Visuals** | An original splash animation, a deepened main-page blue gradient, an independent opacity slider for the player profile panel, and a low-opacity orca watermark |
+| **Visuals** | An original splash animation, a deepened main-page blue gradient, an independent opacity slider for the player profile panel, and a low-opacity mascot watermark |
 | **Features** | Four direct Chunkbase entries on the saves page (seed map / stronghold / nether fortress / end city) and a schematics folder shortcut on the instance overview page |
 | **Compliance** | The About page lists every upstream project that informed the design, along with their sponsorship channels |
 
