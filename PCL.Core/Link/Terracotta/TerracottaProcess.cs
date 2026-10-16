@@ -183,7 +183,7 @@ public static class TerracottaProcess
     /// </summary>
     private static async Task<TerracottaClient> LaunchAsync(string executable, CancellationToken ct)
     {
-        var portFile = Path.Combine(Path.GetTempPath(), $"pcl-dsh-terracotta-{Guid.NewGuid():N}.json");
+        var portFile = Path.Combine(Path.GetTempPath(), $"pcl-he-terracotta-{Guid.NewGuid():N}.json");
         try
         {
             var startInfo = new ProcessStartInfo

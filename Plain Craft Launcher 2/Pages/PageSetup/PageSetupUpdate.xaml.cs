@@ -25,7 +25,7 @@ public partial class PageSetupUpdate
         ComboSystemUpdateChannel.SelectedIndex = (int)Config.Update.UpdateChannel;
         ComboSystemUpdateMode.SelectedIndex = (int)Config.Update.UpdateMode;
 
-        TextCurrentVersion.Text = "PCL-DSH " + VersionNameFormat(ModBase.versionBaseName);
+        TextCurrentVersion.Text = "PCL-HE " + VersionNameFormat(ModBase.versionBaseName);
         ModAnimation.AniControlEnabled -= 1;
         CheckUpdate();
     }
@@ -34,11 +34,11 @@ public partial class PageSetupUpdate
     {
         try
         {
-            // PCL-DSH 是独立发行的版本，不从上游更新服务拉取版本信息（更新源列表刻意留空）。
+            // PCL-HE 是独立发行的版本，不从上游更新服务拉取版本信息（更新源列表刻意留空）。
             // 这里直接报告为最新版本，避免产生一条无意义的网络错误提示。
             if (!UpdateManager.remoteServer.IsAvailable())
             {
-                ModBase.Log("[Update] PCL-DSH 为独立发行版本，不检查上游更新");
+                ModBase.Log("[Update] PCL-HE 为独立发行版本，不检查上游更新");
                 return UpdateStatus.Latest;
             }
 
@@ -84,7 +84,7 @@ public partial class PageSetupUpdate
                         UpdateManager.IsCurrentVersionBeta
                             ? UpdateChannel.beta
                             : UpdateChannel.stable, SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
-                    TextUpdateName.Text = "PCL-DSH " + VersionNameFormat(updateInfo.VersionName);
+                    TextUpdateName.Text = "PCL-HE " + VersionNameFormat(updateInfo.VersionName);
                     var summary = updateInfo.Changelog.Between("<summary>", "</summary>");
                     if (!updateInfo.Changelog.Contains("<summary>") || string.IsNullOrWhiteSpace(summary.Trim()))
                         TextChangelog.Text = Lang.Text("Setup.Update.Changelog.Empty");
@@ -251,7 +251,7 @@ public partial class PageSetupUpdate
 
     private void BtnChangelog_Click(object sender, MouseButtonEventArgs e)
     {
-        ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-DSH/releases");
+        ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-HE/releases");
     }
 
     public string VersionNameFormat(string str)

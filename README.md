@@ -4,25 +4,25 @@
 
 <img src="Plain%20Craft%20Launcher%202/Images/icon.png" alt="Logo" width="80" height="80">
 
-# PCL-DSH
+# PCL-HE
 
-**Plain Craft Launcher DSH Edition**
+**Plain Craft Launcher - Harness Edition**
 
 *一个由第三方独立维护的 PCL 衍生版*
 
-[![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-DSH?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-DSH/stargazers)
-[![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-DSH?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-DSH/issues)
-[![Last commit](https://img.shields.io/github/last-commit/Sherlock-9522/PCL-DSH?style=for-the-badge&labelColor=444444&logo=github)](https://github.com/Sherlock-9522/PCL-DSH/commits)
+[![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-HE/stargazers)
+[![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-HE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-HE/issues)
+[![Last commit](https://img.shields.io/github/last-commit/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&logo=github)](https://github.com/Sherlock-9522/PCL-HE/commits)
 
 </div>
 
-PCL-DSH 是第三方基于 [Plain Craft Launcher](https://github.com/Meloong-Git/PCL) 独立进行二次创作的产物，以 [PCL Community Edition](https://github.com/PCL-Community/PCL-CE) 作为直接的上游基础继续开发。
+PCL-HE 是第三方基于 [Plain Craft Launcher](https://github.com/Meloong-Git/PCL) 独立进行二次创作的产物，以 [PCL Community Edition](https://github.com/PCL-Community/PCL-CE) 作为直接的上游基础继续开发。
 
 **本发行版与成都瓜皮龙科技有限公司、PCL 官方团队、PCL Community 官方团队之间不存在隶属关系，也不代表其立场或受到其背书。**
 
 ## ✨ 与上游的区别
 
-PCL-DSH 在上游基础上做了这些事：
+PCL-HE 在上游基础上做了这些事：
 
 | 方向 | 说明 |
 |---|---|
@@ -45,8 +45,8 @@ PCL-DSH 在上游基础上做了这些事：
 ## 🔨 从源码构建
 
 ```bash
-git clone https://github.com/Sherlock-9522/PCL-DSH.git
-cd PCL-DSH
+git clone https://github.com/Sherlock-9522/PCL-HE.git
+cd PCL-HE
 dotnet build "Plain Craft Launcher 2.slnx" -c Release
 ```
 
@@ -71,4 +71,4 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 本项目为第三方独立维护，**请不要向上游 PCL 或 PCL-CE 仓库反馈本发行版的问题**。
 
-遇到问题请提到[本仓库的 Issues](https://github.com/Sherlock-9522/PCL-DSH/issues)，并附上「设置 → 查看日志 → 导出日志」生成的日志压缩包。
+遇到问题请提到[本仓库的 Issues](https://github.com/Sherlock-9522/PCL-HE/issues)，并附上「设置 → 查看日志 → 导出日志」生成的日志压缩包。

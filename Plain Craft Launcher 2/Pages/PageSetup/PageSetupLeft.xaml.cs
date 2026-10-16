@@ -166,7 +166,7 @@ public partial class PageSetupLeft
                 }
                 case 2:
                 {
-                    ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-DSH/issues/");
+                    ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-HE/issues/");
                     break;
                 }
             }

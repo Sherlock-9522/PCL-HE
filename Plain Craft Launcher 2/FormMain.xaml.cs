@@ -47,7 +47,7 @@ public partial class FormMain
                 changelog = Lang.Text("Main.UpdateLog.Empty");
             if (ModMain.MyMsgBoxMarkdown(changelog,
                     Lang.Text("Main.UpdateLog.Title", ModBase.versionBranchName, ModBase.versionBaseName), Lang.Text("Common.Action.Confirm"), Lang.Text("Main.UpdateLog.FullChangelog")) ==
-                2) ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-DSH/releases");
+                2) ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-HE/releases");
         }, "UpdateLog Output");
     }
 
@@ -245,7 +245,7 @@ public partial class FormMain
                         $"{hint}{"\r\n"}{"\r\n"}{Lang.Text("Main.SpecialVersion.HideHintNotice")}",
                         Lang.Text("Main.SpecialVersion.Title"), Lang.Text("Main.SpecialVersion.IUnderstand"), Lang.Text("Main.SpecialVersion.OpenDownloadPageAndExit"), isWarn: true, button2Action: () =>
                         {
-                            ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-DSH/releases/latest");
+                            ModBase.OpenWebsite("https://github.com/Sherlock-9522/PCL-HE/releases/latest");
                             EndProgram(false);
                         });
                 }
@@ -269,7 +269,7 @@ public partial class FormMain
                             }
                     }
 
-                // PCL-DSH 不收集、不上报任何遥测数据，因此不再就此询问用户。
+                // PCL-HE 不收集、不上报任何遥测数据，因此不再就此询问用户。
                 // 启动加载器池
                 try
                 {
@@ -334,7 +334,7 @@ public partial class FormMain
         if ((int)Config.Launch.GameWindowMode == 5)
             Config.Launch.GameWindowMode = GameWindowSizeMode.Default;
 
-        // PCL-DSH 是独立版本，不再展示 PCL CE 的「社区版」更新提示。
+        // PCL-HE 是独立版本，不再展示 PCL CE 的「社区版」更新提示。
         // UpdateManager.ShowCEAnnounce();
         // 输出更新日志
         if (lastVersionCode <= 0)
@@ -582,7 +582,7 @@ public partial class FormMain
             if (!isLogShown)
             {
                 ModBase.FeedbackInfo();
-                ModBase.Log("请在 https://github.com/Sherlock-9522/PCL-DSH/issues 提交错误报告，以便于定位此问题！（这也有可能是上游 PCL-CE 或原版 PCL 的问题）");
+                ModBase.Log("请在 https://github.com/Sherlock-9522/PCL-HE/issues 提交错误报告，以便于定位此问题！（这也有可能是上游 PCL-CE 或原版 PCL 的问题）");
                 isLogShown = true;
                 ModBase.ShellOnly(LogWrapper.CurrentLogger.CurrentLogFiles.Last());
             }

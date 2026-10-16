@@ -26,8 +26,8 @@ public static class HttpSenderExtension
             if(addMetedata)
             {
                 request
-                    .WithHeader("User-Agent", $"PCL-DSH/{Basics.VersionName} (+https://github.com/Sherlock-9522/PCL-DSH)")
-                    .WithHeader("Referer", "https://github.com/Sherlock-9522/PCL-DSH/");
+                    .WithHeader("User-Agent", $"PCL-HE/{Basics.VersionName} (+https://github.com/Sherlock-9522/PCL-HE)")
+                    .WithHeader("Referer", "https://github.com/Sherlock-9522/PCL-HE/");
             }
 
             var requestId = Guid.NewGuid().ToString();

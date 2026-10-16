@@ -2,7 +2,7 @@ blank_issues_enabled: true
 contact_links:
   - name: "上游问题 / Upstream Issues"
     url: "https://github.com/PCL-Community/PCL-CE/issues"
-    about: "PCL-DSH 是第三方基于 PCL Community Edition 独立维护的衍生版。若该问题在上游同样存在，请先到上游仓库查找或反馈。/ PCL-DSH is an independently maintained third-party derivative of PCL Community Edition. If the same problem also exists upstream, please check or report it there first."
+    about: "PCL-HE 是第三方基于 PCL Community Edition 独立维护的衍生版。若该问题在上游同样存在，请先到上游仓库查找或反馈。/ PCL-HE is an independently maintained third-party derivative of PCL Community Edition. If the same problem also exists upstream, please check or report it there first."
   - name: "PCL 官方仓库 / Upstream PCL Repository"
     url: "https://github.com/Meloong-Git/PCL"
     about: "Plain Craft Launcher 原作者龙腾猫跃的官方仓库 / The official repository of Plain Craft Launcher by the original author, 龙腾猫跃."

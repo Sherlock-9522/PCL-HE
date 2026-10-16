@@ -234,7 +234,7 @@ public class ModSetup
 
     /// <summary>
     ///     主界面左侧档案区背景的不透明度（千分比）。0 为完全透明，1000 为完全不透明。
-    ///     PCL-DSH 新增：与启动器整体透明度独立，方便玩家把壁纸透出来。
+    ///     PCL-HE 新增：与启动器整体透明度独立，方便玩家把壁纸透出来。
     /// </summary>
     public static void UiProfileOpacity(int value)
     {
@@ -459,7 +459,7 @@ public class ModSetup
                     Lang.Text("Setup.Ui.Homepage.NetUpdate.Hint");
                 CustomEventService.SetEventType(ModMain.frmSetupUI.HintCustom, EventType.OpenUrl);
                 CustomEventService.SetEventData(ModMain.frmSetupUI.HintCustom,
-                    "https://github.com/Sherlock-9522/PCL-DSH/discussions");
+                    "https://github.com/Sherlock-9522/PCL-HE/discussions");
                 break;
             }
             case 3: // 预设
@@ -595,7 +595,7 @@ public class ModSetup
                 ModMain.frmMain.ShapeHMCLTitleLogo.Visibility = Visibility.Visible;
                 ModMain.frmMain.LabTitleLogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.ImageTitleLogo.Visibility = Visibility.Collapsed;
-                // PCL-DSH：其他分支都会同步这个 DSH 徽标，此处原先漏了，
+                // PCL-HE：其他分支都会同步这个 DSH 徽标，此处原先漏了，
                 // 从默认模式切到 HMCL 模式时会把 DSH 徽标留在 HMCL 字形旁边。
                 ModMain.frmMain.CELogo.Visibility = Visibility.Collapsed;
                 ModMain.frmMain.BtnTitleHelp.Visibility = Visibility.Visible;

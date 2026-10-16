@@ -133,9 +133,9 @@ public class LobbyService() : GeneralService("lobby", "LobbyService")
 
     public static async Task InitializeAsync()
     {
-        // PCL-DSH：联机已整体改用陶瓦（Terracotta），不再初始化 PCL CE 的 Scaffolding 大厅，
+        // PCL-HE：联机已整体改用陶瓦（Terracotta），不再初始化 PCL CE 的 Scaffolding 大厅，
         // 以免触碰 PCL-CE 的 EasyTier 下载源与 Natayark 账号服务。
-        LogWrapper.Info("LobbyService", "PCL-DSH 已停用 PCL CE 大厅服务，InitializeAsync 被忽略。");
+        LogWrapper.Info("LobbyService", "PCL-HE 已停用 PCL CE 大厅服务，InitializeAsync 被忽略。");
         await Task.CompletedTask.ConfigureAwait(false);
         return;
 
@@ -193,7 +193,7 @@ public class LobbyService() : GeneralService("lobby", "LobbyService")
     /// </summary>
     public static async Task DiscoverWorldAsync()
     {
-        // PCL-DSH：世界发现已交由陶瓦负责，PCL CE 的扫描逻辑停用。
+        // PCL-HE：世界发现已交由陶瓦负责，PCL CE 的扫描逻辑停用。
         await Task.CompletedTask.ConfigureAwait(false);
         return;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
@@ -264,8 +264,8 @@ public class LobbyService() : GeneralService("lobby", "LobbyService")
     /// <param name="username">Player name.</param>
     public static async Task<bool> CreateLobbyAsync(int port, string username)
     {
-        // PCL-DSH：建房已由陶瓦（Terracotta）的本机 HTTP 接口接管。
-        LogWrapper.Info("LobbyService", "PCL-DSH 已停用 PCL CE 大厅服务，CreateLobbyAsync 被忽略。");
+        // PCL-HE：建房已由陶瓦（Terracotta）的本机 HTTP 接口接管。
+        LogWrapper.Info("LobbyService", "PCL-HE 已停用 PCL CE 大厅服务，CreateLobbyAsync 被忽略。");
         await Task.CompletedTask.ConfigureAwait(false);
         return false;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
@@ -381,8 +381,8 @@ public class LobbyService() : GeneralService("lobby", "LobbyService")
     /// <param name="username">Current use name.</param>
     public static async Task<bool> JoinLobbyAsync(string lobbyCode, string username)
     {
-        // PCL-DSH：加入已由陶瓦（Terracotta）的本机 HTTP 接口接管。
-        LogWrapper.Info("LobbyService", "PCL-DSH 已停用 PCL CE 大厅服务，JoinLobbyAsync 被忽略。");
+        // PCL-HE：加入已由陶瓦（Terracotta）的本机 HTTP 接口接管。
+        LogWrapper.Info("LobbyService", "PCL-HE 已停用 PCL CE 大厅服务，JoinLobbyAsync 被忽略。");
         await Task.CompletedTask.ConfigureAwait(false);
         return false;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照

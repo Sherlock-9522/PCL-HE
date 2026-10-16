@@ -4,19 +4,19 @@
 
 <img src="Plain%20Craft%20Launcher%202/Images/icon.png" alt="Logo" width="80" height="80">
 
-# PCL-DSH
+# PCL-HE
 
-**Plain Craft Launcher DSH Edition**
+**Plain Craft Launcher - Harness Edition**
 
 *An independently maintained third-party derivative of PCL*
 
-[![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-DSH?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-DSH/stargazers)
-[![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-DSH?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-DSH/issues)
-[![Last commit](https://img.shields.io/github/last-commit/Sherlock-9522/PCL-DSH?style=for-the-badge&labelColor=444444&logo=github)](https://github.com/Sherlock-9522/PCL-DSH/commits)
+[![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-HE/stargazers)
+[![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-HE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-HE/issues)
+[![Last commit](https://img.shields.io/github/last-commit/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&logo=github)](https://github.com/Sherlock-9522/PCL-HE/commits)
 
 </div>
 
-PCL-DSH is an independent third-party derivative work based on [Plain Craft Launcher](https://github.com/Meloong-Git/PCL), developed on top of [PCL Community Edition](https://github.com/PCL-Community/PCL-CE) as its direct upstream.
+PCL-HE is an independent third-party derivative work based on [Plain Craft Launcher](https://github.com/Meloong-Git/PCL), developed on top of [PCL Community Edition](https://github.com/PCL-Community/PCL-CE) as its direct upstream.
 
 **This distribution is not affiliated with Chengdu Guapilong Technology Co., Ltd., the official PCL team, or the official PCL Community team, and does not represent or carry the endorsement of any of them.**
 
@@ -43,8 +43,8 @@ PCL-DSH is an independent third-party derivative work based on [Plain Craft Laun
 ## 🔨 Building from source
 
 ```bash
-git clone https://github.com/Sherlock-9522/PCL-DSH.git
-cd PCL-DSH
+git clone https://github.com/Sherlock-9522/PCL-HE.git
+cd PCL-HE
 dotnet build "Plain Craft Launcher 2.slnx" -c Release
 ```
 
@@ -69,4 +69,4 @@ And every [contributor](https://github.com/PCL-Community/PCL-CE/graphs/contribut
 
 This is an independently maintained third-party project. **Please do not report issues with this distribution to the upstream PCL or PCL-CE repositories.**
 
-Report problems in [this repository's issues](https://github.com/Sherlock-9522/PCL-DSH/issues) and attach the log archive produced by Settings → View Log → Export Log.
+Report problems in [this repository's issues](https://github.com/Sherlock-9522/PCL-HE/issues) and attach the log archive produced by Settings → View Log → Export Log.

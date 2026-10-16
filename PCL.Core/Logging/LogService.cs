@@ -62,7 +62,7 @@ public class LogService : ILifecycleLogService
         string plain,
         Exception? ex)
     {
-        // PCL-DSH 不向任何远程遥测服务上报异常：异常只写入本地日志，不出本机。
+        // PCL-HE 不向任何远程遥测服务上报异常：异常只写入本地日志，不出本机。
 
         // log
 #if !TRACE

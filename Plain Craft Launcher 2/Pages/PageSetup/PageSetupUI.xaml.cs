@@ -772,7 +772,7 @@ public partial class PageSetupUI
                     : Visibility.Visible;
                 ModMain.frmSetupLeft.ItemAbout.Visibility =
                     !HiddenForceShow && conf.SetupAbout ? Visibility.Collapsed : Visibility.Visible;
-                // PCL-DSH 不再向 PCL-CE 的仓库反馈，反馈入口始终隐藏。
+                // PCL-HE 不再向 PCL-CE 的仓库反馈，反馈入口始终隐藏。
                 ModMain.frmSetupLeft.ItemFeedback.Visibility = Visibility.Collapsed;
                 ModMain.frmSetupLeft.ItemLog.Visibility =
                     !HiddenForceShow && conf.SetupLog ? Visibility.Collapsed : Visibility.Visible;

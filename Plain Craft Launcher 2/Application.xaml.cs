@@ -67,7 +67,7 @@ public partial class Application
                 new FrameworkPropertyMetadata(100));
             Tooltip.Enable();
 
-            // 设置初始窗口（PCL-DSH：改用带动画的自定义开屏窗口）
+            // 设置初始窗口（PCL-HE：改用带动画的自定义开屏窗口）
             if (Config.Preference.ShowStartupLogo)
                 try
                 {

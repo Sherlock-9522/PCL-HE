@@ -8,9 +8,9 @@ using System.Windows.Threading;
 namespace PCL;
 
 /// <summary>
-///     PCL-DSH 开屏动画窗口（原创实现）。
+///     PCL-HE 开屏动画窗口（原创实现）。
 ///     替换 PCL CE 原生的静态 <see cref="System.Windows.SplashScreen" />，提供带动画的开屏体验。
-///     本类为 PCL-DSH 项目的独立第三方添加内容，不包含 PCL CE 的既有实现。
+///     本类为 PCL-HE 项目的独立第三方添加内容，不包含 PCL CE 的既有实现。
 /// </summary>
 public partial class FormSplash
 {
@@ -92,13 +92,13 @@ public partial class FormSplash
     }
 
     /// <summary>
-    ///     诊断用：当环境变量 <c>DSH_SPLASH_SHOT</c> 指向一个目录时，把开屏动画的若干帧
+    ///     诊断用：当环境变量 <c>HE_SPLASH_SHOT</c> 指向一个目录时，把开屏动画的若干帧
     ///     渲染为 PNG 落盘，随后结束进程。仅用于自动化视觉验证；正常启动时该变量不存在，
     ///     本方法立即返回，不产生任何开销与副作用。
     /// </summary>
     private void StartFrameCaptureIfRequested()
     {
-        var dir = Environment.GetEnvironmentVariable("DSH_SPLASH_SHOT");
+        var dir = Environment.GetEnvironmentVariable("HE_SPLASH_SHOT");
         if (string.IsNullOrWhiteSpace(dir)) return;
 
         try
@@ -202,7 +202,7 @@ public partial class FormSplash
     {
         try
         {
-            var dir = Environment.GetEnvironmentVariable("DSH_SPLASH_SHOT");
+            var dir = Environment.GetEnvironmentVariable("HE_SPLASH_SHOT");
             if (string.IsNullOrWhiteSpace(dir)) return;
             Directory.CreateDirectory(dir);
             File.AppendAllText(Path.Combine(dir, "intro-failed.txt"), ex + Environment.NewLine);

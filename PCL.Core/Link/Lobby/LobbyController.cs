@@ -214,7 +214,7 @@ public sealed class LobbyController
 
     private static async Task<bool> _SendTelemetryAsync(bool isHost)
     {
-        // PCL-DSH：本方法不向任何服务器上报数据，恒返回 false，
+        // PCL-HE：本方法不向任何服务器上报数据，恒返回 false，
         // 调用方会按「跳过上报」继续联机流程。
         //
         // 上游 PCL-CE 在此收集 LauncherId、Natayark 账户 ID / 邮箱 / 最近登录 IP
@@ -222,7 +222,7 @@ public sealed class LobbyController
         // 「不经过任何自有服务器、不收集个人信息」的联机说明直接冲突，保留在源码里也
         // 有被误启用的风险。
         _ = isHost;
-        LogWrapper.Info("Link", "PCL-DSH 不上报联机遥测数据，已跳过。");
+        LogWrapper.Info("Link", "PCL-HE 不上报联机遥测数据，已跳过。");
         return await Task.FromResult(false).ConfigureAwait(false);
     }
 }

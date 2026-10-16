@@ -115,7 +115,7 @@
                                         FontSize="42"
                                         FontWeight="Bold"
                                         Foreground="{DynamicResource ColorBrush1}"
-                                        Text="PCL-DSH"
+                                        Text="PCL-HE"
                                         TextWrapping="Wrap" />
 
                                     <TextBlock
@@ -169,7 +169,7 @@
                             SvgIcon="lucide/globe"
                             ColorType="Highlight"
                             local:CustomEventService.EventType="OpenUrl"
-                            local:CustomEventService.EventData="https://github.com/Sherlock-9522/PCL-DSH/tree/main/PCL.Core/App/Localization/Languages" />
+                            local:CustomEventService.EventData="https://github.com/Sherlock-9522/PCL-HE/tree/main/PCL.Core/App/Localization/Languages" />
 
                         <local:MyIconTextButton
                             x:Name="BtnSubmitPullRequest"
@@ -177,7 +177,7 @@
                             Text="{DynamicResource Setup.Language.Banner.SubmitPullRequest}"
                             SvgIcon="lucide/git-pull-request-arrow"
                             local:CustomEventService.EventType="OpenUrl"
-                            local:CustomEventService.EventData="https://github.com/Sherlock-9522/PCL-DSH/pulls" />
+                            local:CustomEventService.EventData="https://github.com/Sherlock-9522/PCL-HE/pulls" />
                     </StackPanel>
                 </StackPanel>
             </local:MyCard>

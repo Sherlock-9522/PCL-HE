@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:local="clr-namespace:PCL"
-      xmlns:val="urn:pcl-dsh:core:utils:validate"
+      xmlns:val="urn:pcl-he:core:utils:validate"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800">
     <Grid.RowDefinitions>

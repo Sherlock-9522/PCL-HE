@@ -24,10 +24,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Images\icon.ico</ApplicationIcon>
-        <AssemblyTitle>Plain Craft Launcher DSH Edition</AssemblyTitle>
-        <Description>Minecraft 启动器 · PCL-DSH Edition（第三方独立开发内容，基于 PCL CE 二次开发；原作 龙腾猫跃）</Description>
-        <Product>Plain Craft Launcher DSH Edition</Product>
-        <Copyright>Copyright © 龙腾猫跃 2016. Modified by the PCL-DSH Project (independent third-party modifications). All Rights Reserved.</Copyright>
+        <AssemblyTitle>Plain Craft Launcher - Harness Edition</AssemblyTitle>
+        <Description>Minecraft 启动器 · PCL-HE Edition（第三方独立开发内容，基于 PCL CE 二次开发；原作 龙腾猫跃）</Description>
+        <Product>Plain Craft Launcher - Harness Edition</Product>
+        <Copyright>Copyright © 龙腾猫跃 2016. Modified by the PCL-HE Project (independent third-party modifications). All Rights Reserved.</Copyright>
         <AssemblyVersion>2.15.1.0</AssemblyVersion>
         <FileVersion>2.15.1.0</FileVersion>
         <NoWarn>

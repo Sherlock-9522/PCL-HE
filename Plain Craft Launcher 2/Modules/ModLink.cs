@@ -23,7 +23,7 @@ public static class ModLink
 
     public static bool LobbyPrecheck()
     {
-        // PCL-DSH：陶瓦联机不需要 PCL CE 的大厅预检（大厅可用性询问、Natayark 登录、EasyTier 下载）。
+        // PCL-HE：陶瓦联机不需要 PCL CE 的大厅预检（大厅可用性询问、Natayark 登录、EasyTier 下载）。
         return true;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         if (!LobbyInfoProvider.IsLobbyAvailable)
@@ -318,9 +318,9 @@ public static class ModLink
 
     public static int DownloadEasyTier()
     {
-        // PCL-DSH：联机已改用陶瓦（Terracotta），其自带 EasyTier，
+        // PCL-HE：联机已改用陶瓦（Terracotta），其自带 EasyTier，
         // 因此无需再从 PCL-CE 的静态资源站下载，避免触碰社区服务器。
-        ModBase.Log("[PCL-DSH] EasyTier 由陶瓦自带，已停用 PCL CE 的下载通道。");
+        ModBase.Log("[PCL-HE] EasyTier 由陶瓦自带，已停用 PCL CE 的下载通道。");
         return 0;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         var dlTargetPath = $"{ModBase.pathTemp}EasyTier\\EasyTier-{ETInfoProvider.ETVersion}.zip";

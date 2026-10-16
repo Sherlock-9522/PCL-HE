@@ -3560,7 +3560,7 @@ public static class ModBase
                                  Lang.Text("Common.Action.OpenFolder"),
                                  Lang.Text("Setup.Feedback.Reminder.NotNeeded")) ==
                              1)) OpenExplorer(exePath + @"PCL\Log\");
-        // PCL-DSH 没有面向上游社区存储库（PCL-CE）的反馈通道，因此不再跳转其 issue 页。
+        // PCL-HE 没有面向上游社区存储库（PCL-CE）的反馈通道，因此不再跳转其 issue 页。
     }
 
     public static bool CanFeedback(bool showHint)

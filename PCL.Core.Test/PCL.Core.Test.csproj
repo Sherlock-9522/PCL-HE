@@ -10,7 +10,7 @@
     <Platforms>AnyCPU;x64;ARM64</Platforms>
     <AssemblyTitle>PCL.Test</AssemblyTitle>
     <Product>PCL.Test</Product>
-    <Copyright>Copyright © 龙腾猫跃 2016. Modified by the PCL-DSH Project (independent third-party modifications). All Rights Reserved.</Copyright>
+    <Copyright>Copyright © 龙腾猫跃 2016. Modified by the PCL-HE Project (independent third-party modifications). All Rights Reserved.</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>

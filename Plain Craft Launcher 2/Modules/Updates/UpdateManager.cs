@@ -13,7 +13,7 @@ public static class UpdateManager
     public static bool isUpdateWaitingRestart;
 
     /// <summary>
-    ///     PCL-DSH 是独立发行的版本，不从任何上游启动器更新服务拉取版本、公告或本体。
+    ///     PCL-HE 是独立发行的版本，不从任何上游启动器更新服务拉取版本、公告或本体。
     ///     这里刻意留空：所有取版本 / 公告 / 下载的调用都会走到「所有源都不可用」分支，
     ///     由调用方的 try/catch 兜住，不会产生任何对外网络请求。
     /// </summary>
@@ -30,7 +30,7 @@ public static class UpdateManager
     }
 
     /// <summary>
-    ///     PCL-DSH 不与上游更新服务通信，因此永远报告为最新版本。
+    ///     PCL-HE 不与上游更新服务通信，因此永远报告为最新版本。
     /// </summary>
     public static UpdateEnums.VersionStatus GetVersionStatus()
     {
@@ -40,12 +40,12 @@ public static class UpdateManager
     public static ModLoader.LoaderCombo<JsonObject> updateLoader;
 
     /// <summary>
-    ///     PCL-DSH 是独立发行的版本，不提供经由上游服务器的自动更新。
+    ///     PCL-HE 是独立发行的版本，不提供经由上游服务器的自动更新。
     ///     保留此入口仅为兼容既有调用点，调用后不会产生任何下载行为。
     /// </summary>
     public static void UpdateStart(UpdateEnums.UpdateType type, string receivedKey = null, bool forceValidated = false)
     {
-        ModBase.Log("[Update] PCL-DSH 不提供自动更新，已忽略更新请求");
+        ModBase.Log("[Update] PCL-HE 不提供自动更新，已忽略更新请求");
     }
 
     public static void UpdateRestart(bool triggerRestartAndByEnd, bool triggerRestart = true)
@@ -86,7 +86,7 @@ public static class UpdateManager
 
     /// <summary>
     ///     确保 PathTemp 下的 Latest.exe 可用，它会被用于整合包打包。
-    ///     PCL-DSH 不从网络下载启动器本体，直接复用当前正在运行的可执行文件。
+    ///     PCL-HE 不从网络下载启动器本体，直接复用当前正在运行的可执行文件。
     /// </summary>
     internal static void DownloadLatestPCL(ModLoader.LoaderBase loaderToSyncProgress = null)
     {
@@ -101,8 +101,8 @@ public static class UpdateManager
 
     private static void LoadOnlineInfo()
     {
-        // PCL-DSH 不拉取上游公告，也不按上游策略检查更新。
-        ModBase.Log("[Update] PCL-DSH 不检查更新、不拉取公告");
+        // PCL-HE 不拉取上游公告，也不按上游策略检查更新。
+        ModBase.Log("[Update] PCL-HE 不检查更新、不拉取公告");
     }
 
     /// <summary>

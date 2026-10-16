@@ -4,7 +4,7 @@ namespace PCL.Core.Utils.OS;
 
 public static class AumidHelper
 {
-    public const string Aumid = "PCLDSHProject.PlainCraftLauncherDSH";
+    public const string Aumid = "PCLHEProject.PlainCraftLauncherDSH";
     
     public static bool HasAumid()
     {
@@ -16,7 +16,7 @@ public static class AumidHelper
     {
         // .NET 8 在正常情况下不可能返回 null，如果炸了不应该包住而是让他炸下去
         using var key = Registry.CurrentUser.CreateSubKey(string.Concat(@"Software\Classes\AppUserModelId\", Aumid));
-        key.SetValue("DisplayName", "Plain Craft Launcher DSH Edition");
+        key.SetValue("DisplayName", "Plain Craft Launcher - Harness Edition");
         key.SetValue("IconUri", IconHelper.GetIconPath());
         key.SetValue("IconBackgroundColor", "FF1370F3");
     }

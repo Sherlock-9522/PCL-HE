@@ -6,9 +6,9 @@
                   xmlns:local="clr-namespace:PCL"
                   mc:Ignorable="d" x:Name="PanBack"
                   d:DesignHeight="417.2" Width="300">
-    <!-- PCL-DSH 品牌水印：低透明度虎鲸标识，内嵌在玩家档案区 -->
-    <Image x:Name="ImgBrandWatermark" Source="/Images/whale_dark.png"
-           Stretch="Uniform" Opacity="0.06" IsHitTestVisible="False"
+    <!-- PCL-HE 品牌水印：低透明度吉祥物插画，内嵌在玩家档案区 -->
+    <Image x:Name="ImgBrandWatermark" Source="/Images/mascot.png"
+           Stretch="Uniform" Opacity="0.1" IsHitTestVisible="False"
            HorizontalAlignment="Center" VerticalAlignment="Center"
            Margin="6,6,6,34" />
     <Grid Name="PanInput" RenderTransformOrigin="0.5,0.5">

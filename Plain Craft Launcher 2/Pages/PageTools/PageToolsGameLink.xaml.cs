@@ -44,7 +44,7 @@ public partial class PageToolsGameLink
         // 注册自定义的 OnStateChanged
         initLoader.OnStateChangedUi += OnLoadStateChanged;
 
-        // PCL-DSH 以陶瓦（Terracotta）作为联机底座，不再订阅 PCL CE 的 Scaffolding 大厅事件。
+        // PCL-HE 以陶瓦（Terracotta）作为联机底座，不再订阅 PCL CE 的 Scaffolding 大厅事件。
         // 陶瓦自己负责扫描世界、端口转发与玩家广播，这里只需要驱动它的 HTTP 接口。
 
         if (lobbyAnnouncementLoader is null)
@@ -56,7 +56,7 @@ public partial class PageToolsGameLink
                 HintAnnounce.Theme = MyHint.Themes.Blue;
                 HintAnnounce.Text = Lang.Text("Tools.GameLink.Loading.ConnectingServer");
             })));
-            // PCL-DSH 不接入 PCL-CE 的联机大厅服务器，因此不再拉取社区公告。
+            // PCL-HE 不接入 PCL-CE 的联机大厅服务器，因此不再拉取社区公告。
             // （Secrets.LinkServers 在无社区密钥的构建中为空，拉取会抛 InvalidOperationException。）
             lobbyAnnouncementLoader = new ModLoader.LoaderCombo<int>("Lobby Announcement", loaders) { show = false };
         }
@@ -104,7 +104,7 @@ public partial class PageToolsGameLink
         await Dispatcher.BeginInvoke(new Action(async () =>
             await _LinkAnnounceUpdateAsync())); // 我实在不理解为啥 BeginInvoke 这个委托要 MustBeInherit
 
-        // PCL-DSH：用陶瓦后台进程取代 PCL CE 的大厅初始化。
+        // PCL-HE：用陶瓦后台进程取代 PCL CE 的大厅初始化。
         await EnsureTerracottaReadyAsync().ConfigureAwait(false);
     }
 
@@ -279,7 +279,7 @@ public partial class PageToolsGameLink
 
             #region 更新 UI 状态
 
-            // PCL-DSH：世界由陶瓦自动扫描，没有探测到局域网世界时也允许直接创建，
+            // PCL-HE：世界由陶瓦自动扫描，没有探测到局域网世界时也允许直接创建，
             // 因此这里只调整下拉框可用性，不再用它决定创建按钮的启用状态。
             ComboWorldList.IsEnabled = ComboWorldList.Items.Count > 0;
 
@@ -515,7 +515,7 @@ public partial class PageToolsGameLink
 
                 #endregion
 
-                // PCL-DSH：联机已改用陶瓦（Terracotta），不再需要 Natayark 账户体系。
+                // PCL-HE：联机已改用陶瓦（Terracotta），不再需要 Natayark 账户体系。
                 // 原此处会在 NaidRefreshToken 非空时调用 ReloadNaidData() 访问 account.naids.com，
                 // 属 PCL-CE 的后端依赖，已整体移除。
 
@@ -605,7 +605,7 @@ public partial class PageToolsGameLink
 
     private void ReloadNaidData()
     {
-        // PCL-DSH：Natayark 账户体系已停用（联机改用陶瓦，全程不访问 account.naids.com）。
+        // PCL-HE：Natayark 账户体系已停用（联机改用陶瓦，全程不访问 account.naids.com）。
         return;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         ModBase.RunInNewThread(() =>
@@ -683,7 +683,7 @@ public partial class PageToolsGameLink
 
     private void LabNatayarkUserName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        // PCL-DSH：Natayark 登录入口已停用（不访问 account.naids.com）。
+        // PCL-HE：Natayark 登录入口已停用（不访问 account.naids.com）。
         return;
 #pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
         // If Not IsLobbyAvailable Then
@@ -788,7 +788,7 @@ public partial class PageToolsGameLink
         try
         {
             BtnInputPort.IsEnabled = false;
-            // PCL-DSH：陶瓦模式下无需 PCL CE 的大厅预检（Natayark 登录与 EasyTier 下载）。
+            // PCL-HE：陶瓦模式下无需 PCL CE 的大厅预检（Natayark 登录与 EasyTier 下载）。
             var input = ModMain.MyMsgBoxInput(Lang.Text("Tools.GameLink.Create.EnterPort"),
                 validateRules: [new IntValidator(65535,1024)]);
             int port;
@@ -813,7 +813,7 @@ public partial class PageToolsGameLink
     {
         BtnCreate.IsEnabled = false;
 
-        // PCL-DSH：世界交由陶瓦自动扫描，因此不再要求先在下拉框中选择。
+        // PCL-HE：世界交由陶瓦自动扫描，因此不再要求先在下拉框中选择。
         var port = ComboWorldList.SelectedItem is null
             ? 0
             : (int)((MyComboBoxItem)ComboWorldList.SelectedItem).Tag;

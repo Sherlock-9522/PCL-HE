@@ -75,7 +75,7 @@ public sealed partial class RpcService
         }
     }
 
-    public const string PipePrefix = "PCLDSH_RPC";
+    public const string PipePrefix = "PCLHE_RPC";
     
     private static readonly string _EchoPipeName = $"{PipePrefix}@{Basics.CurrentProcess.Id}";
     private static readonly string[] _RequestTypeArray = ["GET", "SET", "REQ"];

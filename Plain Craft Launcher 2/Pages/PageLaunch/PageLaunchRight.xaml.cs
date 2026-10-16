@@ -34,7 +34,7 @@ public partial class PageLaunchRight : IRefreshable
         PanBack.ScrollToHome();
         PanScroll = PanBack; // 不知道为啥不能在 XAML 设置
         PanLog.Visibility = ModBase.modeDebug ? Visibility.Visible : Visibility.Collapsed;
-        // PCL-DSH 是第三方衍生版：按 PCL 分发有限许可的要求说明自身身份，用户确认一次后不再显示。
+        // PCL-HE 是第三方衍生版：按 PCL 分发有限许可的要求说明自身身份，用户确认一次后不再显示。
         if (States.Hint.CEMessage)
         {
             LabHint1.Text = Lang.Text("Launch.Right.CommunityHint.Message");
@@ -223,8 +223,8 @@ public partial class PageLaunchRight : IRefreshable
                     break;
                 
                 case 14:
-                    // PCL-DSH 是独立版本，不再连接 PCL CE 的在线公告服务。
-                    LogWrapper.Info("[Page] 主页预设：公告栏（PCL-DSH 未提供在线公告）");
+                    // PCL-HE 是独立版本，不再连接 PCL CE 的在线公告服务。
+                    LogWrapper.Info("[Page] 主页预设：公告栏（PCL-HE 未提供在线公告）");
                     content = "";
                     break;
                 

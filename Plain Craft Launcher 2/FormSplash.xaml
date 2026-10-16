@@ -1,7 +1,7 @@
 <Window x:Class="PCL.FormSplash"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Plain Craft Launcher DSH Edition"
+        Title="Plain Craft Launcher - Harness Edition"
         Width="420" Height="280"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
@@ -9,7 +9,7 @@
         SnapsToDevicePixels="True" UseLayoutRounding="True"
         FontFamily="{DynamicResource LaunchFontFamily}">
     <!--
-        PCL-DSH 开屏动画窗口（原创实现）
+        PCL-HE 开屏动画窗口（原创实现）
         替换 PCL CE 原生的静态 System.Windows.SplashScreen，提供带动画的开屏体验。
 
         设计目标：不与主界面割裂。
@@ -31,8 +31,8 @@
                 Background="{DynamicResource ColorBrushBg1}">
         <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <!-- PCL-DSH 虎鲸标识，带品牌蓝辉光 -->
-            <Viewbox x:Name="LogoBox" Width="104" Height="76" Opacity="0"
+            <!-- PCL-HE 六边形字标，带品牌蓝辉光 -->
+            <Viewbox x:Name="LogoBox" Width="84" Height="84" Opacity="0"
                      HorizontalAlignment="Center">
                 <Viewbox.RenderTransform>
                     <TranslateTransform x:Name="LogoShift" Y="10" />
@@ -40,7 +40,7 @@
                 <Viewbox.Effect>
                     <DropShadowEffect Color="#1370F3" BlurRadius="26" ShadowDepth="0" Opacity="0.42" />
                 </Viewbox.Effect>
-                <Image Source="/Images/whale_blue.png" Stretch="Uniform"
+                <Image Source="/Images/logo_he.png" Stretch="Uniform"
                        RenderOptions.BitmapScalingMode="HighQuality" />
             </Viewbox>
 
@@ -49,7 +49,7 @@
                        FontSize="22" FontWeight="Light" Opacity="0"
                        Foreground="{DynamicResource ColorBrush1}" />
 
-            <TextBlock x:Name="LabSub" Text="D S H   E D I T I O N"
+            <TextBlock x:Name="LabSub" Text="H A R N E S S   E D I T I O N"
                        HorizontalAlignment="Center" Margin="0,8,0,0"
                        FontSize="10" FontWeight="Bold" Opacity="0"
                        Foreground="{DynamicResource ColorBrush3}" />

@@ -56,7 +56,7 @@
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
                         <local:MyCheckBox Grid.Row="0" Grid.Column="0" Text="{DynamicResource Setup.Misc.System.DisableHardwareAcceleration}" x:Name="CheckSystemDisableHardwareAcceleration" Tag="SystemDisableHardwareAcceleration" Change="CheckSystemDisableHardwareAcceleration_OnChange"/>
-                        <!-- PCL-DSH 不收集、不上报任何遥测数据，此开关对 PCL-DSH 没有意义，故隐藏。 -->
+                        <!-- PCL-HE 不收集、不上报任何遥测数据，此开关对 PCL-HE 没有意义，故隐藏。 -->
                         <local:MyCheckBox Grid.Row="0" Grid.Column="1" Text="{DynamicResource Setup.Misc.System.Telemetry}" x:Name="CheckSystemTelemetry" Tag="SystemTelemetry" Change="CheckBoxChange" Visibility="Collapsed"
                           ToolTip="{DynamicResource Setup.Misc.System.Telemetry.ToolTip}"/>
                     </Grid>
