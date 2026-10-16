@@ -279,11 +279,11 @@ public partial class PageToolsGameLink
 
             #region 更新 UI 状态
 
-            var hasItems = ComboWorldList.Items.Count > 0;
-            ComboWorldList.IsEnabled = hasItems;
-            BtnCreate.IsEnabled = hasItems;
+            // PCL-DSH：世界由陶瓦自动扫描，没有探测到局域网世界时也允许直接创建，
+            // 因此这里只调整下拉框可用性，不再用它决定创建按钮的启用状态。
+            ComboWorldList.IsEnabled = ComboWorldList.Items.Count > 0;
 
-            if (hasItems && ComboWorldList.SelectedIndex == -1) ComboWorldList.SelectedIndex = 0;
+            if (ComboWorldList.Items.Count > 0 && ComboWorldList.SelectedIndex == -1) ComboWorldList.SelectedIndex = 0;
 
             #endregion
         });
