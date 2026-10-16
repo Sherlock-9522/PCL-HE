@@ -1,6 +1,6 @@
 # 如何为项目做贡献
 
-Wiki 页面:
+上游 PCL-CE 的技术文档（本项目沿用其代码风格与工程约定，遇到疑问可参考）：
 [开发指南](https://github.com/PCL-Community/PCL2-CE/wiki/开发指南)
 [技术规范](https://github.com/PCL-Community/PCL2-CE/wiki/技术规范)
 
@@ -10,7 +10,7 @@ Wiki 页面:
 
 ## 开始之前
 
-查看 [Issues](https://github.com/PCL-Community/PCL2-CE/issues) 寻找可以参与的任务，或创建新 Issue 讨论您的想法。
+查看 [Issues](https://github.com/Sherlock-9522/PCL-HE/issues) 寻找可以参与的任务，或创建新 Issue 讨论您的想法。
 
 ## 贡献流程
 
@@ -54,7 +54,7 @@ Wiki 页面:
    ```
 
 6. 创建 Pull Request
-   - 指向上游仓库的 `dev` 分支
+   - 指向本仓库的 `main` 分支
    - 详细填写 PR 信息
    - 关联 Issue（如有）
 
@@ -154,8 +154,11 @@ revert:<type>(<scope>): <subject>
 <footer>
 ```
 
-## 提交上游
+## 与上游的关系
 
-若你要将他人在 CE 中实现的功能或修复提交到上游，请用 Co-authored 来指明原始贡献者
+本项目以 PCL Community Edition 为直接上游，欢迎把上游已验证的修复同步过来；
+若某处改动源自他人的实现，请用 `Co-authored-by:` 在提交信息中指明原始贡献者。
+
+若某个问题在 PCL 或 PCL-CE 上同样存在，请优先到上游仓库反馈——本发行版不代为转达。
 
 </details>
