@@ -2525,10 +2525,8 @@
 
     <!-- Setup.About.Legal -->
 
-    <sys:String x:Key="Setup.About.Legal.CommunityLobbyPrivacy">Community lobby privacy policy</sys:String>
     <sys:String x:Key="Setup.About.Legal.CommunitySource">PCL CE source code</sys:String>
-    <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © PCL Community &amp; LTCat (龙腾猫跃) 2026.&#xD;NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</sys:String>
-    <sys:String x:Key="Setup.About.Legal.NatayarkTerms">Natayark OpenID ToS</sys:String>
+    <sys:String x:Key="Setup.About.Legal.CopyrightText">Copyright © PCL Community &amp; LTCat (龙腾猫跃) 2026.&#xD;PCL-DSH is an independent third-party derivative work based on PCL and is not affiliated with the official PCL or PCL Community Edition teams.&#xD;NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</sys:String>
     <sys:String x:Key="Setup.About.Legal.OtherInfo">Other information</sys:String>
     <sys:String x:Key="Setup.About.Legal.PrivacyNotice">Privacy statement</sys:String>
     <sys:String x:Key="Setup.About.Legal.PrivacyText">The User Agent of this software includes the launcher version number to count the number of users on each version.&#xD;Other than this, this software will not upload any other information to the developers.&#xD;* Online and hardware/software survey features follow their own privacy policies, which are separate from this notice.</sys:String>
