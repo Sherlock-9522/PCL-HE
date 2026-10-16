@@ -247,6 +247,48 @@ public static partial class KernelInterop
     }
 
     /// <summary>
+    /// 获取系统的提交内存 (Commit) 上限与剩余量，单位为字节。<br/>
+    /// 「提交内存」由物理内存与页面文件共同构成，是进程能够成功分配（Commit）的内存总量上限。
+    /// 它比「可用物理内存」更能决定 JVM 能否按 <c>-Xmx</c> 成功保留堆空间。
+    /// </summary>
+    public static (ulong Limit, ulong Available) GetCommitMemoryBytes()
+    {
+        var status = CreateStatus();
+        if (!GlobalMemoryStatusEx(ref status)) _ThrowLastWin32Error();
+        return (status.ullTotalPageFile, status.ullAvailPageFile);
+    }
+
+    /// <summary>
+    /// 一次性获取系统内存的整体快照，避免多次调用 <c>GlobalMemoryStatusEx</c> 期间数值漂移。
+    /// </summary>
+    public static MemorySnapshot GetMemorySnapshot()
+    {
+        var status = CreateStatus();
+        if (!GlobalMemoryStatusEx(ref status)) _ThrowLastWin32Error();
+        return new MemorySnapshot(
+            status.ullTotalPhys,
+            status.ullAvailPhys,
+            status.ullTotalPageFile,
+            status.ullAvailPageFile,
+            status.dwMemoryLoad);
+    }
+
+    /// <summary>
+    /// 系统内存快照，各字段单位为字节
+    /// </summary>
+    /// <param name="TotalPhysical">物理内存总量</param>
+    /// <param name="AvailablePhysical">当前可用物理内存</param>
+    /// <param name="CommitLimit">提交内存上限</param>
+    /// <param name="CommitAvailable">提交内存剩余量</param>
+    /// <param name="MemoryLoadPercent">内存占用百分比 (0 ~ 100)</param>
+    public readonly record struct MemorySnapshot(
+        ulong TotalPhysical,
+        ulong AvailablePhysical,
+        ulong CommitLimit,
+        ulong CommitAvailable,
+        double MemoryLoadPercent);
+
+    /// <summary>
     /// 为当前进程新建终端窗口。<br/>
     /// 若进程已拥有终端窗口，该方法将无任何作用。若有需要，可在调用前使用
     /// <see cref="GetConsoleWindow"/> 来确认进程是否存在关联的终端窗口。
