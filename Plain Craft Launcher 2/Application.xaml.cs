@@ -67,12 +67,18 @@ public partial class Application
                 new FrameworkPropertyMetadata(100));
             Tooltip.Enable();
 
-            // 设置初始窗口
+            // 设置初始窗口（PCL-DSH：改用带动画的自定义开屏窗口）
             if (Config.Preference.ShowStartupLogo)
-            {
-                ModMain.frmStart = new SplashScreen(@"Images\icon.ico");
-                ModMain.frmStart.Show(false, true);
-            }
+                try
+                {
+                    ModMain.frmStart = new FormSplash();
+                    ModMain.frmStart.Show();
+                }
+                catch (Exception ex)
+                {
+                    ModBase.Log(ex, "创建开屏动画窗口失败，已跳过开屏", ModBase.LogLevel.Hint);
+                    ModMain.frmStart = null;
+                }
 
             // 设置初始化
             _ = Config.Debug.Enabled;

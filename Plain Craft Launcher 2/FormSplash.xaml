@@ -1,0 +1,88 @@
+<Window x:Class="PCL.FormSplash"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Plain Craft Launcher DSH Edition"
+        Width="500" Height="300"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        SnapsToDevicePixels="True" UseLayoutRounding="True"
+        FontFamily="{DynamicResource LaunchFontFamily}">
+    <!--
+        PCL-DSH 开屏动画窗口（原创实现）
+        替换 PCL CE 原生的静态 System.Windows.SplashScreen，提供带动画的开屏体验。
+        设计目标：深色卡片 + 蓝色辉光 + logo 弹入 + 标题浮现 + 底部光带扫掠。
+    -->
+    <Grid x:Name="RootGrid" Opacity="0">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="RootScale" ScaleX="0.94" ScaleY="0.94" CenterX="250" CenterY="146" />
+        </Grid.RenderTransform>
+
+        <Border x:Name="Card" Margin="12,10,12,18" CornerRadius="8"
+                Background="#F0161B24"
+                BorderBrush="#24FFFFFF" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="26" ShadowDepth="7" Direction="270" Opacity="0.45" Color="#000000" />
+            </Border.Effect>
+
+            <Border x:Name="GlowLayer" CornerRadius="7" Opacity="0">
+                <Border.Background>
+                    <RadialGradientBrush GradientOrigin="0.5,0.3" Center="0.5,0.3" RadiusX="0.72" RadiusY="0.95">
+                        <GradientStop Color="#401370F3" Offset="0" />
+                        <GradientStop Color="#181370F3" Offset="0.42" />
+                        <GradientStop Color="#00000000" Offset="1" />
+                    </RadialGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-10,0,0">
+                        <!-- PCL-DSH 虎鲸标识，放大并加蓝色辉光 -->
+                        <Viewbox x:Name="LogoBox" Width="98" Height="72" Opacity="0"
+                                 HorizontalAlignment="Center">
+                            <Viewbox.RenderTransform>
+                                <TranslateTransform x:Name="LogoShift" Y="12" />
+                            </Viewbox.RenderTransform>
+                            <Viewbox.Effect>
+                                <DropShadowEffect Color="#1370F3" BlurRadius="18" ShadowDepth="0" Opacity="0.75" />
+                            </Viewbox.Effect>
+                            <Image Source="/Images/whale.png" Stretch="Uniform"
+                                   RenderOptions.BitmapScalingMode="HighQuality" />
+                        </Viewbox>
+
+                        <TextBlock x:Name="LabTitle" Text="Plain Craft Launcher"
+                                   HorizontalAlignment="Center" Margin="0,18,0,0"
+                                   FontSize="21" FontWeight="Light" Foreground="#FFFFFFFF" Opacity="0" />
+
+                        <TextBlock x:Name="LabSub" Text="D S H   E D I T I O N"
+                                   HorizontalAlignment="Center" Margin="0,7,0,0"
+                                   FontSize="10" FontWeight="Bold" Opacity="0"
+                                   Foreground="{DynamicResource ColorBrush4}" />
+                    </StackPanel>
+
+                    <!-- 底部光带进度指示 -->
+                    <Grid x:Name="ProgressTrack" Grid.Row="1" Width="280" Height="3" Opacity="0"
+                          HorizontalAlignment="Center" Margin="0,0,0,30" ClipToBounds="True">
+                        <Border Background="#1FFFFFFF" CornerRadius="1.5" />
+                        <Border Width="120" HorizontalAlignment="Left" CornerRadius="1.5">
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="ProgressShift" X="-140" />
+                            </Border.RenderTransform>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#001370F3" Offset="0" />
+                                    <GradientStop Color="{DynamicResource ColorObject4}" Offset="0.5" />
+                                    <GradientStop Color="#001370F3" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

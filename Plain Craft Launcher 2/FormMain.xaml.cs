@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -191,7 +191,11 @@ public partial class FormMain
         // #End If
         Topmost = false;
         if (ModMain.frmStart is not null)
-            ModMain.frmStart.Close(new TimeSpan(0, 0, 0, 0, (int)Math.Round(400d / ModAnimation.aniSpeed)));
+        {
+            ModMain.frmStart.FadeOutAndClose(new TimeSpan(0, 0, 0, 0,
+                (int)Math.Round(400d / Math.Max(0.05d, ModAnimation.aniSpeed))));
+            ModMain.frmStart = null;
+        }
         // 更改窗口
         // Top = (GetWPFSize(My.Computer.Screen.WorkingArea.Height) - Height) / 2
         // Left = (GetWPFSize(My.Computer.Screen.WorkingArea.Width) - Width) / 2
