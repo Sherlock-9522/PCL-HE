@@ -29,6 +29,11 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
             ["littleskin.cn"] = "1514"
         };
 
+    /// <summary>
+    ///     覆盖内置客户端 ID 的环境变量前缀，完整形式为前缀加规范化后的主机名。
+    /// </summary>
+    private const string ClientIdOverridePrefix = "PCL_OAUTH_CLIENT_ID_";
+
     private static readonly string[] _Scopes =
     [
         "openid",
@@ -59,9 +64,26 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
         _yggdrasilServer = yggdrasilServer;
     }
 
+    /// <summary>
+    ///     解析某个认证服务器对应的 OAuth 客户端 ID。
+    ///     <para>
+    ///     先看 <c>PCL_OAUTH_CLIENT_ID_&lt;主机名&gt;</c> 环境变量（点与连字符换成下划线、转大写），
+    ///     没有才回落到内置表。内置的 LittleSkin ID 是上游 PCL 注册的应用，授权页会显示上游名称；
+    ///     使用者可以在 LittleSkin 注册自己的应用，再把新 ID 通过环境变量注入，无需改代码。
+    ///     例如 littleskin.cn 对应 <c>PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN</c>。
+    ///     </para>
+    /// </summary>
     public static bool TryGetBuiltInClientId(string host, out string clientId)
     {
         var normalizedHost = host.Trim().TrimEnd('.');
+        var overrideVar = ClientIdOverridePrefix + normalizedHost.ToUpperInvariant().Replace('.', '_').Replace('-', '_');
+        var overrideValue = Environment.GetEnvironmentVariable(overrideVar);
+        if (!string.IsNullOrWhiteSpace(overrideValue))
+        {
+            clientId = overrideValue.Trim();
+            return true;
+        }
+
         return _BuiltInClientIds.TryGetValue(normalizedHost, out clientId!);
     }
 
