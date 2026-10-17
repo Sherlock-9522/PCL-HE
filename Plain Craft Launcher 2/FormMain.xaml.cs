@@ -342,13 +342,11 @@ public partial class FormMain
         if (lowerVersionCode >= ModBase.versionCode)
             return;
         ShowUpdateLog();
-        
-        // 重置自定义主页配置
-        if (lastVersionCode < 521 && Config.Preference.Homepage.SelectedPreset >= 3)
-        {
-            Config.Preference.Homepage.SelectedPreset = 0;
-            ModMain.MyMsgBox(Lang.Text("Main.HomepageReset.Content"), Lang.Text("Main.HomepageReset.Title"));
-        }
+
+        // 上游此处有一段 lastVersionCode < 521 时重置自定义主页的兼容逻辑：上游在 521 版
+        // 重构过自定义主页的格式，升级时会丢弃旧的第三类及以上预设并提示一次。
+        // PCL-HE 的版本号自 1 起算、首个版本即已采用新格式，这段逻辑对我们的用户没有意义；
+        // 而保留原阈值会在我们每次提升版本号时误重置用户的自定义主页，故移除。
     }
 
     private void DowngradeSub(int lastVersionCode)
