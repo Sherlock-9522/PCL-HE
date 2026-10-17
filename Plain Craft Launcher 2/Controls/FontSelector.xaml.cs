@@ -177,7 +177,7 @@ public partial class FontSelector
 
             foreach (var font in availableFonts)
                 CustomFontCollection.Add(new CustomFontProperties
-                    { Name = font.Name, Font = font.Font, Tag = font.Font.Source });
+                    { Name = font.Name, Font = BuildPreviewFontFamily(font), Tag = font.Font.Source });
 
             ComboFont.IsEnabled = true;
 
@@ -190,6 +190,31 @@ public partial class FontSelector
 
             _isInitializing = false;
         });
+    }
+
+    /// <summary>
+    ///     决定列表项用哪个字体渲染字体名。
+    ///     <para>
+    ///     列表项是用字体自身渲染字体名的，这对绝大多数西文字体没问题，但纯图标字体
+    ///     （Segoe Fluent Icons、Segoe MDL2 Assets、Marlett、MS Outlook 等）不含完整的
+    ///     拉丁字形，渲染出来就是整行方框。这类字体改用默认字体显示名字，其余仍用自身做预览。
+    ///     </para>
+    ///     <para>
+    ///     没有用 FontFamily 的逗号回退链，因为 WPF 的 GetTypefaces() 不会合并链上的字体，
+    ///     缺字时并不会自动落到下一项，实测回退链对这个场景无效。
+    ///     </para>
+    /// </summary>
+    private static FontFamily BuildPreviewFontFamily((string Name, FontFamily Font) font)
+    {
+        foreach (var typeface in font.Font.GetTypefaces())
+        {
+            if (!typeface.TryGetGlyphTypeface(out var glyph)) continue;
+            // 以自己的显示名为判据，而不是只探一个拉丁字母：
+            // MT Extra、MS Outlook、Kingsoft UE 等字体含字母 A 却没有完整的名字字形，
+            // 只看 'A' 会让它们漏网，照样显示成一行方框。
+            if (font.Name.All(ch => glyph.CharacterToGlyphMap.ContainsKey(ch))) return font.Font;
+        }
+        return LocalizationFontService.BuildLaunchFontFamily();
     }
 
     private void ComboFont_SelectionChanged(object sender, SelectionChangedEventArgs e)
