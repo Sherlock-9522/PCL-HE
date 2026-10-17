@@ -63,12 +63,16 @@ public static class Paths
 
     static Paths()
     {
+        // PCL-HE 是独立发行版，共享数据目录必须与上游 PCL-CE 分开：
+        // 单实例锁、EasyTier 运行时缓存都放在 SharedLocalData 下，共用会导致
+        // 两者无法同时运行、且互相顶掉对方的运行时目录。
+        // oldName 指向上游的目录名，用于首次启动时把既有配置与档案迁移过来。
 #if DEBUG
-        const string name = "PCLCE_Debug";
-        const string oldName = ".PCLCEDebug";
+        const string name = "PCLHE_Debug";
+        const string oldName = "PCLCE_Debug";
 #else
-        const string name = "PCLCE";
-        const string oldName = ".PCLCE";
+        const string name = "PCLHE";
+        const string oldName = "PCLCE";
 #endif
         // fill paths
         _data = Path.Combine(DefaultDirectory, "PCL");

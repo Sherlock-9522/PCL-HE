@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -159,7 +159,10 @@ public sealed partial class ConfigService
                 // try migrate
                 if (!File.Exists(SharedConfigPath))
                 {
+                    // OldSharedData 在 PCL-HE 下指向上游 PCL-CE 的共享目录。
+                    // 优先迁上游当前实际使用的文件名，再退回更早版本的命名。
                     string[] oldPaths = [
+                        Path.Combine(Paths.OldSharedData, "config.v1.json"),
                         Path.Combine(Paths.OldSharedData, "Config.json"),
                         Path.Combine(Paths.SharedData, "config.json")
                     ];

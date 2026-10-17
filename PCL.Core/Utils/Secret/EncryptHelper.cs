@@ -172,18 +172,58 @@ public static class EncryptHelper
     private static byte[] _LoadOrCreateKey()
     {
         var keyFile = KeyFilePath;
+        // 顺序很关键：先读本地产密钥；没有再尝试从上游继承；继承到就再读一次。
+        // 若继承后仍直接落到 _CreateKey，刚拷来的密钥会被当成坏文件隔离掉，迁移就白做了。
+        if (_TryReadExistingKey(keyFile, out var key)) return key;
+        if (_TryInheritKeyFromUpstream(keyFile) && _TryReadExistingKey(keyFile, out key)) return key;
+        return _CreateKey(keyFile);
+    }
+
+    /// <summary>
+    /// 尝试读取既有的密钥文件。<br/>
+    /// 文件不存在返回 false 且不记日志；内容确实不可用返回 false 并记录原因；
+    /// I/O 类异常视为瞬时故障，照常抛出，绝不因此换掉一把还能用的密钥。
+    /// </summary>
+    private static bool _TryReadExistingKey(string keyFile, out byte[] key)
+    {
+        key = [];
         try
         {
-            if (File.Exists(keyFile)) return _ReadKey(keyFile);
+            if (!File.Exists(keyFile)) return false;
+            key = _ReadKey(keyFile);
+            return true;
         }
-        // IOException / UnauthorizedAccessException 属瞬时故障（占用、杀软扫描），故意不在此列：
-        // 照常抛出、下次访问重试，绝不能因此换掉一把还能用的密钥。
         catch (Exception ex) when (_IsKeyUnusable(ex))
         {
             LogWrapper.Error(ex, "Encryption",
                 $"用户密钥无法解密，将重建（HRESULT=0x{ex.HResult:X8}，file={keyFile}）");
+            return false;
         }
-        return _CreateKey(keyFile);
+    }
+
+    /// <summary>
+    /// 首次以 PCL-HE 身份启动时，从上游共享目录继承既有密钥。<br/>
+    /// 密钥决定 SharedEncrypt 配置（含已保存的账户档案）能否解开，直接重建会让这些数据全部失效，
+    /// 因此换用独立共享目录后必须把密钥一并带过来。
+    /// </summary>
+    /// <returns>是否成功复制了一份密钥过来</returns>
+    private static bool _TryInheritKeyFromUpstream(string keyFile)
+    {
+        if (_keyFileverride is not null) return false; // 显式指定或测试用路径时不继承
+        try
+        {
+            var upstreamKey = Path.Combine(Paths.OldSharedData, "UserKey.bin");
+            if (!File.Exists(upstreamKey) || File.Exists(keyFile)) return false;
+            Directory.CreateDirectory(Path.GetDirectoryName(keyFile)!);
+            File.Copy(upstreamKey, keyFile, false);
+            LogWrapper.Info("Encryption", $"已从上游目录继承用户密钥：{upstreamKey} -> {keyFile}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            LogWrapper.Warn(ex, "Encryption", "继承上游用户密钥失败，将生成新密钥");
+            return false;
+        }
     }
 
     /// <summary>读取密钥；v1 密钥会在解密成功后惰性迁移为 v2。内容不可用时抛出。</summary>
