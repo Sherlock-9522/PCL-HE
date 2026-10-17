@@ -50,6 +50,17 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 The build output lands in `Plain Craft Launcher 2/bin/Release/net10.0-windows/`.
 
+## 🛡️ "Windows protected your PC"
+
+This distribution ships **without a code signing certificate**, so the `.exe` carries no Authenticode signature and SmartScreen reports the publisher as unknown before letting it start. That is **not** a malware warning — it is how Windows treats any unsigned binary, including one you built yourself from this source.
+
+To get past it:
+
+- **Built it yourself?** Right-click `PCL-HE.exe` → Properties → tick *Unblock* → OK. Or run `Unblock-File .\PCL-HE.exe` in PowerShell.
+- **Downloaded from Releases?** Click *More info* → *Run anyway*.
+
+Removing the prompt entirely requires buying a code signing certificate for the release artifacts. An ordinary OV certificate still reports "unknown publisher" at first until download volume builds up reputation; only an EV certificate clears it immediately.
+
 ## 🔒 License
 
 - `Plain Craft Launcher 2/` uses a [custom license](Plain%20Craft%20Launcher%202/LICENCE), which contains the *PCL Distribution Limited License* and the *PCL Repository Fair Use Guidelines*

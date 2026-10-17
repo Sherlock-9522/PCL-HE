@@ -52,6 +52,17 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 建置產物位於 `Plain Craft Launcher 2/bin/Release/net10.0-windows/`。
 
+## 🛡️ Windows 提示「已保護您的電腦」怎麼辦
+
+本發行版**沒有程式碼簽章憑證**，`.exe` 不含 Authenticode 簽章，因此 SmartScreen 會把「發行者」顯示為未知並攔截啟動。這**不是**病毒警告，只是 Windows 對任何未簽章程式的預設態度；您自己從原始碼建置出來的產物同樣會被這樣攔。
+
+解除方式：
+
+- **自己建置**的產物：右鍵 `PCL-HE.exe` → 內容 → 勾選「解除封鎖」→ 確定；或在 PowerShell 裡執行 `Unblock-File .\PCL-HE.exe`
+- **從 Releases 下載**的產物：點「更多資訊」→「仍要執行」
+
+需要徹底消除的話，只能為發佈產物購買程式碼簽章憑證。一般 OV 憑證簽好後，一開始仍會回報「發行者未知」，要等下載量累積出信譽；能立刻通過的是 EV 憑證。
+
 ## 🔒 授權條款
 
 - `Plain Craft Launcher 2/` 使用 [自訂授權條款](Plain%20Craft%20Launcher%202/LICENCE)，其中包含《PCL 分發有限許可》與《PCL 儲存庫合理使用指南》

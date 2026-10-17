@@ -52,6 +52,17 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 构建产物位于 `Plain Craft Launcher 2/bin/Release/net10.0-windows/`。
 
+## 🛡️ Windows 提示「已保护你的电脑」怎么办
+
+本发行版**没有代码签名证书**，`.exe` 不含 Authenticode 签名，因此 SmartScreen 会把「发布者」显示为未知并拦截启动。这**不是**病毒报警，只是 Windows 对任何未签名程序的默认态度；你自己从源码构建出来的产物同样会被这样拦。
+
+解除方式：
+
+- **自己构建**的产物：右键 `PCL-HE.exe` → 属性 → 勾选「解除锁定」→ 确定；或在 PowerShell 里执行 `Unblock-File .\PCL-HE.exe`
+- **从 Releases 下载**的产物：点「更多信息」→「仍要运行」
+
+需要彻底消除的话，只能为发布产物购买代码签名证书。普通 OV 证书签好后，一开始仍会报「发布者未知」，要等下载量累积出信誉；能立刻通过的是 EV 证书。
+
 ## 🔒 许可证
 
 - `Plain Craft Launcher 2/` 使用 [自定义许可证](Plain%20Craft%20Launcher%202/LICENCE)，其中包含《PCL 分发有限许可》与《PCL 存储库合理使用指南》
