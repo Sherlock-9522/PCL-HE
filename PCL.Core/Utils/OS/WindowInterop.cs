@@ -127,6 +127,64 @@ public static partial class WindowInterop
         return GetWindowRectangle(hWnd);
     }
 
+    #region 缩放热区光标
+
+    /// <summary>
+    /// 窗口缩放的边角。
+    /// </summary>
+    public enum ResizeEdge
+    {
+        None,
+        Left,
+        Right,
+        Top,
+        Bottom,
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    }
+
+    private const int IDC_SIZENWSE = 32642; // 左上-右下
+    private const int IDC_SIZENESW = 32643; // 右上-左下
+    private const int IDC_SIZEWE = 32644;   // 左右
+    private const int IDC_SIZENS = 32645;   // 上下
+
+    [LibraryImport("user32.dll", EntryPoint = "LoadCursorW")]
+    private static partial IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);
+
+    [LibraryImport("user32.dll")]
+    private static partial IntPtr SetCursor(IntPtr hCursor);
+
+    /// <summary>
+    /// 为窗口缩放热区设置对应的系统缩放光标。
+    /// <para>
+    /// 系统是在处理 <c>WM_NCHITTEST</c> 时顺手把光标换成缩放形状的。我们自己接管了这条消息、
+    /// 直接返回 <c>HTLEFT</c> 之类的命中码，就不再走 <c>DefWindowProc</c>，也就没人替我们设光标了。
+    /// 结果是鼠标压在被判定为热区的边框上，光标仍是箭头，用户完全看不出这里能拖——
+    /// 手感上就表现为「边框和实际操作区对不上」。
+    /// </para>
+    /// </summary>
+    /// <param name="edge">当前命中的热区边角</param>
+    public static void SetResizeCursor(ResizeEdge edge)
+    {
+        var cursorId = edge switch
+        {
+            ResizeEdge.Left or ResizeEdge.Right => IDC_SIZEWE,
+            ResizeEdge.Top or ResizeEdge.Bottom => IDC_SIZENS,
+            ResizeEdge.TopLeft or ResizeEdge.BottomRight => IDC_SIZENWSE,
+            ResizeEdge.TopRight or ResizeEdge.BottomLeft => IDC_SIZENESW,
+            _ => 0
+        };
+
+        if (cursorId == 0)
+            return;
+
+        SetCursor(LoadCursor(IntPtr.Zero, new IntPtr(cursorId)));
+    }
+
+    #endregion
+
     /// <summary>
     /// 获取 Win32 窗口位置与大小
     /// </summary>

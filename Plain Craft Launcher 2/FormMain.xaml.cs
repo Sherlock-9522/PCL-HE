@@ -176,10 +176,18 @@ public partial class FormMain
         BtnExtraLog.showCheck = BtnExtraLog_ShowCheck;
         BtnExtraApril.ShowRefresh();
         // 初始化尺寸改变
+        // 同步外观与行为：勾选「锁定启动器大小」时如果仍保持 CanResize 的外观，
+        // 边框看起来可以拖动、实际却一律回 HTCLIENT，手感上就是「边框和实际区域对不上」。
         if (!Config.Preference.LockWindowSize)
+        {
+            ResizeMode = ResizeMode.CanResize;
             AddResizer();
+        }
         else
+        {
+            ResizeMode = ResizeMode.NoResize;
             RemoveResizer();
+        }
         // PLC 彩蛋
         if (RandomUtils.NextInt(1, 1000) == 233)
             ShapeTitleLogo.Data = (Geometry)new GeometryConverter().ConvertFromString(
@@ -376,6 +384,7 @@ public partial class FormMain
     {
         // 窗口活动常量
         const int WM_NCHITTEST = 0x84;
+        const int WM_SETCURSOR = 0x20;
         const int HTCLIENT = 1;
         const int HTLEFT = 10;
         const int HTRIGHT = 11;
@@ -391,7 +400,32 @@ public partial class FormMain
         const int offsetWpf = 0;
         const int hitWidthWpf = 8;
 
+
         // 过滤非 WM_NCHITTEST 事件
+        if (msg == WM_SETCURSOR)
+        {
+            // WM_NCHITTEST 里设的光标会被 WPF 随后发出的 WM_SETCURSOR 覆盖回箭头，
+            // 导致左侧能看出可缩放、右侧仍是箭头。这里按命中码再设一次。
+            var hitCode = (int)(lParam.ToInt64() & 0xFFFF);
+            var edge = hitCode switch
+            {
+                HTLEFT => WindowInterop.ResizeEdge.Left,
+                HTRIGHT => WindowInterop.ResizeEdge.Right,
+                HTTOP => WindowInterop.ResizeEdge.Top,
+                HTBOTTOM => WindowInterop.ResizeEdge.Bottom,
+                HTTOPLEFT => WindowInterop.ResizeEdge.TopLeft,
+                HTTOPRIGHT => WindowInterop.ResizeEdge.TopRight,
+                HTBOTTOMLEFT => WindowInterop.ResizeEdge.BottomLeft,
+                HTBOTTOMRIGHT => WindowInterop.ResizeEdge.BottomRight,
+                _ => WindowInterop.ResizeEdge.None
+            };
+            if (edge == WindowInterop.ResizeEdge.None)
+                return nint.Zero;
+            WindowInterop.SetResizeCursor(edge);
+            handled = true;
+            return new nint(1); // TRUE：光标已由我们设置
+        }
+
         if (msg != WM_NCHITTEST)
             return nint.Zero;
 
@@ -439,23 +473,50 @@ public partial class FormMain
 
         handled = true; // 接管该区域的消息
 
+
+        // 接管之后不再走 DefWindowProc，系统就不会替我们换缩放光标，
+        // 必须自己设，否则鼠标压在边框上时光标仍是箭头，用户看不出这里能拖。
         // 返回结果
         if (inTop && inLeft)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.TopLeft);
             return new nint(HTTOPLEFT);
+        }
         if (inTop && inRight)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.TopRight);
             return new nint(HTTOPRIGHT);
+        }
         if (inBottom && inLeft)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.BottomLeft);
             return new nint(HTBOTTOMLEFT);
+        }
         if (inBottom && inRight)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.BottomRight);
             return new nint(HTBOTTOMRIGHT);
+        }
         if (inLeft)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.Left);
             return new nint(HTLEFT);
+        }
         if (inRight)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.Right);
             return new nint(HTRIGHT);
+        }
         if (inTop)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.Top);
             return new nint(HTTOP);
+        }
         if (inBottom)
+        {
+            WindowInterop.SetResizeCursor(WindowInterop.ResizeEdge.Bottom);
             return new nint(HTBOTTOM);
+        }
 
         // 如果在 0-offset 范围内，返回 HTCLIENT 杀掉默认缩放
         return new nint(HTCLIENT);
