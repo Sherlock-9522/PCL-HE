@@ -100,8 +100,18 @@ public partial class FormMain
         Opacity = 0d;
         try
         {
-            Height = States.UI.WindowHeight;
-            Width = States.UI.WindowWidth;
+            // 保存值可能来自更早的版本（默认曾是 1024×640）或一块更大的显示器：
+            // 原样套用会让窗口在启动时明显大于设计尺寸，甚至伸出当前屏幕，看起来就是「莫名放大」。
+            // 超出工作区或非法的值一律退回 XAML 的设计尺寸，再由 MinWidth/MinHeight 兜底。
+            var targetWidth = States.UI.WindowWidth;
+            var targetHeight = States.UI.WindowHeight;
+            var workArea = SystemParameters.WorkArea;
+            if (double.IsNaN(targetWidth) || targetWidth <= 0d || targetWidth > workArea.Width)
+                targetWidth = Width;
+            if (double.IsNaN(targetHeight) || targetHeight <= 0d || targetHeight > workArea.Height)
+                targetHeight = Height;
+            Width = Math.Max(MinWidth, targetWidth);
+            Height = Math.Max(MinHeight, targetHeight);
         }
         catch (Exception ex) // 修复 #2019
         {
