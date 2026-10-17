@@ -93,7 +93,10 @@ public class HostConnectionHandler
             cancellationSource.Cancel();
             _ = _CleanupUnusedConnectionsAsync(connectionTasks, null).ConfigureAwait(false);
 
-            LogWrapper.Error(ex, ModuleName, $"All connection attempts failed for {host}");
+            // 网络不可达是可预期的情况（DNS 污染、防火墙、离线），不是程序缺陷，因此用 Warn 记日志：
+            // LogWrapper.Error 会经 LogService 弹出「发生意外错误」对话框，而调用方通常已有降级方案
+            // （如版本列表自动切换到镜像源），弹窗只会打断用户。
+            LogWrapper.Warn(ex, ModuleName, $"All connection attempts failed for {host}");
             throw new HttpRequestException($"Connection failed for {host}", ex);
         }
         finally

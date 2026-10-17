@@ -133,7 +133,8 @@ public class HttpProxyManager : IWebProxy, IDisposable
             }
             catch (Exception ex)
             {
-                LogWrapper.Error(ex, "Proxy", "获取系统代理时出现异常");
+                // 读不到系统代理（权限、注册表异常）不影响直连，对话框提示反而会打断启动流程。
+                LogWrapper.Warn(ex, "Proxy", "获取系统代理时出现异常");
             }
         }
     }

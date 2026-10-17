@@ -18,6 +18,15 @@ public static partial class WindowInterop
     [LibraryImport("dwmapi.dll")]
     private static partial int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] out bool pfEnabled);
 
+    /// <summary>
+    /// 获取窗口在屏幕上实际可见的边界（即排除 DWM 为你绘制的那圈不可见阴影）。
+    /// </summary>
+    private const uint DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(
+        IntPtr hWnd, uint dwAttribute, out RECT pvAttribute, uint cbAttribute);
+
     // Win32 矩形结构定义
     [StructLayout(LayoutKind.Sequential)]
     private struct RECT { public int left; public int top; public int right; public int bottom; }
@@ -91,6 +100,31 @@ public static partial class WindowInterop
         var hResult = GetWindowRect(hWnd, out var rect);
         return hResult ? (rect.left, rect.top, rect.right, rect.bottom)
             : throw new Win32Exception("Failed to get window rectangle");
+    }
+
+    /// <summary>
+    /// 获取窗口在屏幕上实际可见的边界。
+    /// <para>
+    /// <see cref="GetWindowRectangle"/> 返回的是包含 DWM 阴影边框的矩形，比用户看到的窗口
+    /// 四周各外扩若干像素，因此不能直接用来判断鼠标落在哪条边上。这里改用
+    /// DWMWA_EXTENDED_FRAME_BOUNDS 取真实可见区域；DWM 不可用时回退到窗口矩形。
+    /// </para>
+    /// </summary>
+    public static (int Left, int Top, int Right, int Bottom) GetVisibleWindowRectangle(IntPtr hWnd)
+    {
+        try
+        {
+            if (DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, out var visible,
+                    (uint)Marshal.SizeOf<RECT>()) == 0
+                && visible.right > visible.left && visible.bottom > visible.top)
+                return (visible.left, visible.top, visible.right, visible.bottom);
+        }
+        catch (Exception)
+        {
+            // 取不到可见边界时退回窗口矩形，至少还能缩放
+        }
+
+        return GetWindowRectangle(hWnd);
     }
 
     /// <summary>

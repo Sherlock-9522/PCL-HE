@@ -376,9 +376,10 @@ public partial class FormMain
         const int HTBOTTOMLEFT = 16;
         const int HTBOTTOMRIGHT = 17;
 
-        // WPF 尺寸的 offset
-        const int offsetWpf = 6;
-        const int hitWidthWpf = 5;
+        // 热区紧贴窗口真实边缘并加宽：此前的 offset 让最外 6 DIP 完全不响应缩放，
+        // 鼠标压在看得见的边框上却拖不动，手感与视觉不一致。
+        const int offsetWpf = 0;
+        const int hitWidthWpf = 8;
 
         // 过滤非 WM_NCHITTEST 事件
         if (msg != WM_NCHITTEST)
@@ -391,8 +392,9 @@ public partial class FormMain
         var yMouse = BitConverter.ToInt16(mouseBytes, 2);
 
         // 获取窗口参数
-        var windowRect = WindowInterop.GetWindowRectangle(hWnd);
-        var windowBounds = windowRect.ToWindowBounds();
+        // 用真实可见边界而非窗口矩形：后者包含 DWM 阴影，比用户看到的窗口四周各外扩几像素，
+        // 拿它算热区会让「鼠标贴在边框上却拖不动」、「鼠标还在窗口外就变了缩放光标」。
+        var windowRect = WindowInterop.GetVisibleWindowRectangle(hWnd);
 
         // 判断鼠标是否在窗口范围内
         var isInWindow = xMouse >= windowRect.Left && xMouse <= windowRect.Right && yMouse >= windowRect.Top &&
@@ -416,8 +418,8 @@ public partial class FormMain
         // 计算鼠标相对于窗口左上角的物理像素位置
         var relX = xMouse - windowRect.Left;
         var relY = yMouse - windowRect.Top;
-        var w = windowBounds.Width;
-        var h = windowBounds.Height;
+        var w = windowRect.Right - windowRect.Left;
+        var h = windowRect.Bottom - windowRect.Top;
 
         // 判定是否命中偏移后的热区
         var inLeft = relX >= offsetPxX && relX <= offsetPxX + hitWidthPxX;
@@ -615,7 +617,9 @@ public partial class FormMain
 
     private void FormMain_SizeChanged(object? sender = null, EventArgs? e = null)
     {
-        if (isSizeSaveable)
+        // 只在普通状态下记录尺寸：最大化时 Height/Width 是屏幕尺寸，记下来会让下次
+        // 以普通状态启动的窗口直接撑满屏幕，表现为「打开时莫名其妙变大」。
+        if (isSizeSaveable && WindowState == WindowState.Normal)
         {
             States.UI.WindowHeight = Height;
             States.UI.WindowWidth = Width;

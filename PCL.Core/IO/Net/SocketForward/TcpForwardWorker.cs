@@ -114,7 +114,9 @@ public sealed class TcpForwardWorker : IDisposable
             }
             catch (Exception ex)
             {
-                LogWrapper.Error(ex, ModuleName, $"接受连接时发生错误");
+                // 对端复位、超时、防火墙拦截属联机常态，用 Warn 记日志即可：
+                // LogWrapper.Error 会弹出「发生意外错误」对话框，中断用户正在进行的游戏。
+                LogWrapper.Warn(ex, ModuleName, $"接受连接时发生错误");
                 await Task.Delay(500).ConfigureAwait(false);
             }
         }
@@ -156,7 +158,8 @@ public sealed class TcpForwardWorker : IDisposable
         }
         catch (Exception ex)
         {
-            LogWrapper.Error(ex, ModuleName, $"处理连接 {connectionId} 时发生错误");
+            // 同样属联机常态（加入方掉线、房主关闭大厅），不应弹窗打断用户。
+            LogWrapper.Warn(ex, ModuleName, $"处理连接 {connectionId} 时发生错误");
         }
         finally
         {
