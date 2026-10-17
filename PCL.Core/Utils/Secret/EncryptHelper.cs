@@ -210,9 +210,11 @@ public static class EncryptHelper
     private static bool _TryInheritKeyFromUpstream(string keyFile)
     {
         if (_keyFileverride is not null) return false; // 显式指定或测试用路径时不继承
+        var upstreamDir = Paths.OldSharedData;
+        if (upstreamDir is null) return false; // 尚未初始化时不做迁移，避免无谓告警
         try
         {
-            var upstreamKey = Path.Combine(Paths.OldSharedData, "UserKey.bin");
+            var upstreamKey = Path.Combine(upstreamDir, "UserKey.bin");
             if (!File.Exists(upstreamKey) || File.Exists(keyFile)) return false;
             Directory.CreateDirectory(Path.GetDirectoryName(keyFile)!);
             File.Copy(upstreamKey, keyFile, false);
