@@ -10,6 +10,9 @@ public enum LogLevel
     Trace = 000 + ActionLevel.TraceLog,
     Debug = 100 + ActionLevel.NormalLog,
     Info = 200 + ActionLevel.NormalLog,
+    // TRACE 构建（含 Debug）把 Warning 升级为弹提示、Error 升级为弹对话框，便于开发时立刻看到；
+    // 但日志行仍打印为 [WARN] / [ERR!]，因为 RealLevel() 按区间判定。
+    // 因此用 Debug 构建验收界面时，一条"只该记日志"的 Warn 会弹出红色 Toast，Release / Beta 下不会。
 #if TRACE
     Warning = 300 + ActionLevel.HintErr,
     Error = 400 + ActionLevel.MsgBoxErr,
