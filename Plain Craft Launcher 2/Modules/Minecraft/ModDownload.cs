@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -2155,6 +2155,29 @@ public static class ModDownload
     }
 
     /// <summary>
+    ///     把 Library 的原始下载地址映射到 BMCLAPI 镜像。
+    ///     <para>
+    ///     maven.neoforged.net 与 maven.minecraftforge.net 在国内经常不可达，
+    ///     而 BMCLAPI 的 /maven/ 同时镜像了这两家的 releases 目录
+    ///     （已核对 neoforge-21.1.80.pom 与 forge-1.20.1-47.2.0.pom 均返回 200），
+    ///     因此必须一并替换，否则 NeoForge / Forge 的库会直连国外源而超时。
+    ///     </para>
+    /// </summary>
+    private static string DlSourceLibraryMirror(string original, string mirrorPath)
+    {
+        return original
+            .Replace("https://piston-data.mojang.com", mirrorPath)
+            .Replace("https://piston-meta.mojang.com", mirrorPath)
+            .Replace("https://libraries.minecraft.net", mirrorPath)
+            .Replace("https://maven.neoforged.net/releases", mirrorPath)
+            .Replace("https://maven.neoforged.net", mirrorPath)
+            .Replace("https://maven.minecraftforge.net", mirrorPath)
+            .Replace("https://files.minecraftforge.net/maven", mirrorPath)
+            .Replace("https://zkitefly.github.io/unlisted-versions-of-minecraft",
+                "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto");
+    }
+
+    /// <summary>
     ///     下载 Libraries 文件。
     /// </summary>
     public static IEnumerable<string> DlSourceLibraryGet(string original)
@@ -2162,31 +2185,15 @@ public static class ModDownload
         if (new[] { "minecraftforge", "fabricmc", "neoforged" }.Any(k => original.Contains(k))) // 不添加原版源
             return new[]
             {
-                original.Replace("https://piston-data.mojang.com", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://piston-meta.mojang.com", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://zkitefly.github.io/unlisted-versions-of-minecraft",
-                        "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto"),
-                original.Replace("https://piston-data.mojang.com", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://piston-meta.mojang.com", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://zkitefly.github.io/unlisted-versions-of-minecraft",
-                        "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto")
+                DlSourceLibraryMirror(original, "https://bmclapi2.bangbang93.com/maven"),
+                DlSourceLibraryMirror(original, "https://bmclapi2.bangbang93.com/libraries")
             };
 
         return DlSourceOrder(new[] { original },
             new[]
             {
-                original.Replace("https://piston-data.mojang.com", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://piston-meta.mojang.com", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven")
-                    .Replace("https://zkitefly.github.io/unlisted-versions-of-minecraft",
-                        "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto"),
-                original.Replace("https://piston-data.mojang.com", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://piston-meta.mojang.com", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/libraries")
-                    .Replace("https://zkitefly.github.io/unlisted-versions-of-minecraft",
-                        "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto"),
+                DlSourceLibraryMirror(original, "https://bmclapi2.bangbang93.com/maven"),
+                DlSourceLibraryMirror(original, "https://bmclapi2.bangbang93.com/libraries"),
                 original
             });
     }
