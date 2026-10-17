@@ -3543,7 +3543,7 @@
     <sys:String x:Key="Update.Error.Sha256Mismatch">更新檔案 SHA256 不正確，應該為 {0}，實際為 {1}</sys:String>
     <sys:String x:Key="Update.Error.UnableToGetUpdate">無法取得更新</sys:String>
     <sys:String x:Key="Update.Error.UpdateBlocked">更新失敗</sys:String>
-    <sys:String x:Key="Update.Error.UpdateBlockedMessage">由於被 Windows 安全中心攔截，或存在權限問題，導致 PCL-HE 無法更新。&#xA;請將 PCL-HE 所在資料夾加入白名單，或手動用 {0}PCL\Plain Craft Launcher 2.exe 取代目前檔案！</sys:String>
+    <sys:String x:Key="Update.Error.UpdateBlockedMessage">由於被 Windows 安全中心攔截，或存在權限問題，導致 PCL-HE 無法更新。&#xA;請將 PCL-HE 所在資料夾加入白名單，或手動用 {0}PCL\PCL-HE.exe 取代目前檔案！</sys:String>
     <sys:String x:Key="Update.Service.PclCe">PCL-HE 服務</sys:String>
     <sys:String x:Key="Update.Title">啟動器更新</sys:String>
 
