@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -72,7 +72,7 @@ public static class ModBase
     /// <summary>
     ///     程序内嵌图片文件夹路径，以“/”结尾。
     /// </summary>
-    public static readonly string pathImage = "pack://application:,,,/Plain Craft Launcher 2;component/Images/";
+    public static readonly string pathImage = "pack://application:,,,/PCL-HE;component/Images/";
 
     /// <summary>
     ///     当前程序的语言。
