@@ -15,10 +15,19 @@
         <Grid.RenderTransform>
             <ScaleTransform />
         </Grid.RenderTransform>
-        <Border x:Name="PanColor" BorderThickness="2" BorderBrush="#FFFFFFFF" Background="{DynamicResource ColorBrush3}"
+        <Border x:Name="PanColor" BorderThickness="2" Background="{DynamicResource ColorBrush3}"
                 CornerRadius="{Binding ActualHeight, ConverterParameter=0.4, Converter={StaticResource MultiplicationConverter}, ElementName=PanBack, Mode=OneWay}">
+            <!-- 描边自上而下由亮到暗，模拟顶部打光，避免整圈等亮造成平面感 -->
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#FFFFFFFF" Offset="0" />
+                    <GradientStop Color="#CCFFFFFF" Offset="0.5" />
+                    <GradientStop Color="#73FFFFFF" Offset="1" />
+                </LinearGradientBrush>
+            </Border.BorderBrush>
             <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.2" />
+                <!-- 投影带向下偏移才有高度：ShadowDepth=0 时四周等量漫射，看上去就是一张贴纸 -->
+                <DropShadowEffect ShadowDepth="3" Direction="270" BlurRadius="8" Opacity="0.45" Color="#FF06254D" />
             </Border.Effect>
         </Border>
         <StackPanel Orientation="Horizontal" Margin="20,0" SnapsToDevicePixels="False" UseLayoutRounding="False">
