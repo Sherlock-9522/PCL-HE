@@ -7,9 +7,14 @@ namespace PCL.Core.App;
 public static class Secrets
 {
     /// <summary>
-    /// 微软 OAuth 的 Client ID
+    /// 微软 OAuth 的 Client ID。
+    /// <para>
+    /// 刻意不走 readEnvDebugOnly：PCL-HE 不内置任何上游注册的 Azure 应用，正版登录依赖
+    /// 使用者自行注册应用并注入 PCL_MS_CLIENT_ID。若只在 Debug 构建读取，Release 用户将
+    /// 永远无法启用正版登录。
+    /// </para>
     /// </summary>
-    public static string MSOAuthClientId { get; } = EnvironmentInterop.GetSecret("MS_CLIENT_ID", readEnvDebugOnly: true).ReplaceNullOrEmpty();
+    public static string MSOAuthClientId { get; } = EnvironmentInterop.GetSecret("MS_CLIENT_ID", readEnvDebugOnly: false).ReplaceNullOrEmpty();
 
     /// <summary>
     /// CurseForge API 的 Client ID
