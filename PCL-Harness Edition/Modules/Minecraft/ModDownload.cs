@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -14,6 +14,17 @@ namespace PCL;
 
 public static class ModDownload
 {
+    /// <summary>
+    ///     先写临时文件再改名，避免写到一半被打断时留下截断的坏缓存。
+    ///     下次读到的要么是旧的完整内容，要么是新的完整内容。
+    /// </summary>
+    private static void WriteCacheAtomically(string path, string content)
+    {
+        var tempPath = path + ".tmp";
+        File.WriteAllText(tempPath, content);
+        File.Move(tempPath, path, true);
+    }
+
     #region DlClient* | Minecraft 客户端
 
     /// <summary>
@@ -351,7 +362,7 @@ public static class ModDownload
                 {
                     var unlistedJson = (JsonObject)Requester.FetchJson(
                         "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto/version_manifest.json");
-                    File.WriteAllText(cacheFilePath, unlistedJson.ToString());
+                    WriteCacheAtomically(cacheFilePath, unlistedJson.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -436,7 +447,7 @@ public static class ModDownload
                 {
                     var unlistedJson = (JsonObject)Requester.FetchJson(
                         "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto/version_manifest.json");
-                    File.WriteAllText(cacheFilePath, unlistedJson.ToString());
+                    WriteCacheAtomically(cacheFilePath, unlistedJson.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -2012,6 +2023,10 @@ public static class ModDownload
                 }
             }
 
+        // 没有可用的镜像映射时（mcimUrl 与原地址相同），上面的 switch 不会填入任何源，
+        // 此时必须回落到原地址，否则下面是空循环、只会抛出一个消息为空的异常。
+        if (urls.Count == 0) urls.Add(new KeyValuePair<string, int>(url, 5));
+
         var exs = "";
         foreach (var Source in urls)
             try
@@ -2077,6 +2092,10 @@ public static class ModDownload
                     break;
                 }
             }
+
+        // 没有可用的镜像映射时（mcimUrl 与原地址相同），上面的 switch 不会填入任何源，
+        // 此时必须回落到原地址，否则下面是空循环、只会抛出一个消息为空的异常。
+        if (urls.Count == 0) urls.Add(new KeyValuePair<string, int>(url, 5));
 
         var exs = "";
         foreach (var Source in urls)
