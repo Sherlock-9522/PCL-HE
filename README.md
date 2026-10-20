@@ -50,7 +50,7 @@ cd PCL-HE
 dotnet build "Plain Craft Launcher 2.slnx" -c Release
 ```
 
-构建产物位于 `Plain Craft Launcher 2/bin/Release/net10.0-windows/`。
+构建产物位于 `PCL-Harness Edition/bin/Release/net10.0-windows/`。
 
 ## 🛡️ Windows 提示「已保护你的电脑」怎么办
 
@@ -65,7 +65,7 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 ## 🔒 许可证
 
-- `Plain Craft Launcher 2/` 使用 [自定义许可证](Plain%20Craft%20Launcher%202/LICENCE)，其中包含《PCL 分发有限许可》与《PCL 存储库合理使用指南》
+- `PCL-Harness Edition/` 使用 [自定义许可证](PCL-Harness%20Edition/LICENCE)，其中包含《PCL 分发有限许可》与《PCL 存储库合理使用指南》
 - `其余所有目录` 使用 [Apache License 2.0](LICENSE)
 
 本发行版不以任何形式向接收者收费。上文两份许可继续适用于本发行版。

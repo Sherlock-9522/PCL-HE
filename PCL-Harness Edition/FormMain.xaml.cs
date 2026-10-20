@@ -569,6 +569,11 @@ public partial class FormMain
     /// <param name="isUpdating">是否正在更新重启</param>
     public void EndProgram(bool sendWarning, bool isUpdating = false)
     {
+        // 退出流程已经在走时，WPF 仍可能再发一次 WM_CLOSE。此时界面已经拆掉，
+        // 再弹「还有下载任务未完成」的确认框只会得到一个永远没人点的窗口，
+        // 其 converter.Result 保持 null。直接忽略这次重复请求。
+        if (ModBase.isProgramEnded)
+            return;
         // 发出警告
         if (sendWarning && ModNet.HasDownloadingTask())
         {

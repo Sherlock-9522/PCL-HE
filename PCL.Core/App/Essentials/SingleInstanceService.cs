@@ -39,8 +39,11 @@ public sealed partial class SingleInstanceService
             sw.Flush();
             _lockStream = stream;
         }
-        catch (Exception)
+        catch (Exception exCreate)
         {
+            // 创建锁失败不一定是「已有实例在跑」，也可能是目录不可写等 IO 问题。
+            // 记录原始异常，否则后续那次 FileMode.Open 的失败会把真因盖掉。
+            Context.Debug("创建单例锁失败，按已有实例处理", exCreate);
             try
             {
                 using var stream = File.Open(_LockFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);

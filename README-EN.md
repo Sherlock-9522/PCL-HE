@@ -48,7 +48,7 @@ cd PCL-HE
 dotnet build "Plain Craft Launcher 2.slnx" -c Release
 ```
 
-The build output lands in `Plain Craft Launcher 2/bin/Release/net10.0-windows/`.
+The build output lands in `PCL-Harness Edition/bin/Release/net10.0-windows/`.
 
 ## 🛡️ "Windows protected your PC"
 
@@ -63,7 +63,7 @@ Removing the prompt entirely requires buying a code signing certificate for the 
 
 ## 🔒 License
 
-- `Plain Craft Launcher 2/` uses a [custom license](Plain%20Craft%20Launcher%202/LICENCE), which contains the *PCL Distribution Limited License* and the *PCL Repository Fair Use Guidelines*
+- `PCL-Harness Edition/` uses a [custom license](PCL-Harness%20Edition/LICENCE), which contains the *PCL Distribution Limited License* and the *PCL Repository Fair Use Guidelines*
 - `All other directories` use the [Apache License 2.0](LICENSE)
 
 This distribution is never charged for. Both licenses above continue to apply to it.

@@ -420,7 +420,7 @@ public static class ModMain
             }
 
             ModBase.Log($"[Control] 普通弹框返回：{converter.Result ?? "null"}");
-            return (int)converter.Result;
+            return converter.Result is int resultValue ? resultValue : 0;
         }
 
         // 不进行等待，直接返回
@@ -515,7 +515,7 @@ public static class ModMain
             }
 
             ModBase.Log($"[Control] 普通弹框返回：{converter.Result ?? "null"}");
-            return (int)converter.Result;
+            return converter.Result is int resultValue ? resultValue : 0;
         }
 
         // 不进行等待，直接返回

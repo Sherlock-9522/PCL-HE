@@ -11,7 +11,7 @@
             "name": "PCL-HE",
             "info": "本发行版由 PCL-HE Project 基于 PCL Community Edition 独立进行二次开发并维护，与上游官方团队之间没有隶属关系。原作 Copyright © 龙腾猫跃 2016.",
             "website": "https://github.com/Sherlock-9522/PCL-HE",
-            "license": "https://github.com/Sherlock-9522/PCL-HE/blob/main/Plain Craft Launcher 2/LICENCE"
+            "license": "https://github.com/Sherlock-9522/PCL-HE/blob/main/PCL-Harness%20Edition/LICENCE"
         },
         {
             "name": "PCL.Core",
