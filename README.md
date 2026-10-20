@@ -34,6 +34,7 @@ PCL-HE 在上游基础上做了这些事：
 | **功能** | 存档页四个 Chunkbase 直达入口（种子地图 / 要塞 / 下界要塞 / 末地城）、实例概览页的蓝图文件夹快捷方式 |
 | **合规** | 关于页完整列出「开发参考」的上游项目与赞助渠道 |
 
+
 ## 🌱 项目缘起与开发方式
 
 2026 年 10 月 20 日，上游 PCL2 与若干主流启动器因政策原因陆续停止了「直接下载游戏本体」的供应，玩家想玩原版就得自己另找安装器、自己拼 jar 与资源文件。PCL-HE 因此立项：在 PCL-CE 的基础上继续维护一套**仍然能完整下载并安装游戏本体**的启动器，离线登录、第三方验证与正版登录三条入口保持可用。
@@ -47,6 +48,7 @@ PCL-HE 在上游基础上做了这些事：
 
 **感谢 DeepSeek Harness 提供模型与工具支持，同时也感谢 DeepSeek Harness 社区的插件大佬们所提供的工具插件** —— 没有它与工具插件，这个项目只会残存在我的脑中，而不会以这样的速度成型。同时也有必要说清楚：PCL-HE 由社区独立维护，与任何模型厂商都不存在隶属或背书关系。
 
+
 ## 💻 支持平台
 
 | 操作系统 | 支持情况 | 环境要求 |
@@ -55,6 +57,7 @@ PCL-HE 在上游基础上做了这些事：
 | Windows 8 - Windows 10 1809 (17763) | ⚠️ 理论能跑，酌情提供支持 | [.NET 10 Desktop Runtime](https://get.dot.net/10) |
 | Windows 7 或更低版本 | ❌ 不支持 | / |
 | macOS / Linux / 其他操作系统 | ⚠️ 仅交叉编译开发支持 | [.NET 10 SDK](https://get.dot.net/10) |
+
 
 ## 🔨 从源码构建
 
@@ -65,6 +68,7 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 ```
 
 构建产物位于 `PCL-Harness Edition/bin/Release/net10.0-windows/`。
+
 
 ## 🛡️ Windows 提示「已保护你的电脑」怎么办
 
@@ -77,7 +81,8 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 需要彻底消除的话，只能为发布产物购买代码签名证书。普通 OV 证书签好后，一开始仍会报「发布者未知」，要等下载量累积出信誉；能立刻通过的是 EV 证书。
 
-## 🔐 正版登录目前的状况
+
+## 🔐 关于正版登录目前的状况
 
 正版登录走的是 **Microsoft 设备代码流**（Device Code Flow）：启动器显示一串 8 位验证码，你在 <https://www.microsoft.com/link> 输入并授权，全程不需要在启动器里填密码。
 
@@ -103,12 +108,14 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 **离线登录**（随便填个名字）与**第三方登录**（LittleSkin 等 authlib-injector 服务）不受以上限制，开箱即可用。
 
+
 ## 🔒 许可证
 
 - `PCL-Harness Edition/` 使用 [自定义许可证](PCL-Harness%20Edition/LICENCE)，其中包含《PCL 分发有限许可》与《PCL 存储库合理使用指南》
 - `其余所有目录` 使用 [Apache License 2.0](LICENSE)
 
 本发行版不以任何形式向接收者收费。上文两份许可继续适用于本发行版。
+
 
 ## ❤️ 致谢
 
@@ -118,7 +125,8 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 以及上游 PCL-CE 的[全部贡献者](https://github.com/PCL-Community/PCL-CE/graphs/contributors)。没有他们的工作，就没有这个项目。
 
-## 🐛 反馈
+
+## 📝 反馈
 
 本项目为第三方独立维护，**请不要向上游 PCL 或 PCL-CE 仓库反馈本发行版的问题**。
 
