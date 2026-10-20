@@ -138,7 +138,11 @@ public sealed class TcpForwardWorker : IDisposable
             targetSocket.ReceiveBufferSize = (int)_cfg.BufferSize;
             targetSocket.SendBufferSize = (int)_cfg.BufferSize;
 
-            await targetSocket.ConnectAsync(_cfg.RemoteHost!, _cfg.RemotePort, cancellationToken).ConfigureAwait(false);
+            // 远端不可达时系统级 connect 会重试到 20 秒以上，期间连接信号量一直被占用，
+            // 达到上限后新连接被直接拒绝，表现为「进服后突然谁也连不上」。给单次连接加时限。
+            using var connectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            connectCts.CancelAfter(TimeSpan.FromSeconds(10));
+            await targetSocket.ConnectAsync(_cfg.RemoteHost!, _cfg.RemotePort, connectCts.Token).ConfigureAwait(false);
 
             LogWrapper.Info(ModuleName, $"开始 TCP 转发 {clientSocket.RemoteEndPoint} <-> {targetSocket.RemoteEndPoint}({connectionId})");
 

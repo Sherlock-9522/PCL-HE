@@ -824,6 +824,9 @@ public partial class PageToolsGameLink
 
     private static TerracottaClient? _tcClient;
 
+    /// <summary>加入流程是否正在进行，用于拦住 Enter 键的重复触发。</summary>
+    private static int _joinInProgress;
+
     /// <summary>
     ///     确保陶瓦后台进程已就绪，并取得可用的控制客户端。
     /// </summary>
@@ -992,73 +995,88 @@ public partial class PageToolsGameLink
 
     // 加入大厅
     private async void BtnJoin_Click(object sender, MouseButtonEventArgs e)
+{
+    // Enter 键会直接调用本方法，连按两次就会并发两个 Join，
+    // 而它们共享同一个静态 _tcClient，会互相干扰轮询与页面状态。
+    if (Interlocked.CompareExchange(ref _joinInProgress, 1, 0) != 0)
     {
-        var raw = TextJoinLobbyId.Text;
-
-        // 先在本地校验邀请码格式，格式不对就没必要去打扰陶瓦。
-        if (!TerracottaInviteCode.TryParse(raw, out var inviteCode))
-        {
-            HintService.Hint(Lang.Text("Tools.GameLink.Join.InvalidText"));
-            return;
-        }
-
-        ModBase.Log("[Link] 加入陶瓦房间：" + inviteCode);
-
-        var username = LobbyInfoProvider.GetUsername();
-
-        ModBase.RunInUi(() =>
-        {
-            BtnFinishPing.Visibility = Visibility.Visible;
-            LabFinishPing.Text = "-ms";
-            BtnConnectType.Visibility = Visibility.Visible;
-            LabConnectType.Text = Lang.Text("Tools.GameLink.Finish.Connecting");
-            CardPlayerList.Title = Lang.Text("Tools.GameLink.Member.ListLoading");
-            StackPlayerList.Children.Clear();
-            LabConnectUserName.Text = username;
-            LabConnectUserType.Text = Lang.Text("Tools.GameLink.Finish.Guest");
-            LabFinishId.Text = inviteCode;
-            BtnFinishCopyIp.Visibility = Visibility.Visible;
-            CurrentSubpage = Subpages.PanFinish;
-        });
-
-        if (!await EnsureTerracottaReadyAsync())
-        {
-            ModBase.RunInUi(() =>
-            {
-                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
-                CurrentSubpage = Subpages.PanSelect;
-            });
-            return;
-        }
-
-        try
-        {
-            await _tcClient!.JoinAsync(inviteCode, username).ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            ModBase.Log(ex, "[Terracotta] 加入房间失败");
-            ModBase.RunInUi(() =>
-            {
-                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
-                CurrentSubpage = Subpages.PanSelect;
-            });
-            return;
-        }
-
-        var state = await PollTerracottaAsync(s => s.IsGuestReady, 120);
-
-        ModBase.RunInUi(() =>
-        {
-            if (state is { IsGuestReady: true })
-                HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.GuestReady"));
-            else
-            {
-                HintService.Hint(DescribeTerracottaError(state), HintType.Error);
-                CurrentSubpage = Subpages.PanSelect;
-            }
-        });
+        HintService.Hint("正在加入大厅，请稍候。");
+        return;
     }
+
+    try
+    {
+            var raw = TextJoinLobbyId.Text;
+
+            // 先在本地校验邀请码格式，格式不对就没必要去打扰陶瓦。
+            if (!TerracottaInviteCode.TryParse(raw, out var inviteCode))
+            {
+                HintService.Hint(Lang.Text("Tools.GameLink.Join.InvalidText"));
+                return;
+            }
+
+            ModBase.Log("[Link] 加入陶瓦房间：" + inviteCode);
+
+            var username = LobbyInfoProvider.GetUsername();
+
+            ModBase.RunInUi(() =>
+            {
+                BtnFinishPing.Visibility = Visibility.Visible;
+                LabFinishPing.Text = "-ms";
+                BtnConnectType.Visibility = Visibility.Visible;
+                LabConnectType.Text = Lang.Text("Tools.GameLink.Finish.Connecting");
+                CardPlayerList.Title = Lang.Text("Tools.GameLink.Member.ListLoading");
+                StackPlayerList.Children.Clear();
+                LabConnectUserName.Text = username;
+                LabConnectUserType.Text = Lang.Text("Tools.GameLink.Finish.Guest");
+                LabFinishId.Text = inviteCode;
+                BtnFinishCopyIp.Visibility = Visibility.Visible;
+                CurrentSubpage = Subpages.PanFinish;
+            });
+
+            if (!await EnsureTerracottaReadyAsync())
+            {
+                ModBase.RunInUi(() =>
+                {
+                    HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
+                    CurrentSubpage = Subpages.PanSelect;
+                });
+                return;
+            }
+
+            try
+            {
+                await _tcClient!.JoinAsync(inviteCode, username).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "[Terracotta] 加入房间失败");
+                ModBase.RunInUi(() =>
+                {
+                    HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
+                    CurrentSubpage = Subpages.PanSelect;
+                });
+                return;
+            }
+
+            var state = await PollTerracottaAsync(s => s.IsGuestReady, 120);
+
+            ModBase.RunInUi(() =>
+            {
+                if (state is { IsGuestReady: true })
+                    HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.GuestReady"));
+                else
+                {
+                    HintService.Hint(DescribeTerracottaError(state), HintType.Error);
+                    CurrentSubpage = Subpages.PanSelect;
+                }
+            });
+    }
+    finally
+    {
+        Interlocked.Exchange(ref _joinInProgress, 0);
+    }
+}
 
     private void TextJoinLobbyId_KeyDown(object sender, KeyEventArgs e)
     {

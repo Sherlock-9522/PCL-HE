@@ -1052,7 +1052,7 @@ public partial class PageInstanceExport : IRefreshable
                         }
                         finally
                         {
-                            endedThreadCount += 1;
+                            Interlocked.Increment(ref endedThreadCount);
                             loader.Progress += 0.45d;
                         }
                     }, "Modrinth - " + loaderName);
@@ -1092,16 +1092,24 @@ public partial class PageInstanceExport : IRefreshable
                         }
                         finally
                         {
-                            endedThreadCount += 1;
+                            Interlocked.Increment(ref endedThreadCount);
                             loader.Progress += 0.45d;
                         }
                     }, "CurseForge - " + loaderName); // Modrinth 上传模式下，不能从 CurseForge 获取信息
 
                     // 等待线程结束
-                    while (endedThreadCount != 2)
+                    // 等号判断在丢一次更新时会永远不成立，而且两个线程里的网络请求没有超时，
+                    // 网络挂起就会无限期占住这个线程。改成「小于」并加总时限。
+                    var waitStartedAt = Environment.TickCount64;
+                    while (Volatile.Read(ref endedThreadCount) < 2)
                     {
                         if (loader.IsAborted)
                             return;
+                        if (Environment.TickCount64 - waitStartedAt > 120_000)
+                        {
+                            ModBase.Log("[Export] 等待网络信息超时，按已获取的数据继续", ModBase.LogLevel.Debug);
+                            break;
+                        }
                         Thread.Sleep(10);
                     }
 

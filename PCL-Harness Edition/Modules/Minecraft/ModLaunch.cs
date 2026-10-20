@@ -861,7 +861,7 @@ public static class ModLaunch
         {
             // 1.5.2-：最高 Java 8
             if (ModBase.modeDebug)
-                ModBase.Log("[Launch] [Debug] MC 1.5.2- 要求最高 Java 12");
+                ModBase.Log("[Launch] [Debug] MC 1.5.2- 要求最高 Java 8");
             maxVer = new Version(1, 8, 999, 999);
         }
 
@@ -2615,7 +2615,9 @@ public static class ModLaunch
             : mcLaunchJavaSelected.Installation.JavawExePath);
 
         // 设置环境变量
-        var paths = new List<string>(startInfo.EnvironmentVariables["Path"].Split(";"));
+        // 环境变量被精简（部分精简系统/安全软件）时索引器返回 null，直接 Split 会抛空引用，
+        // 而错误信息会指向启动失败本身，与真实原因完全无关。
+        var paths = new List<string>((startInfo.EnvironmentVariables["Path"] ?? string.Empty).Split(";"));
         paths.Add(ModBase.ShortenPath(mcLaunchJavaSelected.Installation.JavaFolder));
         startInfo.EnvironmentVariables["Path"] = paths.Distinct().ToList().Join(";");
         startInfo.EnvironmentVariables["appdata"] = ModBase.ShortenPath(ModFolder.mcFolderSelected);
@@ -2635,6 +2637,17 @@ public static class ModLaunch
         if (loader.IsAborted)
         {
             McLaunchLog("由于取消启动，已强制结束游戏进程"); // #1631
+            // 输出被重定向了，但 Watcher 还没建立、没人读这两个管道。
+            // 不显式关掉的话，Kill 之后这两条流上的句柄会一直挂着。
+            try
+            {
+                gameProcess.StandardOutput.Close();
+                gameProcess.StandardError.Close();
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "关闭已取消的游戏进程输出管道时出错", ModBase.LogLevel.Debug);
+            }
             gameProcess.Kill();
             return;
         }
@@ -2708,7 +2721,7 @@ public static class ModLaunch
         McLaunchLog("~ 档案参数 ~");
         McLaunchLog("玩家用户名：" + mcLoginLoader.output.Name);
         McLaunchLog("AccessToken：" + mcLoginLoader.output.AccessToken);
-        McLaunchLog("ClientToken：" + mcLoginLoader.output.ClientToken);
+        // ClientToken 属会话凭据，打码函数不覆盖它，直接不写入日志。
         McLaunchLog("UUID：" + mcLoginLoader.output.Uuid);
         McLaunchLog("验证方式：" + mcLoginLoader.output.Type);
         McLaunchLog("");
@@ -2746,7 +2759,12 @@ public static class ModLaunch
 
         // 等待
         while (watcher.State == ModWatcher.Watcher.MinecraftState.Loading)
+        {
+            // 用户取消启动时进程可能已被 Kill，而 watcher 还来不及切状态。
+            // 只看 State 会让这个线程永远停在「正在启动」。
+            if (loader.State == ModBase.LoadState.Aborted) return;
             Thread.Sleep(100);
+        }
         if (watcher.State == ModWatcher.Watcher.MinecraftState.Crashed) throw new Exception("$$");
     }
 

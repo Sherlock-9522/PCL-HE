@@ -651,6 +651,16 @@ public partial class FormMain
         // Await LobbyController.CloseAsync().ConfigureAwait(False)
         ModBase.isProgramEnded = true;
         ModAnimation.AniControlEnabled += 1;
+        // 联机组件是外部进程，必须显式结束，否则会留下孤儿进程继续占用虚拟网卡与端口。
+        try
+        {
+            PCL.Core.Link.EasyTier.ETController.Exit();
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "关闭 EasyTier 时遇到问题", ModBase.LogLevel.Debug);
+        }
+
         if (UpdateManager.isUpdateWaitingRestart && !isUpdating)
             UpdateManager.UpdateRestart(false, false);
         if (returnCode == ModBase.ProcessReturnValues.Exception)

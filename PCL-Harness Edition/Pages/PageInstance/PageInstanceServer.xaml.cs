@@ -31,26 +31,35 @@ public partial class PageInstanceServer : MyPageRight
     }
 
     private async void PageLoaded(object e, RoutedEventArgs sender)
+{
+    try
     {
-        serverList.Clear();
-        serverCardList.Clear();
-        PanServers.Children.Clear();
+            serverList.Clear();
+            serverCardList.Clear();
+            PanServers.Children.Clear();
 
-        await LoadServersFromFileAsync();
-        RefreshTip();
+            await LoadServersFromFileAsync();
+            RefreshTip();
 
-        foreach (var server in serverList)
-        {
-            var serverCard = new ServerCard();
-            serverCard.RemoveServer += RemoveServerEvent;
-            serverCard.EditServer += (a, b) => this.EditServer(a, (ServerCard.ResultEventArgs)b);
-            serverCard.UpdateServerInfo(server);
-            serverCardList.Add(serverCard);
-            PanServers.Children.Add(serverCard);
-        }
+            foreach (var server in serverList)
+            {
+                var serverCard = new ServerCard();
+                serverCard.RemoveServer += RemoveServerEvent;
+                serverCard.EditServer += (a, b) => this.EditServer(a, (ServerCard.ResultEventArgs)b);
+                serverCard.UpdateServerInfo(server);
+                serverCardList.Add(serverCard);
+                PanServers.Children.Add(serverCard);
+            }
 
-        PingAllServers();
+            PingAllServers();
     }
+    catch (Exception ex)
+    {
+        // servers.dat 损坏、被占用或无权限时，async void 里没人接的异常会直接崩掉进程。
+        ModBase.Log(ex, "处理服务器列表时出错");
+        HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
+    }
+}
 
     private void PageInstanceServer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -64,95 +73,118 @@ public partial class PageInstanceServer : MyPageRight
     }
 
     private async void RemoveServerEvent(object sender, EventArgs e)
+{
+    try
     {
-        // Get server index
-        var index = PanServers.Children.IndexOf((UIElement)sender);
-        if (index < 0)
-        {
-            HintService.Hint(Lang.Text("Instance.Server.IndexNotFound"), HintType.Error);
-            return;
-        }
+            // Get server index
+            var index = PanServers.Children.IndexOf((UIElement)sender);
+            if (index < 0)
+            {
+                HintService.Hint(Lang.Text("Instance.Server.IndexNotFound"), HintType.Error);
+                return;
+            }
 
-        // Read NBT file
-        var nbtData =
-            await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(
-                Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat"), "servers");
-        if (nbtData is null)
-        {
-            HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
-            return;
-        }
+            // Read NBT file
+            var nbtData =
+                await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(
+                    Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat"), "servers");
+            if (nbtData is null)
+            {
+                HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
+                return;
+            }
 
-        // Remove server from NBT data
-        nbtData.RemoveAt(index);
-        var clonedNbtData = (NbtList)nbtData.Clone();
+            // Remove server from NBT data
+            nbtData.RemoveAt(index);
+            var clonedNbtData = (NbtList)nbtData.Clone();
 
-        // Write back to NBT file
-        if (!await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData,
-                Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat")))
-        {
-            HintService.Hint(Lang.Text("Instance.Server.WriteDataFailed"), HintType.Error);
-            return;
-        }
+            // Write back to NBT file
+            if (!await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData,
+                    Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat")))
+            {
+                HintService.Hint(Lang.Text("Instance.Server.WriteDataFailed"), HintType.Error);
+                return;
+            }
 
-        // Remove server from list and UI
-        serverList.RemoveAt(index);
-        serverCardList.Remove((ServerCard)sender);
-        if (serverList.Count == 0) RefreshTip();
+            // Remove server from list and UI
+            serverList.RemoveAt(index);
+            serverCardList.Remove((ServerCard)sender);
+            if (serverList.Count == 0) RefreshTip();
 
-        // Remove UI element
-        PanServers.Children.Remove((UIElement)sender);
+            // Remove UI element
+            PanServers.Children.Remove((UIElement)sender);
 
-        // Success message
-        HintService.Hint(Lang.Text("Instance.Server.Removed"), HintType.Success);
+            // Success message
+            HintService.Hint(Lang.Text("Instance.Server.Removed"), HintType.Success);
     }
+    catch (Exception ex)
+    {
+        // servers.dat 损坏、被占用或无权限时，async void 里没人接的异常会直接崩掉进程。
+        ModBase.Log(ex, "处理服务器列表时出错");
+        HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
+    }
+}
 
     private async void EditServer(object sender, ServerCard.ResultEventArgs e)
+{
+    try
     {
-        // Read NBT file
-        var nbtData =
-            await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat"),
-                "servers");
-        if (nbtData is null)
+            // Read NBT file
+            var nbtData =
+                await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat"),
+                    "servers");
+            if (nbtData is null)
+            {
+                HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
+                return;
+            }
+
+            // Get server index
+            var index = PanServers.Children.IndexOf((UIElement)sender);
+            if (index < 0 || index >= nbtData.Count)
+            {
+                HintService.Hint(Lang.Text("Instance.Server.IndexNotFound"), HintType.Error);
+                return;
+            }
+
+            // Verify server data
+            var server = nbtData[index] as NbtCompound;
+        if (server is null)
         {
             HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
             return;
         }
 
-        // Get server index
-        var index = PanServers.Children.IndexOf((UIElement)sender);
-        if (index < 0 || index >= nbtData.Count)
-        {
-            HintService.Hint(Lang.Text("Instance.Server.IndexNotFound"), HintType.Error);
-            return;
-        }
+            // Update server data
+            server["name"] = new NbtString("name", e.Param1);
+            server["ip"] = new NbtString("ip", e.Param2);
 
-        // Verify server data
-        var server = nbtData[index] as NbtCompound;
+            // Write updated NBT data
+            var clonedNbtData = (NbtList)nbtData.Clone();
+            if (!await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData,
+                    Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat")))
+            {
+                HintService.Hint(Lang.Text("Instance.Server.WriteDataFailed"), HintType.Error);
+                return;
+            }
 
-        // Update server data
-        server["name"] = new NbtString("name", e.Param1);
-        server["ip"] = new NbtString("ip", e.Param2);
+            var serverCard = sender as ServerCard;
 
-        // Write updated NBT data
-        var clonedNbtData = (NbtList)nbtData.Clone();
-        if (!await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData,
-                Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat")))
-        {
-            HintService.Hint(Lang.Text("Instance.Server.WriteDataFailed"), HintType.Error);
-            return;
-        }
+            serverCard.server.Name = e.Param1;
+            serverCard.server.Address = e.Param2;
 
-        var serverCard = sender as ServerCard;
+            await serverCard.RefreshServerStatusAsync(true);
 
-        serverCard.server.Name = e.Param1;
-        serverCard.server.Address = e.Param2;
-
-        await serverCard.RefreshServerStatusAsync(true);
-
-        // Success message
-        HintService.Hint(Lang.Text("Instance.Server.Updated"), HintType.Success);
+            // Success message
+            HintService.Hint(Lang.Text("Instance.Server.Updated"), HintType.Success);
     }
+    catch (Exception ex)
+    {
+        // servers.dat 损坏、被占用或无权限时，async void 里没人接的异常会直接崩掉进程。
+        ModBase.Log(ex, "处理服务器列表时出错");
+        HintService.Hint(Lang.Text("Instance.Server.ReadDataFailed"), HintType.Error);
+    }
+}
 
     /// <summary>
     ///     刷新服务器列表

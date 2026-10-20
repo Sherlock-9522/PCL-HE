@@ -405,6 +405,15 @@ public static class ModMain
                 ModBase.Log("[Control] 主窗体加载完成前出现意料外的等待弹窗：" + button1 + "," + button2 + "," + button3,
                     ModBase.LogLevel.Debug);
             }
+            else if (!ModBase.RunInUi())
+            {
+                // 后台 loader 线程上 PushFrame 会建出一个绑定错的嵌套消息循环，
+                // 连 loader.Abort() 都打断不了这次等待。改把整段弹窗投递到 UI 线程去跑。
+                var remoteResult = 0;
+                ModBase.RunInUiWait(() => remoteResult = MyMsgBox(caption, title, button1, button2, button3,
+                    isWarn, highLight, forceWait, button1Action, button2Action, button3Action));
+                return remoteResult;
+            }
             else
             {
                 try
@@ -499,6 +508,15 @@ public static class ModMain
 
                 ModBase.Log("[Control] 主窗体加载完成前出现意料外的等待弹窗：" + button1 + "," + button2 + "," + button3,
                     ModBase.LogLevel.Debug);
+            }
+            else if (!ModBase.RunInUi())
+            {
+                // 后台 loader 线程上 PushFrame 会建出一个绑定错的嵌套消息循环，
+                // 连 loader.Abort() 都打断不了这次等待。改把整段弹窗投递到 UI 线程去跑。
+                var remoteResult = 0;
+                ModBase.RunInUiWait(() => remoteResult = MyMsgBox(caption, title, button1, button2, button3,
+                    isWarn, highLight, forceWait, button1Action, button2Action, button3Action));
+                return remoteResult;
             }
             else
             {

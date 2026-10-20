@@ -24,6 +24,12 @@ public partial class ProfileService
     private static readonly ProfileManagement<McProfile> _profiles = new();
     private static readonly object _saveLock = new();
     private static bool _canPersist = true;
+    private static bool _persistWarningLogged;
+
+    /// <summary>
+    ///     档案配置是否可以写回磁盘。凭据解密失败时为 false，此时登录只留在内存里。
+    /// </summary>
+    public static bool CanPersist => _canPersist;
 
     public static IReadOnlyList<McProfile> Profiles => _profiles.GetAll();
     public static McProfile? Current => _profiles.Current;
@@ -89,7 +95,18 @@ public partial class ProfileService
 
     public static void Save()
     {
-        if (!IsLoaded || !_canPersist) return;
+        if (!IsLoaded) return;
+        if (!_canPersist)
+        {
+            // 不留痕迹的话，用户会看到「登录成功」但重启后账号消失，
+            // 现象和原因完全对不上。这里把真实原因写进日志。
+            if (!_persistWarningLogged)
+            {
+                _persistWarningLogged = true;
+                Context.Error("档案配置无法写回磁盘，本次登录只保存在内存中，重启启动器后会丢失。");
+            }
+            return;
+        }
         lock (_saveLock)
             Config.System.ProfilesConfig.SetValue(_profiles.Serialize(), forceNewValue: true);
     }

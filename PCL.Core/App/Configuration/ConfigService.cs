@@ -199,7 +199,9 @@ public sealed partial class ConfigService
                         ArgumentNullException.ThrowIfNull(argument);
                         var dir = Path.GetFullPath(argument.ToString()!);
                         var configPath = Path.Combine(dir, "PCL", "config.v1.yml");
-                        if (!File.Exists(dir)) _TryMigrate(dir, [
+                        // 这里原本检查的是 dir（目录），File.Exists 对它恒为 false，
+                        // 于是每次构造实例配置都会尝试迁移，旧 setup.ini 会反复覆盖用户改动。
+                        if (!File.Exists(configPath)) _TryMigrate(dir, [
                             new ConfigMigration
                             {
                                 From = Path.Combine(dir, "PCL", "setup.ini"),

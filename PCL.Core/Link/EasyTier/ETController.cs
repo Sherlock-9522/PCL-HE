@@ -186,6 +186,14 @@ public static class ETController
             LogWrapper.Info("Link", "启动 EasyTier");
             // 操作 UI 显示大厅编号（可能写到 XAML 下面 UI 控制那部分去？）
             ETProcess.Start();
+            // 进程可能崩溃或被外部结束。不监听的话，界面会一直显示「联机中」，
+            // 实际上转发早已断开，用户只能重启启动器才能发现。
+            ETProcess.Exited += (_, _) =>
+            {
+                LogWrapper.Warn("Link", "EasyTier 进程已退出，联机可能已中断");
+                Status = ETState.Stopped;
+                ETProcess = null;
+            };
             Status = ETState.Running;
             return 0;
         }

@@ -110,7 +110,16 @@ public static class TerracottaProcess
     /// </summary>
     public static void ResetClient()
     {
-        _client = null;
+        // 与 EnsureRunningAsync 共用同一把 Gate，否则并发的探测会丢掉刚启动的 client。
+        Gate.Wait();
+        try
+        {
+            _client = null;
+        }
+        finally
+        {
+            Gate.Release();
+        }
     }
 
     /// <summary>
@@ -118,10 +127,18 @@ public static class TerracottaProcess
     /// </summary>
     public static async Task ShutdownAsync(CancellationToken ct = default)
     {
-        var client = _client;
-        ResetClient();
-        if (client is null) return;
-        await client.ShutdownAsync(ct).ConfigureAwait(false);
+        await Gate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            var client = _client;
+            _client = null;
+            if (client is null) return;
+            await client.ShutdownAsync(ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            Gate.Release();
+        }
     }
 
     /// <summary>

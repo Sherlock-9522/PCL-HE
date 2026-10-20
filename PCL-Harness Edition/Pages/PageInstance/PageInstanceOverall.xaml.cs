@@ -349,8 +349,27 @@ public partial class PageInstanceOverall
             }
 
             // 重命名主文件夹
+            // 临时名被占用时第一步就会失败；第二步失败则实例停在 *_temp 下，
+            // 用户看到的是「实例消失」，所以这里要预检并回滚。
+            if (Directory.Exists(tempPath))
+                throw new InvalidOperationException("临时目录 " + tempName + " 已存在，请先清理后再重命名");
             FileSystem.RenameDirectory(oldPath, tempName);
-            FileSystem.RenameDirectory(tempPath, newName);
+            try
+            {
+                FileSystem.RenameDirectory(tempPath, newName);
+            }
+            catch
+            {
+                try
+                {
+                    FileSystem.RenameDirectory(tempPath, oldName);
+                }
+                catch
+                {
+                    // 回滚也失败时保持原样，至少不要掩盖第一个异常。
+                }
+                throw;
+            }
             // 清理 ini 缓存
             ModBase.IniClearCache(Path.Combine(PageInstanceLeft.McInstance.PathIndie, "options.txt"));
             // 重命名 Jar 文件与 natives 文件夹

@@ -291,6 +291,9 @@ public static class ModWatcher
                         Thread.Sleep(10);
                     }
 
+                    // 循环也可能是因为 loader 被取消而退出的。那种情况没人会把状态切走，
+                    // 状态会永久停在 Loading，等它的启动线程就再也醒不过来。
+                    if (State == MinecraftState.Loading) State = MinecraftState.Canceled;
                     WatcherLog(Lang.Text("Watcher.Exited"));
                 }
                 catch (Exception ex)

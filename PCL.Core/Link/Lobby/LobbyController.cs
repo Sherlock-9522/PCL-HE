@@ -72,9 +72,17 @@ public sealed class LobbyController
 
             var hostname = string.Empty;
 
+            // 服务端不返回玩家列表时（半开连接、服务端异常），这里会一直等下去，
+            // 界面就永久停在「连接中」且没有取消入口。给一个总时限，超时按失败处理。
+            const int playerListTimeoutMs = 15_000;
+            var playerListWaited = 0;
             while (scfEntity.Client.PlayerList is null)
             {
-                await Task.Delay(800).ConfigureAwait(false);
+                if (playerListWaited >= playerListTimeoutMs)
+                    throw new TimeoutException("等待大厅玩家列表超时，可能是大厅服务端无响应");
+                ct.ThrowIfCancellationRequested();
+                await Task.Delay(800, ct).ConfigureAwait(false);
+                playerListWaited += 800;
             }
 
             foreach (var profile in scfEntity.Client.PlayerList)
@@ -94,6 +102,14 @@ public sealed class LobbyController
                 : Lang.Text("Link.Lobby.MotdDesc", hostname);
 
             var tcpPortForForward = NetworkHelper.NewTcpPort();
+            // 重复加入时旧转发实例会被直接覆盖，它的监听 socket 与连接信号量就无人释放了。
+            if (McForward is not null || McBroadcast is not null)
+            {
+                McForward?.Stop();
+                McBroadcast?.Stop();
+                McForward = null;
+                McBroadcast = null;
+            }
             McForward = new TcpForwardBuilder()
                 .BindLocal((ushort)tcpPortForForward)
                 .SetRemote(IPAddress.Loopback, (ushort)localPort)
@@ -190,7 +206,9 @@ public sealed class LobbyController
     public async Task<int> CloseAsync()
     {
         McForward?.Stop();
+        McForward = null;
         McBroadcast?.Stop();
+        McBroadcast = null;
         try
         {
             if (ScfClientEntity is not null)
