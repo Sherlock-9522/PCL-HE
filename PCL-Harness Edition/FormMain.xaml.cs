@@ -731,8 +731,12 @@ public partial class FormMain
             VideoBack.Height = formHeight;
         }
 
-        if (WindowState == WindowState.Maximized)
-            WindowState = WindowState.Normal; // 修复 #1938
+        // 上游 #1938：初始化阶段恢复上次尺寸时可能意外落到最大化，需要纠正回来。
+        // 但这行原本无差别执行，运行期用户主动最大化也会被立刻撤销；更糟的是拖动边框把
+        // 窗口拉到屏幕边缘时，Windows 会短暂进入最大化，于是窗口在「最大化→普通」之间
+        // 反复切换，表现为剧烈抽搐。只在初始化阶段（isSizeSaveable 仍为 false）纠正。
+        if (!isSizeSaveable && WindowState == WindowState.Maximized)
+            WindowState = WindowState.Normal;
     }
 
     // 标题栏改变大小
