@@ -40,6 +40,19 @@ public static class MojangUtils
                 }
                 ), Encoding.UTF8, "application/json")
             ).SendAsync(cancellationToken: token).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            // 403 与 401 的语义完全不同：401 表示令牌无效，403 表示令牌有效但该 Azure 应用没有调用
+            // Minecraft API 的权限。后者只能通过向 Mojang 申请白名单解决，所以这里必须说清楚，
+            // 否则用户只会看到一个光秃秃的 HttpRequestException，误以为是自己账号的问题。
+            var body = await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
+            throw new InvalidOperationException(
+                "Minecraft 服务拒绝了本次登录（HTTP 403）。\n" +
+                "这一步之前的 OAuth 与 Xbox Live 认证都已通过，问题出在应用本身：" +
+                "当前使用的 Azure 应用客户端 ID 还没有加入 Minecraft API 的白名单。\n" +
+                "请向 Mojang 申请该应用的 Minecraft API 访问权限，或改用已获授权的客户端 ID。\n" +
+                $"服务端响应：{body}");
+        }
         response.EnsureSuccessStatusCode();
         return await response.AsJsonAsync<MojangResponse>(cancellationToken: token).ConfigureAwait(false);
     }
