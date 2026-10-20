@@ -6,9 +6,9 @@
 
 # PCL-HE
 
-**Plain Craft Launcher - Harness Edition**
+**Plain Craft Launcher (PCL) - Harness Edition**
 
-*一個由第三方獨立維護的 PCL 衍生版*
+*一個由第三方獨立維護的 PCL 衍生版，也屬於 PCL-CE 的另一種分支版本*
 
 [![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-HE/stargazers)
 [![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-HE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-HE/issues)
@@ -26,7 +26,7 @@ PCL-HE 在上游基礎上做了這些事：
 
 | 方向 | 說明 |
 |---|---|
-| **連線** | 連線底座換成 [陶瓦（Terracotta）](https://github.com/burningtnt/Terracotta)，在本機以獨立行程方式提供，不經過任何中間伺服器；陶瓦自帶 EasyTier，無需另行下載 |
+| **連線** | 連線底座換成了 [陶瓦（Terracotta）連線](https://github.com/burningtnt/Terracotta)，在本機以獨立行程方式提供，不經過任何中間伺服器；陶瓦自帶 EasyTier，無需另行下載 |
 | **隱私** | 全面切斷遙測：不收集、不上報任何使用資料；已停用 Natayark 帳戶體系與上游連線大廳服務 |
 | **更新** | 作為獨立發行版，不從任何上游更新服務拉取版本、公告或本體 |
 | **視覺** | 原創開屏動畫、深化的主介面藍漸層、檔案區獨立不透明度滑桿、低透明度吉祥物浮水印 |
@@ -35,16 +35,16 @@ PCL-HE 在上游基礎上做了這些事：
 
 ## 🌱 專案緣起與開發方式
 
-2026 年 10 月，上游 PCL2 與若干主流啟動器陸續停止了「直接下載遊戲本體」的供應，玩家想玩原版就得自己另找安裝器、自己拼 jar 與資源檔。PCL-HE 因此立項：在 PCL-CE 的基礎上繼續維護一套**仍然能完整下載並安裝遊戲本體**的啟動器，離線登入、第三方驗證與正版登入三條入口保持可用。
+2026 年 10 月 20 日，上游 PCL2 與若干主流啟動器因政策原因陸續停止了「直接下載遊戲本體」的供應，玩家想玩原版就得自己另找安裝器、自己拼 jar 與資源檔。PCL-HE 因此立項：在 PCL-CE 的基礎上繼續維護一套**仍然能完整下載並安裝遊戲本體**的啟動器，離線登入、第三方驗證與正版登入三條入口保持可用。
 
 開發方式上，這個專案和通常的開源專案不太一樣，所以有必要寫清楚：
 
-- **架構、需求與驗收由人類維護者負責** —— 決定做成什麼樣、哪種實作可以接受、什麼才算修好了；
-- **具體實作、程式碼巡檢與驗證由 AI 承擔** —— 由 [DeepSeek](https://www.deepseek.com/) 驅動，逐輪產出補丁、跑建置，並在真實實例裡重現問題、確認修復。
+- **架構、需求與驗收由人類維護者（也就是我本人）負責** —— 決定做成什麼樣、哪種實作可以接受、什麼才算修好了；
+- **而具體實作、程式碼巡檢與驗證由 AI 承擔** —— 由 [DeepSeek Harness](https://www.deepseek.com/harness) 驅動與開發，逐輪產出補丁、跑建置，並在真實實例裡重現問題、確認修復。（某些情況下允許其自由發揮）
 
-換句話說，這裡不是「AI 產生、人類照單全收」，而是人類守住方向與品質關口，AI 負責把想法落成能跑的程式碼。好處是迭代快、覆蓋面廣；代價是每個改動都必須有實機驗證兜底，所以倉庫裡大量提交都附帶重現步驟與日誌證據，而不是只改幾行就宣布修好。
+換句話說，這裡不是「AI 產生、我照單全收」，而是人類守住方向與品質關口，AI 大模型負責把想法落成能跑的程式碼。好處是迭代快、覆蓋面廣；代價是每個改動都必須有實機驗證兜底，所以倉庫裡大量提交都附帶重現步驟與日誌證據，而不是只改幾行就宣布修好，工作量大。
 
-**感謝 DeepSeek 提供模型與工具支援** —— 沒有它，這個專案不會以這樣的速度成形。同時也要說清楚：PCL-HE 由社群獨立維護，與任何模型廠商都不存在隸屬或背書關係。
+**感謝 DeepSeek Harness 提供模型與工具支援，同時也感謝 DeepSeek Harness 社群的插件大佬們所提供的工具插件** —— 沒有它與工具插件，這個專案只會殘存在我的腦中，而不會以這樣的速度成形。同時也有必要說清楚：PCL-HE 由社群獨立維護，與任何模型廠商都不存在隸屬或背書關係。
 
 ## 💻 支援平台
 
@@ -76,7 +76,7 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 需要徹底消除的話，只能為發佈產物購買程式碼簽章憑證。一般 OV 憑證簽好後，一開始仍會回報「發行者未知」，要等下載量累積出信譽；能立刻通過的是 EV 憑證。
 
-## 🔐 正版登入目前的狀況
+## 🔐 關於正版登入目前的狀況
 
 正版登入使用 **Microsoft 裝置程式碼流程**（Device Code Flow）：啟動器顯示一組 8 位驗證碼，你在 <https://www.microsoft.com/link> 輸入並授權，整個過程不需要在啟動器裡填密碼。
 
@@ -117,7 +117,7 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 以及上游 PCL-CE 的[全部貢獻者](https://github.com/PCL-Community/PCL-CE/graphs/contributors)。沒有他們的工作，就沒有這個專案。
 
-## 🐛 回饋
+## 📝 回饋
 
 本專案為第三方獨立維護，**請不要向上游 PCL 或 PCL-CE 儲存庫回饋本發行版的問題**。
 

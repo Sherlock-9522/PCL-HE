@@ -6,9 +6,9 @@
 
 # PCL-HE
 
-**Plain Craft Launcher - Harness Edition**
+**Plain Craft Launcher (PCL) - Harness Edition**
 
-*An independently maintained third-party derivative of PCL*
+*An independently maintained third-party derivative of PCL, and also an alternative branch of PCL-CE*
 
 [![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-HE/stargazers)
 [![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-HE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-HE/issues)
@@ -24,7 +24,7 @@ PCL-HE is an independent third-party derivative work based on [Plain Craft Launc
 
 | Area | Description |
 |---|---|
-| **Multiplayer** | The networking backend is [Terracotta](https://github.com/burningtnt/Terracotta), which runs as a separate local process and never goes through an intermediate server. Terracotta bundles EasyTier, so nothing extra needs downloading |
+| **Multiplayer** | The networking backend has been switched to [Terracotta](https://github.com/burningtnt/Terracotta) multiplayer, which runs as a separate local process and never goes through an intermediate server. Terracotta bundles EasyTier, so nothing extra needs downloading |
 | **Privacy** | Telemetry is fully severed: no usage data is collected or uploaded. The Natayark account system and the upstream lobby service are disabled |
 | **Updates** | As an independent distribution, it never fetches versions, announcements, or binaries from any upstream update service |
 | **Visuals** | An original splash animation, a deepened main-page blue gradient, an independent opacity slider for the player profile panel, and a low-opacity mascot watermark |
@@ -33,16 +33,16 @@ PCL-HE is an independent third-party derivative work based on [Plain Craft Launc
 
 ## 🌱 Origins and How This Is Built
 
-In October 2026, upstream PCL2 and several mainstream launchers stopped offering direct game downloads. Playing vanilla suddenly meant hunting for an installer and assembling jars and assets by hand. PCL-HE exists to keep a launcher that **can still download and install the game itself**, with offline login, third-party authentication and Microsoft login all left working.
+On 20 October 2026, upstream PCL2 and several mainstream launchers stopped offering direct game downloads for policy reasons. Playing vanilla suddenly meant hunting for an installer and assembling jars and assets by hand. PCL-HE exists to keep a launcher that **can still download and install the game itself**, with offline login, third-party authentication and Microsoft login all left working.
 
 The way this project is built differs from a typical open-source project, so it is worth stating plainly:
 
-- **Architecture, requirements and acceptance belong to the human maintainer** — what gets built, which implementation is acceptable, and what counts as fixed.
-- **Implementation, code audits and verification are done by AI** — driven by [DeepSeek](https://www.deepseek.com/), producing patches round by round, running builds, and reproducing issues in real instances before calling them fixed.
+- **Architecture, requirements and acceptance belong to the human maintainer (myself)** — what gets built, which implementation is acceptable, and what counts as fixed.
+- **Implementation, code audits and verification are done by AI** — driven and developed by [DeepSeek Harness](https://www.deepseek.com/harness), producing patches round by round, running builds, and reproducing issues in real instances before calling them fixed. (It is given a fair amount of latitude in some cases.)
 
-This is not "AI generates, human rubber-stamps". A human holds the direction and the quality gate; the AI turns intent into runnable code. The upside is speed and coverage. The cost is that every change needs real verification behind it, which is why so many commits here ship with reproduction steps and log evidence instead of a few changed lines and an announcement.
+This is not "AI generates, I rubber-stamp". A human holds the direction and the quality gate; the model turns intent into runnable code. The upside is speed and coverage. The cost is that every change needs real verification behind it, which is why so many commits here ship with reproduction steps and log evidence instead of a few changed lines and an announcement — and why the workload is considerable.
 
-**Thanks to DeepSeek for providing the model and tooling** — without it this project would not have taken shape at this pace. To be clear: PCL-HE is maintained independently by the community and has no affiliation with, or endorsement from, any model vendor.
+**Thanks to DeepSeek Harness for providing the model and tooling, and to the plugin authors in the DeepSeek Harness community for the tool plugins they contribute** — without them this project would have stayed in my head instead of taking shape at this pace. To be clear: PCL-HE is maintained independently by the community and has no affiliation with, or endorsement from, any model vendor.
 
 ## 💻 Supported Platforms
 
@@ -74,7 +74,7 @@ To get past it:
 
 Removing the prompt entirely requires buying a code signing certificate for the release artifacts. An ordinary OV certificate still reports "unknown publisher" at first until download volume builds up reputation; only an EV certificate clears it immediately.
 
-## 🔐 Microsoft login: current status
+## 🔐 About Microsoft login: current status
 
 Signing in with a Microsoft account uses the **Device Code Flow**: the launcher shows an 8-character code, you enter it at <https://www.microsoft.com/link> and approve, and the launcher never asks for your password.
 
@@ -115,7 +115,7 @@ This distribution is never charged for. Both licenses above continue to apply to
 
 And every [contributor](https://github.com/PCL-Community/PCL-CE/graphs/contributors) to upstream PCL-CE. None of this would exist without their work.
 
-## 🐛 Reporting issues
+## 📝 Reporting issues
 
 This is an independently maintained third-party project. **Please do not report issues with this distribution to the upstream PCL or PCL-CE repositories.**
 
