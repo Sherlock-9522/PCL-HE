@@ -1991,6 +1991,9 @@
     <sys:String x:Key="Minecraft.Download.Error.ForgeRecommendedTooFew">获取的推荐版本数过少（{0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallationCanceled">已取消安装。</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailedLastLine">安装器运行出错，末行为 {0}</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerFailed">安装器运行出错（退出码 {0}）</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerLogUnreadable">安装器的输出日志无法读取，请查看实例文件夹下的安装日志</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerNoLogOutput">安装器没有输出任何日志，请查看实例文件夹</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists">实例 {0} 已存在，是否重新下载？{1}这会覆盖实例的 Json 和 Jar 文件，但不会影响实例隔离的文件。</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists.Title">实例已存在</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceDownloading">该实例正在下载中！</sys:String>

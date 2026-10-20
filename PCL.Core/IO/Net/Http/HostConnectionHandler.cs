@@ -110,7 +110,10 @@ public class HostConnectionHandler
         var cacheKey = (host, port);
         var addressCache = _connectionCache.GetValueOrDefault(cacheKey);
 
-        var cachedAddresses = new List<IPAddress>();
+        // 成功时间与地址一起收集。比较器里不能再回查字典：_UpdateConnectionCache 会
+        // 并发移除过期条目，二次取值可能抛 KeyNotFoundException，被 List.Sort 包装成
+        // InvalidOperationException，让整个连接流程失败。
+        var cachedAddresses = new List<(IPAddress Address, DateTime SuccessTime)>();
         var uncachedAddresses = new List<IPAddress>();
 
         foreach (var ip in addresses)
@@ -119,7 +122,7 @@ public class HostConnectionHandler
                 addressCache.TryGetValue(ip, out var successTime) &&
                 now - successTime <= _CacheDuration)
             {
-                cachedAddresses.Add(ip);
+                cachedAddresses.Add((ip, successTime));
             }
             else
             {
@@ -128,8 +131,7 @@ public class HostConnectionHandler
         }
 
         // 缓存地址: 按成功时间倒序 (最近成功的优先)
-        cachedAddresses.Sort((a, b) =>
-            addressCache![b].CompareTo(addressCache[a]));
+        cachedAddresses.Sort(static (a, b) => b.SuccessTime.CompareTo(a.SuccessTime));
 
         // 非缓存地址: IPv6 优先 + 保持原始顺序
         var ipv6List = uncachedAddresses
@@ -154,6 +156,7 @@ public class HostConnectionHandler
         }
 
         return cachedAddresses
+            .Select(static entry => entry.Address)
             .Concat(sortedUncached)
             .Take(WaitTasks)
             .ToArray();
@@ -203,9 +206,13 @@ public class HostConnectionHandler
             await socket.ConnectAsync(ip, port, cancellationToken).ConfigureAwait(false);
             return new NetworkStream(socket, ownsSocket: true);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex)
         {
+            // 任何失败都必须关掉这个 socket。并行连接里「先成功的那个会取消其余尝试」是
+            // 常态而非边缘路径，因此取消分支同样会把 socket 漏掉，句柄只能等 GC 终结器
+            // 回收。长时间批量下载后句柄与端口会耗尽，表现为后续连接全部失败。
             socket.Dispose();
+            if (ex is OperationCanceledException) throw;
             throw new HttpRequestException($"Connection to {ip}:{port} failed", ex);
         }
     }

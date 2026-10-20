@@ -857,9 +857,24 @@ public static class ModDownloadLib
                     process.Start();
                     process.BeginOutputReadLine();
                     process.BeginErrorReadLine();
-                    // 等待
-                    while (!process.HasExited)
-                        Thread.Sleep(10);
+                    // 等待。必须带超时：取消只能由输出回调触发，而安装器一旦不产生任何输出
+                    // （卡在依赖下载、等待 stdin、被弹窗阻塞）回调就永不触发，这里会永久阻塞，
+                    // 用户点取消也没有用。
+                    const int installerTimeoutMs = 30 * 60 * 1000;
+                    if (!process.WaitForExit(installerTimeoutMs))
+                    {
+                        try
+                        {
+                            process.Kill();
+                        }
+                        catch (Exception ex)
+                        {
+                            ModBase.Log(ex, "终止超时的 OptiFine 安装器进程失败");
+                        }
+
+                        process.Dispose();
+                        throw new Exception(Lang.Text("Minecraft.Download.Error.InstallerTimeout"));
+                    }
                     // 输出
                     outputWaitHandle.WaitOne(10000);
                     errorWaitHandle.WaitOne(10000);
@@ -957,19 +972,41 @@ public static class ModDownloadLib
             // 等待原版文件下载完成
             if (clientDownloadLoader is null)
                 return;
+            // 等待期间必须同时排除失败与中止的 loader：它们的状态再也不会变成 Finished，
+            // 只过滤 Finished 会让这个循环在原版文件下载失败时永远转下去，界面固定卡在
+            // 「正在等待原版文件下载完成」，而且没有任何超时。
+            static bool IsPending(ModBase.LoadState state) =>
+                state is not (ModBase.LoadState.Finished or ModBase.LoadState.Failed or ModBase.LoadState.Aborted);
+
             var targetLoaders = clientDownloadLoader.GetLoaderList()
                 .Where(l => (l.name ?? "") == mcDownloadClientLibName || (l.name ?? "") == mcDownloadClientJsonName)
-                .Where(l => l.State != ModBase.LoadState.Finished).ToList();
+                .Where(l => IsPending(l.State)).ToList();
             if (targetLoaders.Any())
                 ModBase.Log("[Download] OptiFine 安装正在等待原版文件下载完成");
+            var waitStarted = DateTime.Now;
+            var waitTimedOut = false;
             while (targetLoaders.Any() && !task.IsAborted)
             {
-                targetLoaders = targetLoaders.Where(l => l.State != ModBase.LoadState.Finished).ToList();
+                if (DateTime.Now - waitStarted > TimeSpan.FromMinutes(10))
+                {
+                    waitTimedOut = true;
+                    break;
+                }
+                targetLoaders = targetLoaders.Where(l => IsPending(l.State)).ToList();
                 Thread.Sleep(50);
             }
 
             if (task.IsAborted)
                 return;
+            if (waitTimedOut)
+                throw new Exception(Lang.Text("Minecraft.Download.Error.VanillaDownloadTimeout"));
+
+            // 原版文件没能下载成功时继续安装只会产出无效实例，直接失败并说明原因
+            var failedVanillaLoaders = clientDownloadLoader.GetLoaderList()
+                .Where(l => (l.name ?? "") == mcDownloadClientLibName || (l.name ?? "") == mcDownloadClientJsonName)
+                .Where(l => l.State is ModBase.LoadState.Failed or ModBase.LoadState.Aborted).ToList();
+            if (failedVanillaLoaders.Any())
+                throw new Exception(Lang.Text("Minecraft.Download.Error.VanillaDownloadFailed"));
             // 拷贝原版文件
             if (!isCustomFolder)
                 return;

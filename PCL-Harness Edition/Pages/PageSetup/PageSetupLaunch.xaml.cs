@@ -14,9 +14,14 @@ public partial class PageSetupLaunch
 {
     private bool isLoad;
 
+    // 内存自动刷新的定时器。原来是局部变量，DispatcherTimer.Start() 会把自己挂进
+    // Dispatcher 的静态计时器表，没有引用也永不回收，会一直每秒跑 RefreshRam() 到进程退出。
+    private DispatcherTimer _ramRefreshTimer;
+
     public PageSetupLaunch()
     {
         Loaded += PageSetupLaunch_Loaded;
+        Unloaded += (_, _) => _ramRefreshTimer?.Stop();
         InitializeComponent();
     }
 
@@ -40,9 +45,12 @@ public partial class PageSetupLaunch
         ModAnimation.AniControlEnabled -= 1;
 
         // 内存自动刷新
-        var timer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 1) };
-        timer.Tick += (_, _) => RefreshRam();
-        timer.Start();
+        if (_ramRefreshTimer is null)
+        {
+            _ramRefreshTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 1) };
+            _ramRefreshTimer.Tick += (_, _) => RefreshRam();
+        }
+        _ramRefreshTimer.Start();
         RectRamGame.SizeChanged += (s, e) => RefreshRamText();
     }
 

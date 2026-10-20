@@ -568,11 +568,18 @@ public partial class PageDownloadCompFavorites
                         }
                         finally
                         {
-                            finishedTasks += 1;
+                            // 这些线程是并发跑的，普通自增会丢失更新，
+                            // 一旦丢一次，下面的等待条件就永远不成立。
+                            System.Threading.Interlocked.Increment(ref finishedTasks);
                         }
                     });
-                while (finishedTasks != ts.input.Count)
+                // 用原子读，并且给等待过程留一个取消出口：
+                // 之前这里没有任何 IsAborted 检查，用户点取消也停不下来，只能重启程序。
+                while (System.Threading.Volatile.Read(ref finishedTasks) < ts.input.Count)
+                {
+                    if (ts.IsAborted) return;
                     Thread.Sleep(200);
+                }
                 // 求取共同的版本
                 foreach (var Item in allFiles)
                 {
@@ -606,7 +613,10 @@ public partial class PageDownloadCompFavorites
                     selectedVersion = ModMain.MyMsgBoxSelect(selection, Lang.Text("Download.Comp.Favorites.Dialog.SelectVersion.Title"), button2: Lang.Text("Common.Action.Cancel"));
                     if (selectedVersion is null) ts.Abort();
                 });
-                string selectedVersionStr = suitVersion[(int)selectedVersion];
+                // 用户点了取消：Abort 只是改状态，不会中断执行流，必须在这里提前退出，
+                // 否则下面 (int)selectedVersion 会拆箱 null 并抛 NullReferenceException。
+                if (selectedVersion is null) return;
+                string selectedVersionStr = suitVersion[selectedVersion.Value];
                 HintService.Hint(Lang.Text("Download.Comp.Favorites.Hint.SelectSaveLocation", selectedVersionStr));
                 var saveFolder = SystemDialogs.SelectFolder();
                 if (string.IsNullOrWhiteSpace(saveFolder))

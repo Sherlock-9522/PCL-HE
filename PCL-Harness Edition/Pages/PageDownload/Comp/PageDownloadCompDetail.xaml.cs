@@ -605,12 +605,22 @@ public partial class PageDownloadCompDetail
     // 翻译简介
     private async void BtnTranslate_Click(object sender, EventArgs e)
     {
-        HintService.Hint(Lang.Text("Download.Comp.Detail.DescriptionTranslating", _project.TranslatedName));
-        var chineseDescription = await _project.ChineseDescription;
-        if (chineseDescription is null)
-            return;
-        ModMain.MyMsgBox(Lang.Text("Download.Comp.Detail.DescriptionTranslationResult", _project.Description,
-            chineseDescription));
+        // async void 里抛出的异常不会回到调用方，只会被全局处理器接住并弹一个与「翻译简介」无关的
+        // 「未知错误」框。这里自己兜住，失败时给出的提示才对得上用户刚才点的是哪个按钮。
+        try
+        {
+            HintService.Hint(Lang.Text("Download.Comp.Detail.DescriptionTranslating", _project.TranslatedName));
+            var chineseDescription = await _project.ChineseDescription;
+            if (chineseDescription is null)
+                return;
+            ModMain.MyMsgBox(Lang.Text("Download.Comp.Detail.DescriptionTranslationResult", _project.Description,
+                chineseDescription));
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Comp] 获取简介译文失败", ModBase.LogLevel.Hint,
+                userSummary: Lang.Text("Download.Comp.Detail.DescriptionTranslationFailed"));
+        }
     }
 
     /// <summary>

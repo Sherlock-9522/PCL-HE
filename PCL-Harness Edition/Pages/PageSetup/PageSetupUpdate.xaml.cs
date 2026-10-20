@@ -116,7 +116,7 @@ public partial class PageSetupUpdate
 
                 if (UpdateManager.updateLoader is not null && UpdateManager.updateLoader.State == ModBase.LoadState.Loading)
                 {
-                    BtnUpdate_Timer();
+                    await BtnUpdate_TimerAsync();
                     BtnUpdate.IsEnabled = false;
                 }
                 else if (UpdateManager.isUpdateWaitingRestart)
@@ -153,12 +153,15 @@ public partial class PageSetupUpdate
         }
     }
 
-    public void BtnUpdate_Timer()
+    private async Task BtnUpdate_TimerAsync()
     {
+        // 这段等待跑在 UI 线程上（CheckUpdate 的续体），原来用 Thread.Sleep 自旋会把消息泵整个堵死，
+        // 更新下载期间切到设置页或点「检查更新」，主窗口会直接「未响应」，动画和进度条全部冻结。
+        // 改成 await Task.Delay 让出 UI 线程，每轮都能重新渲染。
         while (UpdateManager.updateLoader is not null && UpdateManager.updateLoader.State == ModBase.LoadState.Loading)
         {
-            ModBase.RunInUi(() => BtnUpdate.Text = Lang.Number(UpdateManager.updateLoader.Progress, "P2"));
-            Thread.Sleep(200);
+            BtnUpdate.Text = Lang.Number(UpdateManager.updateLoader.Progress, "P2");
+            await Task.Delay(200);
         }
     }
 

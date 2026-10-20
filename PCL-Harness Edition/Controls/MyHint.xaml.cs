@@ -135,7 +135,11 @@ public partial class MyHint
 
     private void MyHint_Loaded(object sender, RoutedEventArgs e)
     {
-        ThemeService.ColorModeChanged += (v, theme) => _ThemeChanged(v, theme);
+        // 必须用方法组订阅：lambda 每次都是新委托，Dispose 里的 -= 永远删不掉它，
+        // 而 ColorModeChanged 是静态事件，会永久持有这个控件，页面每进出一次就泄漏一整棵可视树。
+        // 先退订再订阅，顺带保证 Loaded 重复触发时不会叠加多份。
+        ThemeService.ColorModeChanged -= _ThemeChanged;
+        ThemeService.ColorModeChanged += _ThemeChanged;
         if (CanClose && ConfigService.TryGetConfigItemNoType(RelativeSetup, out var item) && item.GetValueNoType() is not null)
             Visibility = Visibility.Collapsed;
     }

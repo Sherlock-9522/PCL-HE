@@ -30,18 +30,29 @@ public class HttpCacheHandler : DelegatingHandler
 
         // seek cache
         var cacheKey = CacheKeys.ApiResponse("http", uri);
+        var metaKey = CacheKeys.ApiResponseMeta("http", uri);
         var cached = await _cacheService.GetAsync<byte[]>(cacheKey, ct).ConfigureAwait(false);
+        var metaCached = await _cacheService.GetAsync<HttpCacheMetadata>(metaKey, ct).ConfigureAwait(false);
+
         if (cached.Found)
         {
-            var cachedResponse = _DeserializeResponse(cached.Value!);
+            var cachedResponse = _DeserializeResponse(cached.Value!, metaCached.Found ? metaCached.Value : null);
             cachedResponse.Headers.Add("X-Cache-Hit", "HIT");
             cachedResponse.RequestMessage = request;
             return cachedResponse;
         }
 
+        // 正文缓存不在但元数据还在，说明这条缓存已经残缺（正文过期被清，或上次写入失败）。
+        // 这种情况下再发带 ETag / If-Modified-Since 的条件请求，服务器会回 304，
+        // 而 304 本身没有正文，最终会往缓存里写一条 0 字节的“成功”响应，之后所有
+        // 请求都命中它。所以先把元数据清掉，让这次请求拿到完整响应。
+        if (metaCached.Found)
+        {
+            await _cacheService.DeleteAsync(metaKey).ConfigureAwait(false);
+            metaCached = default;
+        }
+
         // seek metadata
-        var metaKey = CacheKeys.ApiResponseMeta("http", uri);
-        var metaCached = await _cacheService.GetAsync<HttpCacheMetadata>(metaKey, ct).ConfigureAwait(false);
         if (metaCached.Found)
         {
             if (metaCached.Value!.ETag is not null)
@@ -68,11 +79,25 @@ public class HttpCacheHandler : DelegatingHandler
             var reCached = await _cacheService.GetAsync<byte[]>(cacheKey, ct).ConfigureAwait(false);
             if (reCached.Found)
             {
-                var cachedResponse = _DeserializeResponse(reCached.Value!);
+                var cachedResponse = _DeserializeResponse(reCached.Value!, metaCached.Found ? metaCached.Value : null);
                 cachedResponse.Headers.Add("X-Cache-Hit", "HIT");
                 cachedResponse.RequestMessage = request;
+                response.Dispose();
                 return cachedResponse;
             }
+
+            // 没有正文可用：把这个 304 原样交出去，但绝不能把它写进缓存。
+            response.Headers.Add("X-Cache-Hit", "MISS");
+            return response;
+        }
+
+        // 只缓存成功响应。404 / 500 一旦被缓存，在有效期（默认 5 分钟）内会以
+        // 缓存的形态反复返回，调用方的 EnsureSuccessStatusCode() 还会因为状态码
+        // 被还原成 200 而检查通过，变成完全无声的失败。
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Headers.Add("X-Cache-Hit", "MISS");
+            return response;
         }
 
         // cache response
@@ -114,9 +139,15 @@ public class HttpCacheHandler : DelegatingHandler
         return TimeSpan.FromMinutes(5);
     }
 
-    private static HttpResponseMessage _DeserializeResponse(byte[] data)
+    private static HttpResponseMessage _DeserializeResponse(byte[] data, HttpCacheMetadata? meta)
     {
-        return new HttpResponseMessage(HttpStatusCode.OK)
+        // 元数据里一直存着原始状态码，但过去从不读回，于是被缓存的 404 / 500 会以
+        // 200 返回。这里按存下来的状态码还原，未知时退回 200。
+        var status = meta is { StatusCode: > 0 }
+            ? (HttpStatusCode)meta.StatusCode
+            : HttpStatusCode.OK;
+
+        return new HttpResponseMessage(status)
         {
             Content = new ByteArrayContent(data)
         };
