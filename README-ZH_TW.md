@@ -76,6 +76,23 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 需要徹底消除的話，只能為發佈產物購買程式碼簽章憑證。一般 OV 憑證簽好後，一開始仍會回報「發行者未知」，要等下載量累積出信譽；能立刻通過的是 EV 憑證。
 
+## 🔐 正版登入目前的狀況
+
+正版登入使用 **Microsoft 裝置程式碼流程**（Device Code Flow）：啟動器顯示一組 8 位驗證碼，你在 <https://www.microsoft.com/link> 輸入並授權，整個過程不需要在啟動器裡填密碼。
+
+目前內建的 Azure 應用程式是 `Plain Craft Launcher (PCL) - Harness Edition`，用戶端 ID 為 `fe6a35b0-86b0-4e23-b234-e80a01b0b5fc`。
+
+**已知限制**：使用這個應用程式登入時，Microsoft OAuth 與 Xbox Live 兩步都能通過，但最後一步 `login_with_xbox` 會回應 **HTTP 403**。這一步由 Mojang 端判斷，與帳號、與用戶端實作都無關；同一份程式碼換成已獲授權的應用程式 ID 即可正常登入。
+
+如果你需要正版登入，可以：
+
+1. 在 Azure 上自行註冊一個應用程式（「個人 Microsoft 帳戶」類型，並開啟「允許公開用戶端流程」）；
+2. 設定環境變數 `PCL_MS_CLIENT_ID` 為你的應用程式 ID，再啟動啟動器。
+
+環境變數優先於內建值，改完重新啟動即生效，不需要重新編譯。
+
+**離線登入**（隨便填個名字）與**第三方登入**（LittleSkin 等 authlib-injector 服務）不受以上限制，開箱即可用。
+
 ## 🔒 授權條款
 
 - `PCL-Harness Edition/` 使用 [自訂授權條款](PCL-Harness%20Edition/LICENCE)，其中包含《PCL 分發有限許可》與《PCL 儲存庫合理使用指南》

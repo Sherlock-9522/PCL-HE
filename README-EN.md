@@ -74,6 +74,23 @@ To get past it:
 
 Removing the prompt entirely requires buying a code signing certificate for the release artifacts. An ordinary OV certificate still reports "unknown publisher" at first until download volume builds up reputation; only an EV certificate clears it immediately.
 
+## 🔐 Microsoft login: current status
+
+Signing in with a Microsoft account uses the **Device Code Flow**: the launcher shows an 8-character code, you enter it at <https://www.microsoft.com/link> and approve, and the launcher never asks for your password.
+
+The built-in Azure application is `Plain Craft Launcher (PCL) - Harness Edition`, client ID `fe6a35b0-86b0-4e23-b234-e80a01b0b5fc`.
+
+**Known limitation**: with this application, Microsoft OAuth and Xbox Live both succeed, but the final `login_with_xbox` call returns **HTTP 403**. That decision is made by Mojang, not by us, and it is independent of both your account and the client implementation; the same code works with an authorised application ID.
+
+If you need Microsoft login, you can:
+
+1. Register your own application on Azure (account type "Personal Microsoft accounts", with "Allow public client flows" enabled);
+2. Set the environment variable `PCL_MS_CLIENT_ID` to your application ID, then start the launcher.
+
+The environment variable takes precedence over the built-in value. A restart is enough; no rebuild is needed.
+
+**Offline login** (any name you like) and **third-party login** (authlib-injector services such as LittleSkin) are unaffected and work out of the box.
+
 ## 🔒 License
 
 - `PCL-Harness Edition/` uses a [custom license](PCL-Harness%20Edition/LICENCE), which contains the *PCL Distribution Limited License* and the *PCL Repository Fair Use Guidelines*
