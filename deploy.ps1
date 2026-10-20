@@ -1,4 +1,4 @@
-# 把 Release 构建产物同步到运行目录，并刷新桌面快捷方式。
+﻿# 把 Release 构建产物同步到运行目录，并刷新桌面快捷方式。
 # 运行目录放在 workspace 之外，因为 DSH 的沙箱会给 workspace 内启动的进程
 # 套上 AppContainer 限制，导致程序无法写入 AppData，启动即退出。
 $ErrorActionPreference = 'Stop'
@@ -19,6 +19,19 @@ Start-Sleep -Seconds 2
 # 保留运行目录里用户自己的游戏数据，只覆盖程序本体
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 Copy-Item -Path (Join-Path $source '*') -Destination $target -Recurse -Force
+
+# 用本机的自签名证书给 exe 签名，避免每次启动都被 Defender 提示发布者未知。
+# 证书在首次运行时创建并导入「受信任的根证书颁发机构」与「受信任的发布者」。
+$cert = Get-ChildItem Cert:\CurrentUser\My |
+    Where-Object { $_.Subject -eq 'CN=PCL-HE Project' } |
+    Select-Object -First 1
+if ($null -eq $cert) {
+    Write-Warning '没有找到 PCL-HE 自签名证书，跳过签名。运行 setup-signing.ps1 创建。'
+} else {
+    Set-AuthenticodeSignature -Certificate $cert -FilePath $exe -HashAlgorithm SHA256 | Out-Null
+    Write-Host "已签名：$((Get-AuthenticodeSignature $exe).Status)"
+}
+Unblock-File -Path $exe -ErrorAction SilentlyContinue
 
 $sh = New-Object -ComObject WScript.Shell
 $lnk = $sh.CreateShortcut($desktop)
