@@ -1174,7 +1174,7 @@
     <sys:String x:Key="Instance.Resource.Item.Schematic.DetailInfo">Details: </sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingDimensions">Enclosing dimensions: </sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingSize">Enclosing size: </sys:String>
-    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">File type: </sys:String>
+    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">File type: {0}</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Mcedit">MCEdit/WorldEdit schematic</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Nbt">Vanilla structure</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Sponge">Sponge schematic</sys:String>

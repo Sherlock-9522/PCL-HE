@@ -1218,7 +1218,7 @@
     <sys:String x:Key="Instance.Resource.Item.Schematic.DetailInfo">详细信息：</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingDimensions">包围盒尺寸：</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingSize">包围盒大小：</sys:String>
-    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">文件类型：</sys:String>
+    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">文件类型：{0}</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Mcedit">MCEdit/WorldEdit Schematic</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Nbt">原版结构</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Sponge">Sponge Schematic</sys:String>
@@ -1990,6 +1990,9 @@
     <sys:String x:Key="Minecraft.Download.Error.ForgePromosResultTooShort">获取的结果过短（{0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.ForgeRecommendedTooFew">获取的推荐版本数过少（{0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallationCanceled">已取消安装。</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerTimeout">安装器运行超时</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadTimeout">原版下载超时</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadFailed">原版下载失败</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailedLastLine">安装器运行出错，末行为 {0}</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailed">安装器运行出错（退出码 {0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerLogUnreadable">安装器的输出日志无法读取，请查看实例文件夹下的安装日志</sys:String>

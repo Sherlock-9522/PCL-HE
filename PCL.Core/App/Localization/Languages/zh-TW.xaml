@@ -1174,7 +1174,7 @@
     <sys:String x:Key="Instance.Resource.Item.Schematic.DetailInfo">詳細資訊：</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingDimensions">包圍盒尺寸：</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.EnclosingSize">包圍盒大小：</sys:String>
-    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">檔案型別：</sys:String>
+    <sys:String x:Key="Instance.Resource.Item.Schematic.FileType">檔案型別：{0}</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Mcedit">MCEdit/WorldEdit Schematic</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Nbt">原版結構</sys:String>
     <sys:String x:Key="Instance.Resource.Item.Schematic.FileType.Sponge">Sponge Schematic</sys:String>
