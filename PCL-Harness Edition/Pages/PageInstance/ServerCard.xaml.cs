@@ -58,44 +58,51 @@ public partial class ServerCard
     /// </summary>
     private async void UpdateServerUi()
     {
-        if (server is null)
-            return;
-
-        // 更新服务器名称
-        ServerName.Text = server.Name;
-        await ImageLoaderHelper.SetServerLogoAsync(server.Icon, ServerIcon);
-        if (server.Status == ServerStatus.Online)
+        try
         {
-            _manager.SetSelectedIconByName(GetSignalIcon(server.Ping));
-            Signal.ToolTip = $"{server.Ping}ms";
-            ToolTipService.SetInitialShowDelay(Signal, 0);
-            ToolTipService.SetBetweenShowDelay(Signal, 50);
-            ToolTipService.SetPlacement(Signal, PlacementMode.Top);
+            if (server is null)
+                return;
 
-            if (server.PlayerCount != default && server.MaxPlayers != default)
-                ServerPlayer.Text = $"{server.PlayerCount} / {server.MaxPlayers}";
-            else
-                ServerPlayer.Text = "???";
+            // 更新服务器名称
+            ServerName.Text = server.Name;
+            await ImageLoaderHelper.SetServerLogoAsync(server.Icon, ServerIcon);
+            if (server.Status == ServerStatus.Online)
+            {
+                _manager.SetSelectedIconByName(GetSignalIcon(server.Ping));
+                Signal.ToolTip = $"{server.Ping}ms";
+                ToolTipService.SetInitialShowDelay(Signal, 0);
+                ToolTipService.SetBetweenShowDelay(Signal, 50);
+                ToolTipService.SetPlacement(Signal, PlacementMode.Top);
 
-            ServerMotD.Visibility = Visibility.Collapsed;
-            MotdRenderer.RenderMotd(server.Description, ThemeService.IsDarkMode, 2);
-            MotdRenderer.RenderCanvas();
+                if (server.PlayerCount != default && server.MaxPlayers != default)
+                    ServerPlayer.Text = $"{server.PlayerCount} / {server.MaxPlayers}";
+                else
+                    ServerPlayer.Text = "???";
+
+                ServerMotD.Visibility = Visibility.Collapsed;
+                MotdRenderer.RenderMotd(server.Description, ThemeService.IsDarkMode, 2);
+                MotdRenderer.RenderCanvas();
+            }
+            else if (server.Status == ServerStatus.Pinging)
+            {
+                _manager.SetSelectedIconByName("loading");
+                MotdRenderer.ClearCanvas();
+                ServerPlayer.Text = Lang.Text("Instance.Server.Card.Connecting");
+                ServerMotD.Text = Lang.Text("Instance.Server.Card.ConnectingDots");
+                ServerMotD.Visibility = Visibility.Visible;
+            }
+            else if (server.Status == ServerStatus.Offline)
+            {
+                _manager.SetSelectedIconByName("signal_offline");
+                MotdRenderer.ClearCanvas();
+                ServerPlayer.Text = Lang.Text("Instance.Server.Card.Offline");
+                ServerMotD.Text = Lang.Text("Instance.Server.Card.ServerOffline");
+                ServerMotD.Visibility = Visibility.Visible;
+            }
         }
-        else if (server.Status == ServerStatus.Pinging)
+        catch (Exception ex)
         {
-            _manager.SetSelectedIconByName("loading");
-            MotdRenderer.ClearCanvas();
-            ServerPlayer.Text = Lang.Text("Instance.Server.Card.Connecting");
-            ServerMotD.Text = Lang.Text("Instance.Server.Card.ConnectingDots");
-            ServerMotD.Visibility = Visibility.Visible;
-        }
-        else if (server.Status == ServerStatus.Offline)
-        {
-            _manager.SetSelectedIconByName("signal_offline");
-            MotdRenderer.ClearCanvas();
-            ServerPlayer.Text = Lang.Text("Instance.Server.Card.Offline");
-            ServerMotD.Text = Lang.Text("Instance.Server.Card.ServerOffline");
-            ServerMotD.Visibility = Visibility.Visible;
+            ModBase.Log(ex, "刷新服务器卡片失败", ModBase.LogLevel.Feedback);
         }
     }
 
@@ -188,7 +195,16 @@ public partial class ServerCard
     /// </summary>
     private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
     {
-        await Task.Run(async () => await RefreshServerStatusAsync(true));
+        try
+        {
+            await Task.Run(async () => await RefreshServerStatusAsync(true));
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, Lang.Text("Instance.Server.RefreshFailed"), ModBase.LogLevel.Feedback);
+            ModBase.RunInUi(() => HintService.Hint(
+                Lang.Text("Instance.Server.RefreshFailed.WithDetail", ex.Message), HintType.Error));
+        }
     }
 
     /// <summary>

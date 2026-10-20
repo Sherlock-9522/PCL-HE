@@ -490,9 +490,16 @@ public partial class PageToolsTest
 
     private async void BtnAchievementPreview_Click(object sender, MouseButtonEventArgs e)
     {
-        var url = GetAchievementUrl();
-        ModBase.Log("[Net] 获取网络结果" + url);
-        await LoadImageAsync(url);
+        try
+        {
+            var url = GetAchievementUrl();
+            ModBase.Log("[Net] 获取网络结果" + url);
+            await LoadImageAsync(url);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "预览成就图片失败", ModBase.LogLevel.Hint);
+        }
     }
 
     private async Task LoadImageAsync(string imageUrl)
@@ -536,8 +543,15 @@ public partial class PageToolsTest
 
     private async void BtnAchievementSave_Click(object sender, MouseButtonEventArgs e)
     {
-        var url = GetAchievementUrl();
-        await DownloadImageToLocalAsync(url);
+        try
+        {
+            var url = GetAchievementUrl();
+            await DownloadImageToLocalAsync(url);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "保存成就图片失败", ModBase.LogLevel.Hint);
+        }
     }
 
     private async Task DownloadImageToLocalAsync(string imageUrl)

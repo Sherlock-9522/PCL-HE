@@ -88,24 +88,32 @@ public partial class PageToolsGameLink
 
     public async void Reload()
     {
-        HintAnnounce.Visibility = Visibility.Visible;
-        HintAnnounce.Text = Lang.Text("Tools.GameLink.Loading.ConnectingServer");
-        HintAnnounce.Theme = MyHint.Themes.Blue;
+        try
+        {
+            HintAnnounce.Visibility = Visibility.Visible;
+            HintAnnounce.Text = Lang.Text("Tools.GameLink.Loading.ConnectingServer");
+            HintAnnounce.Theme = MyHint.Themes.Blue;
 
-        if (_linkAnnounceUpdateCancelSource is not null)
-            _linkAnnounceUpdateCancelSource.Cancel();
-        _linkAnnounceUpdateCancelSource = new CancellationTokenSource();
-        BeginAnnouncementRequest();
-        _linkAnnounces.Clear();
+            if (_linkAnnounceUpdateCancelSource is not null)
+                _linkAnnounceUpdateCancelSource.Cancel();
+            _linkAnnounceUpdateCancelSource = new CancellationTokenSource();
+            BeginAnnouncementRequest();
+            _linkAnnounces.Clear();
 
-        // 加载公告
-        _announcementLoadState = AnnouncementLoadState.Loading;
-        lobbyAnnouncementLoader.Start(isForceRestart: true);
-        await Dispatcher.BeginInvoke(new Action(async () =>
-            await _LinkAnnounceUpdateAsync())); // 我实在不理解为啥 BeginInvoke 这个委托要 MustBeInherit
+            // 加载公告
+            _announcementLoadState = AnnouncementLoadState.Loading;
+            lobbyAnnouncementLoader.Start(isForceRestart: true);
+            await Dispatcher.BeginInvoke(new Action(async () =>
+                await _LinkAnnounceUpdateAsync())); // 我实在不理解为啥 BeginInvoke 这个委托要 MustBeInherit
 
-        // PCL-HE：用陶瓦后台进程取代 PCL CE 的大厅初始化。
-        await EnsureTerracottaReadyAsync().ConfigureAwait(false);
+            // PCL-HE：用陶瓦后台进程取代 PCL CE 的大厅初始化。
+            await EnsureTerracottaReadyAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "初始化陶瓦环境失败", ModBase.LogLevel.Feedback);
+            HintService.Hint(Lang.Text("Tools.GameLink.Terracotta.Failed"), HintType.Error);
+        }
     }
 
     private void BtnAgreeEula_Click(object sender, MouseButtonEventArgs e)
@@ -134,7 +142,14 @@ public partial class PageToolsGameLink
 
     private static async void InitTask(ModLoader.LoaderTask<int, int> task)
     {
-        await LobbyService.InitializeAsync();
+        try
+        {
+            await LobbyService.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "初始化联机服务失败", ModBase.LogLevel.Feedback);
+        }
     }
 
     #region Subscribser
@@ -811,13 +826,25 @@ public partial class PageToolsGameLink
     // 创建大厅
     private async void BtnCreate_Click(object sender, MouseButtonEventArgs e)
     {
-        BtnCreate.IsEnabled = false;
+        try
+        {
+            BtnCreate.IsEnabled = false;
 
-        // PCL-HE：世界交由陶瓦自动扫描，因此不再要求先在下拉框中选择。
-        var port = ComboWorldList.SelectedItem is null
-            ? 0
-            : (int)((MyComboBoxItem)ComboWorldList.SelectedItem).Tag;
-        await CreateLobbyAsync(port);
+            // PCL-HE：世界交由陶瓦自动扫描，因此不再要求先在下拉框中选择。
+            var port = ComboWorldList.SelectedItem is null
+                ? 0
+                : (int)((MyComboBoxItem)ComboWorldList.SelectedItem).Tag;
+            await CreateLobbyAsync(port);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "创建大厅失败", ModBase.LogLevel.Feedback);
+            HintService.Hint(Lang.Text("Tools.GameLink.Error.ConnectFailed"), HintType.Error);
+        }
+        finally
+        {
+            BtnCreate.IsEnabled = true;
+        }
     }
 
     #region 陶瓦（Terracotta）驱动

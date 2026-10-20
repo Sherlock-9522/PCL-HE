@@ -245,51 +245,60 @@ public partial class PageInstanceServer : MyPageRight
 
     private async void BtnAddServer_Click(object sender, MouseButtonEventArgs e)
     {
-        var result = GetServerInfo(new MinecraftServerInfo { Name = Lang.Text("Instance.Server.DefaultName"), Address = "" });
-        if (result.Success)
+        try
         {
-            var newServer = new MinecraftServerInfo
+            var result = GetServerInfo(new MinecraftServerInfo { Name = Lang.Text("Instance.Server.DefaultName"), Address = "" });
+            if (result.Success)
             {
-                Name = result.Name,
-                Address = result.Address,
-                Status = ServerStatus.Unknown
-            };
-            serverList.Add(newServer);
+                var newServer = new MinecraftServerInfo
+                {
+                    Name = result.Name,
+                    Address = result.Address,
+                    Status = ServerStatus.Unknown
+                };
+                serverList.Add(newServer);
 
-            RefreshTip();
-
-            var serverCard = new ServerCard();
-            serverCard.RemoveServer += RemoveServerEvent;
-            serverCard.EditServer += (a, b) => this.EditServer(a, (ServerCard.ResultEventArgs)b);
-            serverCard.UpdateServerInfo(newServer);
-            serverCardList.Add(serverCard);
-            PanServers.Children.Add(serverCard);
-
-            await serverCard.RefreshServerStatusAsync(false);
-
-            var serversDatPath = Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat");
-
-            NbtList nbtData;
-            if (!File.Exists(serversDatPath))
-            {
-                nbtData = new NbtList("servers", NbtTagType.Compound);
                 RefreshTip();
-            }
-            else
-            {
-                nbtData = await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(serversDatPath, "servers");
-            }
 
-            if (nbtData is not null)
-            {
-                var server = new NbtCompound();
-                server["name"] = new NbtString("name", result.Name);
-                server["ip"] = new NbtString("ip", result.Address);
-                if (nbtData.Count == 0) nbtData.ListType = NbtTagType.Compound;
-                nbtData.Add(server);
-                var clonedNbtData = (NbtList)nbtData.Clone();
-                await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData, serversDatPath);
+                var serverCard = new ServerCard();
+                serverCard.RemoveServer += RemoveServerEvent;
+                serverCard.EditServer += (a, b) => this.EditServer(a, (ServerCard.ResultEventArgs)b);
+                serverCard.UpdateServerInfo(newServer);
+                serverCardList.Add(serverCard);
+                PanServers.Children.Add(serverCard);
+
+                await serverCard.RefreshServerStatusAsync(false);
+
+                var serversDatPath = Path.Combine(PageInstanceLeft.McInstance.PathIndie, "servers.dat");
+
+                NbtList nbtData;
+                if (!File.Exists(serversDatPath))
+                {
+                    nbtData = new NbtList("servers", NbtTagType.Compound);
+                    RefreshTip();
+                }
+                else
+                {
+                    nbtData = await NbtFileHandler.ReadTagInNbtFileAsync<NbtList>(serversDatPath, "servers");
+                }
+
+                if (nbtData is not null)
+                {
+                    var server = new NbtCompound();
+                    server["name"] = new NbtString("name", result.Name);
+                    server["ip"] = new NbtString("ip", result.Address);
+                    if (nbtData.Count == 0) nbtData.ListType = NbtTagType.Compound;
+                    nbtData.Add(server);
+                    var clonedNbtData = (NbtList)nbtData.Clone();
+                    await NbtFileHandler.WriteTagInNbtFileAsync(clonedNbtData, serversDatPath);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "添加服务器失败", ModBase.LogLevel.Feedback);
+            ModBase.RunInUi(() => HintService.Hint(
+                Lang.Text("Instance.Server.WriteDataFailed"), HintType.Error));
         }
     }
 
