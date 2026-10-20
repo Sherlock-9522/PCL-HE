@@ -18,9 +18,17 @@ public static class Secrets
     /// 该值是本项目自行注册的 Azure 应用，与 PCL2、PCL CE 等上游项目无关。
     /// </para>
     /// <para>
-    /// 注意：应用注册完成不等于登录可用。Azure 侧需开启「允许公共客户端流」，
-    /// 且 Minecraft 服务侧需把该 Client ID 加入发行方白名单，否则换取 Xbox Live
-    /// 令牌这一步会失败。白名单尚未提交，故当前版本的正版登录仍不可用，
+    /// 注意：应用注册完成不等于登录可用，还有两道外部关卡，都不是改客户端代码能解决的：
+    /// </para>
+    /// <list type="number">
+    /// <item>Azure 侧必须允许公共客户端流。未开启时请求设备码会返回
+    /// <c>AADSTS70002: The client application must be marked as 'mobile.'</c>，
+    /// 在应用注册「身份验证」页勾选「允许公共客户端流」即可。</item>
+    /// <item>Minecraft 服务侧需把该 Client ID 加入发行方白名单，否则换取
+    /// Xbox Live 令牌时会失败。</item>
+    /// </list>
+    /// <para>
+    /// 白名单尚未提交，故当前版本的正版登录仍不可用，
     /// 离线登录与第三方（Yggdrasil）登录不受影响。
     /// </para>
     /// </summary>
