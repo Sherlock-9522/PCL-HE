@@ -80,7 +80,16 @@ Signing in with a Microsoft account uses the **Device Code Flow**: the launcher 
 
 The built-in Azure application is `Plain Craft Launcher (PCL) - Harness Edition`, client ID `fe6a35b0-86b0-4e23-b234-e80a01b0b5fc`.
 
-**Known limitation**: with this application, Microsoft OAuth and Xbox Live both succeed, but the final `login_with_xbox` call returns **HTTP 403**. That decision is made by Mojang, not by us, and it is independent of both your account and the client implementation; the same code works with an authorised application ID.
+**Known limitation**: with this application, Microsoft OAuth and Xbox Live both succeed, but the final `login_with_xbox` call returns **HTTP 403**, and the server says:
+
+```json
+{
+  "path": "/authentication/login_with_xbox",
+  "errorMessage": "Invalid app registration, see https://aka.ms/AppRegInfo for more information"
+}
+```
+
+In other words, the Minecraft backend does not consider this Azure application to be registered on the Minecraft side. This has nothing to do with your account and nothing to do with the client implementation: the same code and the same protocol work with a registered application ID (compare [HMCL](https://github.com/HMCL-dev/HMCL), which is field-for-field identical).
 
 If you need Microsoft login, you can:
 

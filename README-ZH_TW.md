@@ -82,7 +82,16 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 目前內建的 Azure 應用程式是 `Plain Craft Launcher (PCL) - Harness Edition`，用戶端 ID 為 `fe6a35b0-86b0-4e23-b234-e80a01b0b5fc`。
 
-**已知限制**：使用這個應用程式登入時，Microsoft OAuth 與 Xbox Live 兩步都能通過，但最後一步 `login_with_xbox` 會回應 **HTTP 403**。這一步由 Mojang 端判斷，與帳號、與用戶端實作都無關；同一份程式碼換成已獲授權的應用程式 ID 即可正常登入。
+**已知限制**：使用這個應用程式登入時，Microsoft OAuth 與 Xbox Live 兩步都能通過，但最後一步 `login_with_xbox` 會回應 **HTTP 403**，伺服器原文是：
+
+```json
+{
+  "path": "/authentication/login_with_xbox",
+  "errorMessage": "Invalid app registration, see https://aka.ms/AppRegInfo for more information"
+}
+```
+
+即 Minecraft 伺服器認為這個 Azure 應用程式**沒有在 Minecraft 端完成登記**。這一步與你的帳號無關，也與用戶端實作無關——同一份程式碼、同一套協定換成已登記的應用程式 ID 就能登入（可對照 [HMCL](https://github.com/HMCL-dev/HMCL) 的實作，逐欄位一致）。
 
 如果你需要正版登入，可以：
 
