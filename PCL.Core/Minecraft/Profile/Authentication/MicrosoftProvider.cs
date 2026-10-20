@@ -31,7 +31,8 @@ public sealed class MicrosoftProvider : IAuthenticateProvider
         if (string.IsNullOrWhiteSpace(_clientId))
             throw new InvalidOperationException(
                 "未配置微软 OAuth 应用 ID，正版登录无法使用。\n" +
-                "请设置环境变量 PCL_MS_CLIENT_ID（值为 Azure 应用注册中的「应用程序(客户端) ID」）后重新启动启动器。");
+                "请设置环境变量 PCL_MS_CLIENT_ID（值为 Azure 应用注册中的「应用程序(客户端) ID」）后重新启动启动器。\n" +
+                $"内置应用为 {Secrets.MSOAuthApplicationName}，如该应用已被吊销，请自行注册一个并通过环境变量覆盖。");
     }
 
     public async Task<DeviceCodeData> GetDeviceCodeAsync(CancellationToken token)
