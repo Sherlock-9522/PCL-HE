@@ -8,7 +8,7 @@
 
 **Plain Craft Launcher (PCL) - Harness Edition**
 
-*一个由第三方独立维护的 PCL 衍生版*
+*一个由第三方独立维护的 PCL 衍生版，也属于 PCL-CE 的另一种分支版本*
 
 [![Stars](https://img.shields.io/github/stars/Sherlock-9522/PCL-HE?style=for-the-badge&labelColor=444444&color=eac54f&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2VhYzU0ZiIgZD0iTTEyIDJsMyA2IDYgLjktNC41IDQuMyAxLjEgNi4zTDEyIDE2LjZsLTUuNiAzIDEuMS02LjNMMyA4LjkgOWw4LTMiLz48L3N2Zz4%3D)](https://github.com/Sherlock-9522/PCL-HE/stargazers)
 [![Issues](https://img.shields.io/github/issues/Sherlock-9522/PCL-HE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Sherlock-9522/PCL-HE/issues)
@@ -20,13 +20,14 @@ PCL-HE 是第三方基于 [Plain Craft Launcher](https://github.com/Meloong-Git/
 
 **本发行版与成都瓜皮龙科技有限公司、PCL 官方团队、PCL Community 官方团队之间不存在隶属关系，也不代表其立场或受到其背书。**
 
+
 ## ✨ 与上游的区别
 
 PCL-HE 在上游基础上做了这些事：
 
 | 方向 | 说明 |
 |---|---|
-| **联机** | 联机底座换成 [陶瓦（Terracotta）](https://github.com/burningtnt/Terracotta)，在本机以独立进程方式提供，不经过任何中间服务器；陶瓦自带 EasyTier，无需另行下载 |
+| **联机** | 联机底座换成了 [陶瓦（Terracotta）联机](https://github.com/burningtnt/Terracotta)，在本机以独立进程方式提供，不经过任何中间服务器；陶瓦自带 EasyTier，无需另行下载 |
 | **隐私** | 全面切断遥测：不收集、不上报任何使用数据；已停用 Natayark 账户体系与上游联机大厅服务 |
 | **更新** | 作为独立发行版，不从任何上游更新服务拉取版本、公告或本体 |
 | **视觉** | 原创开屏动画、深化的主界面蓝渐变、档案区独立不透明度滑块、低透明度吉祥物水印 |
@@ -35,16 +36,16 @@ PCL-HE 在上游基础上做了这些事：
 
 ## 🌱 项目缘起与开发方式
 
-2026 年 10 月，上游 PCL2 与若干主流启动器陆续停止了「直接下载游戏本体」的供应，玩家想玩原版就得自己另找安装器、自己拼 jar 与资源文件。PCL-HE 因此立项：在 PCL-CE 的基础上继续维护一套**仍然能完整下载并安装游戏本体**的启动器，离线登录、第三方验证与正版登录三条入口保持可用。
+2026 年 10 月 20 日，上游 PCL2 与若干主流启动器因政策原因陆续停止了「直接下载游戏本体」的供应，玩家想玩原版就得自己另找安装器、自己拼 jar 与资源文件。PCL-HE 因此立项：在 PCL-CE 的基础上继续维护一套**仍然能完整下载并安装游戏本体**的启动器，离线登录、第三方验证与正版登录三条入口保持可用。
 
 开发方式上，这个项目和通常的开源项目不太一样，所以有必要写清楚：
 
-- **架构、需求与验收由人类维护者负责** —— 决定做成什么样、哪种实现可以接受、什么才算修好了；
-- **具体实现、代码巡检与验证由 AI 承担** —— 由 [DeepSeek](https://www.deepseek.com/) 驱动，逐轮产出补丁、跑构建，并在真实实例里复现问题、确认修复。
+- **架构、需求与验收由人类维护者（也就是我本人）负责** —— 决定做成什么样、哪种实现可以接受、什么才算修好了；
+- **而具体实现、代码巡检与验证由 AI 承担** —— 由 [DeepSeek Harness](https://www.deepseek.com/harness) 驱动与开发，逐轮产出补丁、跑构建，并在真实实例里复现问题、确认修复。（某些情况下允许其自由发挥）
 
-换句话说，这里不是「AI 生成、人类照单全收」，而是人类守住方向与质量关口，AI 负责把想法落成能跑的代码。好处是迭代快、覆盖面广；代价是每个改动都必须有实机验证兜底，所以仓库里大量提交都附带复现步骤与日志证据，而不是只改几行代码就宣布修好。
+换句话说，这里不是「AI 生成、我照单全收」，而是人类守住方向与质量关口，AI大模型 负责把想法落成能跑的代码。好处是迭代快、覆盖面广；代价是每个改动都必须有实机验证兜底，所以仓库里大量提交都附带复现步骤与日志证据，而不是只改几行代码就宣布修好，工作量大。
 
-**感谢 DeepSeek 提供模型与工具支持** —— 没有它，这个项目不会以这样的速度成型。同时也要说清楚：PCL-HE 由社区独立维护，与任何模型厂商都不存在隶属或背书关系。
+**感谢 DeepSeek Harness 提供模型与工具支持，同时也感谢 DeepSeek Harness 社区的插件大佬们所提供的工具插件** —— 没有它与工具插件，这个项目只会残存在我的脑中，而不会以这样的速度成型。同时也有必要说清楚：PCL-HE 由社区独立维护，与任何模型厂商都不存在隶属或背书关系。
 
 ## 💻 支持平台
 
