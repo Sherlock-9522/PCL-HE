@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="Plain%20Craft%20Launcher%202/Images/icon.png" alt="Logo" width="80" height="80">
+<img src="PCL-Harness%20Edition/Images/icon.png" alt="Logo" width="80" height="80">
 
 # PCL-HE
 
@@ -30,6 +30,19 @@ PCL-HE is an independent third-party derivative work based on [Plain Craft Launc
 | **Visuals** | An original splash animation, a deepened main-page blue gradient, an independent opacity slider for the player profile panel, and a low-opacity mascot watermark |
 | **Features** | Four direct Chunkbase entries on the saves page (seed map / stronghold / nether fortress / end city) and a schematics folder shortcut on the instance overview page |
 | **Compliance** | The About page lists every upstream project that informed the design, along with their sponsorship channels |
+
+## 🌱 Origins and How This Is Built
+
+In October 2026, upstream PCL2 and several mainstream launchers stopped offering direct game downloads. Playing vanilla suddenly meant hunting for an installer and assembling jars and assets by hand. PCL-HE exists to keep a launcher that **can still download and install the game itself**, with offline login, third-party authentication and Microsoft login all left working.
+
+The way this project is built differs from a typical open-source project, so it is worth stating plainly:
+
+- **Architecture, requirements and acceptance belong to the human maintainer** — what gets built, which implementation is acceptable, and what counts as fixed.
+- **Implementation, code audits and verification are done by AI** — driven by [DeepSeek](https://www.deepseek.com/), producing patches round by round, running builds, and reproducing issues in real instances before calling them fixed.
+
+This is not "AI generates, human rubber-stamps". A human holds the direction and the quality gate; the AI turns intent into runnable code. The upside is speed and coverage. The cost is that every change needs real verification behind it, which is why so many commits here ship with reproduction steps and log evidence instead of a few changed lines and an announcement.
+
+**Thanks to DeepSeek for providing the model and tooling** — without it this project would not have taken shape at this pace. To be clear: PCL-HE is maintained independently by the community and has no affiliation with, or endorsement from, any model vendor.
 
 ## 💻 Supported Platforms
 
