@@ -6,7 +6,7 @@
 
 # PCL-HE
 
-**Plain Craft Launcher - Harness Edition**
+**Plain Craft Launcher (PCL) - Harness Edition**
 
 *一个由第三方独立维护的 PCL 衍生版*
 
