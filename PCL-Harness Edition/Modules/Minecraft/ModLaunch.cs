@@ -2898,17 +2898,17 @@ public static class ModLaunch
             {
                 case McLoginType.Legacy:
                 {
-                    text = text.Replace("{login}", replacer("离线"));
+                    text = text.Replace("{login}", replacer(Lang.Text("Minecraft.Launch.Login.Type.Legacy")));
                     break;
                 }
                 case McLoginType.Ms:
                 {
-                    text = text.Replace("{login}", replacer("正版"));
+                    text = text.Replace("{login}", replacer(Lang.Text("Minecraft.Launch.Login.Type.Ms")));
                     break;
                 }
                 case McLoginType.Auth:
                 {
-                    text = text.Replace("{login}", replacer("Authlib-Injector"));
+                    text = text.Replace("{login}", replacer(Lang.Text("Minecraft.Launch.Login.Type.Auth")));
                     break;
                 }
             }

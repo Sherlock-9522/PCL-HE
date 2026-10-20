@@ -2225,6 +2225,9 @@
     <sys:String x:Key="Minecraft.Launch.Login.RefreshAccountFailed.Message">啟動器在嘗試重新整理帳戶資訊時遇到了網路錯誤。&#xA;你可以選擇取消，檢查網路後再次啟動，也可以選擇忽略錯誤繼續啟動，但可能無法遊玩部分伺服器。</sys:String>
     <sys:String x:Key="Minecraft.Launch.Login.RefreshAccountFailed.Title">帳戶資訊取得失敗</sys:String>
     <sys:String x:Key="Minecraft.Launch.Login.Register">註冊</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Legacy">離線</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Ms">正版</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Auth">第三方驗證</sys:String>
 
     <!-- Minecraft.Launch.Login.Auth -->
 

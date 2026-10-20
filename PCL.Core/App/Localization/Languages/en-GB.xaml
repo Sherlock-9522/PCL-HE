@@ -2225,6 +2225,9 @@
     <sys:String x:Key="Minecraft.Launch.Login.RefreshAccountFailed.Message">The launcher encountered a network error whilst trying to refresh account information.&#xA;You can cancel, check your network, and try again, or ignore the error and continue launching, but some servers may not be playable.</sys:String>
     <sys:String x:Key="Minecraft.Launch.Login.RefreshAccountFailed.Title">Failed to refresh account information</sys:String>
     <sys:String x:Key="Minecraft.Launch.Login.Register">Register</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Legacy">Offline</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Ms">Microsoft</sys:String>
+    <sys:String x:Key="Minecraft.Launch.Login.Type.Auth">Third-party auth</sys:String>
 
     <!-- Minecraft.Launch.Login.Auth -->
 
