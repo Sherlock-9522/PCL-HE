@@ -41,24 +41,49 @@ public sealed partial class SingleInstanceService
         }
         catch (Exception exCreate)
         {
-            // 创建锁失败不一定是「已有实例在跑」，也可能是目录不可写等 IO 问题。
-            // 记录原始异常，否则后续那次 FileMode.Open 的失败会把真因盖掉。
-            Context.Debug("创建单例锁失败，按已有实例处理", exCreate);
+            // 只有「锁文件存在且被另一个进程占用」才说明确实已有实例在运行。
+            // 目录不存在、无写权限、磁盘已满这类环境问题同样会走到这里，但那时
+            // 直接退出会让启动器毫无反应、用户也无从判断原因。单例锁只负责防止
+            // 重复启动，缺了它程序照常可用，所以这种情况选择继续启动。
+            if (!_TryNotifyExistingInstance())
+            {
+                Context.Warn("无法创建单例锁，已跳过单例检查继续启动", exCreate);
+                return;
+            }
+            Context.RequestExit(1);
+        }
+    }
+
+    /// <summary>
+    ///     尝试读取锁文件里的进程号并唤醒那个实例。
+    /// </summary>
+    /// <returns>确实找到并通知了另一个实例时为 <c>true</c>；锁文件不可读或内容无效时为 <c>false</c>。</returns>
+    private static bool _TryNotifyExistingInstance()
+    {
+        try
+        {
+            using var stream = File.Open(_LockFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new StreamReader(stream);
+            var pid = reader.ReadToEnd().Trim();
+            if (string.IsNullOrWhiteSpace(pid))
+            {
+                // 上一个实例写到一半就退出了，锁文件是空的，不算重复实例
+                Context.Debug("单例锁内容为空，忽略");
+                return false;
+            }
+            Context.Info($"发现重复实例 {pid}，尝试传递参数并拉起主窗口");
             try
             {
-                using var stream = File.Open(_LockFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using var reader = new StreamReader(stream);
-                var pid = reader.ReadToEnd();
-                Context.Info($"发现重复实例 {pid}，尝试传递参数并拉起主窗口");
-                try
-                {
-                    _TryRpc(pid, "REQ cli\n" + JsonSerializer.Serialize(StartupService.UnhandledCommands, JsonCompat.SerializerOptions));
-                    _TryRpc(pid, "REQ activate");
-                }
-                catch (Exception ex) { Context.Warn("RPC 通信失败", ex); }
+                _TryRpc(pid, "REQ cli\n" + JsonSerializer.Serialize(StartupService.UnhandledCommands, JsonCompat.SerializerOptions));
+                _TryRpc(pid, "REQ activate");
             }
-            catch (Exception ex) { Context.Error("读取单例锁出错", ex); }
-            finally { Context.RequestExit(1); }
+            catch (Exception ex) { Context.Warn("RPC 通信失败", ex); }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Context.Debug("读取单例锁失败，判定为环境问题", ex);
+            return false;
         }
     }
 
@@ -67,7 +92,15 @@ public sealed partial class SingleInstanceService
     {
         if (_lockStream is null) return;
         Context.Debug("正在删除单例锁");
-        _lockStream.Dispose();
-        File.Delete(_LockFilePath);
+        try
+        {
+            _lockStream.Dispose();
+            File.Delete(_LockFilePath);
+        }
+        catch (Exception ex)
+        {
+            // 锁文件删不掉不影响退出，下次启动会覆盖它
+            Context.Debug("删除单例锁失败，忽略", ex);
+        }
     }
 }
