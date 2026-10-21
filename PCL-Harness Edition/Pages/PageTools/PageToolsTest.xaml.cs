@@ -37,10 +37,66 @@ public partial class PageToolsTest
         BtnSelectSkin.Click += BtnSelectSkin_Click;
         CmbHeadSize.SelectionChanged += CmbHeadSize_SelectionChanged;
         Loaded += (_, _) => MeLoaded();
+        Loaded += (_, _) => RefreshMemoryStatus();
         #if DEBUG
         BtnCrash.Visibility = Visibility.Visible;
         #endif
     }
+
+    #region 内存优化
+
+    private void RefreshMemoryStatus()
+    {
+        try
+        {
+            var snapshot = KernelInterop.GetMemorySnapshot();
+            double totalGb = snapshot.TotalPhysical / 1024d / 1024d / 1024d;
+            double availableGb = snapshot.AvailablePhysical / 1024d / 1024d / 1024d;
+            double commitLimitGb = snapshot.CommitLimit / 1024d / 1024d / 1024d;
+            double commitAvailableGb = snapshot.CommitAvailable / 1024d / 1024d / 1024d;
+            TextMemoryStatus.Text = string.Format(Lang.Text("Tools.Memory.Status"),
+                totalGb, availableGb, snapshot.MemoryLoadPercent, commitLimitGb, commitAvailableGb);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "读取内存状态失败", ModBase.LogLevel.Hint);
+            TextMemoryStatus.Text = Lang.Text("Tools.Memory.StatusFailed");
+        }
+    }
+
+    private void BtnMemoryRefresh_Click(object sender, MouseButtonEventArgs e) => RefreshMemoryStatus();
+
+    private void BtnMemoryRelease_Click(object sender, MouseButtonEventArgs e)
+    {
+        // 释放工作集只是把各进程暂时用不到的物理页换出到页面文件，不会减少任何进程的内存需求。
+        // 收益因此是暂时的：那些页面在被访问时会重新读回内存。这里不碰游戏进程与自身进程。
+        BtnMemoryRelease.IsEnabled = false;
+        try
+        {
+            var before = KernelInterop.GetMemorySnapshot();
+            var excluded = new HashSet<uint> { (uint)Environment.ProcessId };
+            var (succeeded, failed) = KernelInterop.EmptyWorkingSets(excluded);
+            var after = KernelInterop.GetMemorySnapshot();
+            double freedMb = (after.AvailablePhysical - before.AvailablePhysical) / 1024d / 1024d;
+            double availableGb = after.AvailablePhysical / 1024d / 1024d / 1024d;
+            TextMemoryStatus.Text = string.Format(Lang.Text("Tools.Memory.Status"),
+                after.TotalPhysical / 1024d / 1024d / 1024d, availableGb, after.MemoryLoadPercent,
+                after.CommitLimit / 1024d / 1024d / 1024d, after.CommitAvailable / 1024d / 1024d / 1024d);
+            HintService.Hint(string.Format(Lang.Text("Tools.Memory.ReleaseResult"), freedMb, succeeded, failed));
+            ModBase.Log($"[Memory] 释放工作集：成功 {succeeded} 个进程，失败 {failed} 个，可用内存变化 {freedMb:F1} MB");
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "释放内存失败", ModBase.LogLevel.Hint,
+                userSummary: Lang.Text("Tools.Memory.ReleaseFailed"));
+        }
+        finally
+        {
+            BtnMemoryRelease.IsEnabled = true;
+        }
+    }
+
+    #endregion
 
     private void MeLoaded()
     {

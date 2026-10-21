@@ -7,6 +7,24 @@
                    PanScroll="{Binding ElementName=PanBack}">
     <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
         <StackPanel x:Name="PanMain" Margin="25,10" Grid.IsSharedSizeScope="True">
+            <local:MyCard Margin="0,15" Title="{DynamicResource Tools.Memory.Title}">
+                <StackPanel Orientation="Vertical" Margin="25,40,25,20">
+                    <TextBlock Text="{DynamicResource Tools.Memory.Description}" TextWrapping="Wrap"
+                               Opacity="0.75" />
+                    <TextBlock x:Name="TextMemoryStatus" Margin="0,14,0,0" TextWrapping="Wrap" />
+                    <WrapPanel Margin="0,16,0,0" ItemHeight="50">
+                        <local:MyButton x:Name="BtnMemoryRefresh" MinWidth="100"
+                                        Text="{DynamicResource Common.Action.Refresh}" Margin="0,0,15,15"
+                                        Click="BtnMemoryRefresh_Click" />
+                        <local:MyButton x:Name="BtnMemoryRelease" MinWidth="150"
+                                        Text="{DynamicResource Tools.Memory.Release}" Margin="0,0,15,15"
+                                        Click="BtnMemoryRelease_Click" />
+                    </WrapPanel>
+                    <TextBlock Text="{DynamicResource Tools.Memory.Note}" TextWrapping="Wrap" Opacity="0.6"
+                               FontSize="12" />
+                </StackPanel>
+            </local:MyCard>
+
             <local:MyCard Margin="0,15" Title="{DynamicResource Tools.Test.Title}">
                 <WrapPanel Margin="25,40,21,5" ItemHeight="50">
                     <local:MyButton x:Name="BtnClear" MinWidth="120" Text="{DynamicResource Tools.Test.Clean.Title}"

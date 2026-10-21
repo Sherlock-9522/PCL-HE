@@ -3437,6 +3437,14 @@
     <sys:String x:Key="Tools.Test.LaunchCount.Message">PCL-HE 已經為你啟動了 {0} 次遊戲了。</sys:String>
     <sys:String x:Key="Tools.Test.LaunchCount.Title">檢視啟動計數</sys:String>
     <sys:String x:Key="Tools.Test.ServerQuery.Title">看眼伺服器</sys:String>
+    <sys:String x:Key="Tools.Memory.Title">記憶體最佳化</sys:String>
+    <sys:String x:Key="Tools.Memory.Description">把各個處理程序暫時用不到的實體記憶體分頁換出到分頁檔，從而讓可用的實體記憶體變多。&#10;這一步不會減少任何處理程序實際需要的記憶體，被換出的分頁在下次存取時會重新讀入，因此效益是暫時的，也不會影響任何資料。&#10;系統處理程序和其他使用者的處理程序無法處理，這部分會被計入失敗數。</sys:String>
+    <sys:String x:Key="Tools.Memory.Status">實體記憶體：共 {0:F1} GB，可用 {1:F1} GB（佔用 {2:F0}%）&#10;提交記憶體：上限 {3:F1} GB，可用 {4:F1} GB</sys:String>
+    <sys:String x:Key="Tools.Memory.StatusFailed">無法讀取記憶體狀態</sys:String>
+    <sys:String x:Key="Tools.Memory.Release">釋放實體記憶體</sys:String>
+    <sys:String x:Key="Tools.Memory.ReleaseResult">可用實體記憶體變化 {0:F0} MB，成功處理 {1} 個處理程序，{2} 個略過</sys:String>
+    <sys:String x:Key="Tools.Memory.ReleaseFailed">釋放記憶體失敗</sys:String>
+    <sys:String x:Key="Tools.Memory.Note">提示：這項操作的效果取決於當時的系統狀態，建議在遊戲卡頓時先重新整理看一眼佔用再決定是否釋放。</sys:String>
     <sys:String x:Key="Tools.Test.Title">百寶箱</sys:String>
 
     <!-- Tools.Test.Achievement -->

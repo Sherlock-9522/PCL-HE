@@ -3513,6 +3513,14 @@
     <sys:String x:Key="Tools.Test.LaunchCount.Message">PCL-HE 已经为你启动了 {0} 次游戏了。</sys:String>
     <sys:String x:Key="Tools.Test.LaunchCount.Title">查看启动计数</sys:String>
     <sys:String x:Key="Tools.Test.ServerQuery.Title">瞅眼服务器</sys:String>
+    <sys:String x:Key="Tools.Memory.Title">内存优化</sys:String>
+    <sys:String x:Key="Tools.Memory.Description">把各个进程暂时用不到的物理内存页换出到页面文件，从而让可用的物理内存变多。&#10;这一步不会减少任何进程实际需要的内存，被换出的页在下次访问时会重新读入，因此收益是暂时的，也不会影响任何数据。&#10;系统进程和其他用户的进程无法处理，这部分会被计入失败数。</sys:String>
+    <sys:String x:Key="Tools.Memory.Status">物理内存：共 {0:F1} GB，可用 {1:F1} GB（占用 {2:F0}%）&#10;提交内存：上限 {3:F1} GB，可用 {4:F1} GB</sys:String>
+    <sys:String x:Key="Tools.Memory.StatusFailed">无法读取内存状态</sys:String>
+    <sys:String x:Key="Tools.Memory.Release">释放物理内存</sys:String>
+    <sys:String x:Key="Tools.Memory.ReleaseResult">可用物理内存变化 {0:F0} MB，成功处理 {1} 个进程，{2} 个跳过</sys:String>
+    <sys:String x:Key="Tools.Memory.ReleaseFailed">释放内存失败</sys:String>
+    <sys:String x:Key="Tools.Memory.Note">提示：这项操作的效果取决于当时的系统状态，建议在游戏卡顿时先刷新看一眼占用再决定是否释放。</sys:String>
     <sys:String x:Key="Tools.Test.Title">百宝箱</sys:String>
 
     <!-- Tools.Test.Achievement -->
