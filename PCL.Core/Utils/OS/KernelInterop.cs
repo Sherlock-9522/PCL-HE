@@ -310,4 +310,62 @@ public static partial class KernelInterop
     /// </summary>
     /// <returns>代表终端窗口的 HWND，若当前进程无关联的终端窗口，则该值为 <see cref="nint.Zero"/></returns>
     public static nint GetConsoleWindow() => _GetConsoleWindow();
+
+    /// <summary>
+    /// 请求系统裁掉其他进程工作集（物理内存）中的可置换页面，把它们放回页面文件。
+    /// 这不会减少任何进程的内存需求，只是把暂时用不到的页面提前换出；
+    /// 这些页面在下次访问时会被重新读回，因此收益是暂时的，也不影响数据正确性。
+    /// </summary>
+    /// <param name="excludedProcessIds">不参与处理的进程 ID，应传入当前进程与游戏进程。</param>
+    /// <returns>成功处理的进程数与失败数。失败通常是因为权限不足（系统进程、其他用户的进程）。</returns>
+    public static (int Succeeded, int Failed) EmptyWorkingSets(IReadOnlySet<uint>? excludedProcessIds = null)
+    {
+        var succeeded = 0;
+        var failed = 0;
+        foreach (var process in System.Diagnostics.Process.GetProcesses())
+        {
+            try
+            {
+                if (process.Id <= 4) continue;
+                if (excludedProcessIds is not null && excludedProcessIds.Contains((uint)process.Id)) continue;
+                // PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SET_QUOTA
+                var handle = _OpenProcess(0x1000 | 0x0100, false, (uint)process.Id);
+                if (handle == nint.Zero)
+                {
+                    failed += 1;
+                    continue;
+                }
+
+                try
+                {
+                    if (_EmptyWorkingSet(handle) != 0) succeeded += 1;
+                    else failed += 1;
+                }
+                finally
+                {
+                    _CloseHandle(handle);
+                }
+            }
+            catch
+            {
+                failed += 1;
+            }
+            finally
+            {
+                process.Dispose();
+            }
+        }
+
+        return (succeeded, failed);
+    }
+
+    [LibraryImport("psapi.dll", EntryPoint = "EmptyWorkingSet")]
+    private static partial int _EmptyWorkingSet(nint hProcess);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial nint _OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
+
+    [LibraryImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool _CloseHandle(nint hObject);
 }

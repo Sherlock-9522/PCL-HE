@@ -58,10 +58,8 @@
                         Margin="3" MouseLeftButtonDown="ImgPCLLogo_Click"
                         Source="/PCL-HE;component/Images/Heads/Logo-HE.png">
                         <Image.Clip>
-                            <EllipseGeometry
-                                Center="17 17"
-                                RadiusX="17"
-                                RadiusY="17" />
+                            <!-- 品牌图是带尖角的六边形，圆形裁剪会削掉上下尖角，改用圆角方块 -->
+                            <RectangleGeometry Rect="0,0,34,34" RadiusX="7" RadiusY="7" />
                         </Image.Clip>
                     </Image>
                     <Image

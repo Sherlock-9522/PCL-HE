@@ -263,7 +263,7 @@ public static partial class Config
             /// <summary>
             /// 配色主题模式。
             /// </summary>
-            [ConfigItem<ColorMode>("UiDarkMode", ColorMode.System)] public partial ColorMode ColorMode { get; set; }
+            [ConfigItem<ColorMode>("UiDarkMode", ColorMode.Dark)] public partial ColorMode ColorMode { get; set; }
 
             /// <summary>
             /// 暗色配色主题。

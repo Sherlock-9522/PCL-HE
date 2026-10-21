@@ -179,13 +179,18 @@ public static class ProfileUi
         return uuid;
     }
 
+    /// <summary>
+    ///     是否允许创建离线与第三方档案。
+    /// </summary>
+    /// <remarks>
+    ///     上游只在「已有正版档案」「功能不受限且已有任意档案」「当前无网络」时才放开这两类登录，
+    ///     因此首次使用的用户必须先完成一次正版验证。微软鉴权目前受 Minecraft 侧应用登记限制，
+    ///     用户拿不到正版档案就永远被困在这一步，连离线都建不了。这里不再设前置条件：
+    ///     三种登录方式对所有人开放，实例自身若要求正版验证，会在启动前的检查里单独拦截。
+    /// </remarks>
     public static bool CanCreateOtherProfile()
     {
-#if DEBUG || DEBUGCI
         return true;
-#else
-        return ProfileService.HasMicrosoftProfile || (Lang.IsFeaturesUnrestricted && ProfileService.Profiles.Count > 0) || NetworkHelper.IsNetworkAvailable() is false;
-#endif
     }
 
     public static void CreateProfile()

@@ -85,6 +85,11 @@
             <SolidColorBrush x:Key="ColorBrushInfoDark">#ffffff</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushInfo">#000000</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushDebug">#95a5a6</SolidColorBrush>
+            <!-- 标题栏与窗口边框：固定深色，不参与主题色计算，保证任何配色下都有明暗对比 -->
+            <SolidColorBrush x:Key="ColorBrushTitleBar">#20242C</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushTitleBarEdge">#3A4049</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushTitleBadge">#F5FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushTitleBadgeText">#20242C</SolidColorBrush>
 
             <!-- Window -->
             <Style TargetType="{x:Type Window}" x:Key="MyWindow">
