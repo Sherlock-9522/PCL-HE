@@ -105,7 +105,9 @@ jobs:
         with:
           inputs: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
           verify: true
-          verify-cert-identity: https://github.com/Sherlock-9522/PCL-HE/.github/workflows/release-publish.yml@refs/heads/main
+          # 证书里的 SAN 是触发这次运行的那个 ref：tag 触发时是 refs/tags/vX.Y.Z，
+          # 手工触发时是 refs/heads/main。写成固定值会让 tag 触发的运行验签失败。
+          verify-cert-identity: https://github.com/Sherlock-9522/PCL-HE/.github/workflows/release-publish.yml@${{ github.ref }}
           verify-oidc-issuer: https://token.actions.githubusercontent.com
 
       - name: Upload binary and signature to Release
