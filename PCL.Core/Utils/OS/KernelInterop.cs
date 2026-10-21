@@ -322,6 +322,7 @@ public static partial class KernelInterop
     {
         var succeeded = 0;
         var failed = 0;
+        Exception? firstUnexpectedError = null;
         foreach (var process in System.Diagnostics.Process.GetProcesses())
         {
             try
@@ -346,8 +347,12 @@ public static partial class KernelInterop
                     _CloseHandle(handle);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                // 权限不足是预期内的常态，其余异常（比如 P/Invoke 入口名写错）必须留痕，
+                // 否则界面只会显示「全部跳过」，根本查不出问题出在哪。
+                if (firstUnexpectedError is null && ex is not System.ComponentModel.Win32Exception)
+                    firstUnexpectedError = ex;
                 failed += 1;
             }
             finally
@@ -356,16 +361,21 @@ public static partial class KernelInterop
             }
         }
 
+        if (firstUnexpectedError is not null)
+            throw new InvalidOperationException(
+                $"修剪工作集时有 {failed} 个进程处理失败，首个非权限类错误：{firstUnexpectedError.Message}",
+                firstUnexpectedError);
+
         return (succeeded, failed);
     }
 
     [LibraryImport("psapi.dll", EntryPoint = "EmptyWorkingSet")]
     private static partial int _EmptyWorkingSet(nint hProcess);
 
-    [LibraryImport("kernel32.dll")]
+    [LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]
     private static partial nint _OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
 
-    [LibraryImport("kernel32.dll")]
+    [LibraryImport("kernel32.dll", EntryPoint = "CloseHandle", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool _CloseHandle(nint hObject);
 }

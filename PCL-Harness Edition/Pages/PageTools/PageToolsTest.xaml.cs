@@ -77,7 +77,9 @@ public partial class PageToolsTest
             var excluded = new HashSet<uint> { (uint)Environment.ProcessId };
             var (succeeded, failed) = KernelInterop.EmptyWorkingSets(excluded);
             var after = KernelInterop.GetMemorySnapshot();
-            double freedMb = (after.AvailablePhysical - before.AvailablePhysical) / 1024d / 1024d;
+            // 两个字段都是 ulong：释放之后可用内存变少时直接相减会下溢成一个天文数字，
+            // 先转成 double 再减才能保留符号。
+            double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 1024d / 1024d;
             double availableGb = after.AvailablePhysical / 1024d / 1024d / 1024d;
             TextMemoryStatus.Text = string.Format(Lang.Text("Tools.Memory.Status"),
                 after.TotalPhysical / 1024d / 1024d / 1024d, availableGb, after.MemoryLoadPercent,
