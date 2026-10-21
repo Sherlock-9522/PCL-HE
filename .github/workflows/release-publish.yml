@@ -25,17 +25,17 @@ on:
       - 'v*'
 
 env:
-  REL_VERSION: ${{ inputs.version || replace(github.ref_name, 'v', '') }}
-  REL_CONFIGURATION: ${{ inputs.configuration || 'Beta' }}
+  REL_VERSION: ${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
+  REL_CONFIGURATION: ${{ github.event.inputs.configuration || 'Beta' }}
 
 jobs:
   build:
     strategy:
       matrix:
         include:
-          - configuration: ${{ inputs.configuration || 'Beta' }}
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: x64
-          - configuration: ${{ inputs.configuration || 'Beta' }}
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: ARM64
       fail-fast: false
 
@@ -85,9 +85,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - configuration: ${{ inputs.configuration || 'Beta' }}
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: x64
-          - configuration: ${{ inputs.configuration || 'Beta' }}
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: ARM64
     steps:
       - name: Download Build Artifact
