@@ -4,6 +4,7 @@ using PCL.Core.App;
 using PCL.Core.App.Localization;
 using PCL.Core.IO.Net.Http;
 using PCL.Core.Logging;
+using PCL.Core.Minecraft.IdentityModel;
 using PCL.Core.Minecraft.Yggdrasil;
 using PCL.Core.Minecraft.Profile;
 using PCL.Core.Minecraft.Profile.Authentication;
@@ -305,6 +306,20 @@ public partial class PageLoginAuth
         catch (ThreadInterruptedException)
         {
             HintService.Hint(Lang.Text("Launch.Account.Auth.Cancelled"));
+        }
+        catch (IdentityModelAuthenticationException ex)
+        {
+            // 授权过期、用户取消、服务端不支持所需权限范围，都是登录流程的正常结局，
+            // 把这些错误码的整段堆栈糊到用户脸上没有意义，用提示条说明下一步更直接。
+            var message = ex.Error switch
+            {
+                "expired_token" => Lang.Text("Launch.Account.Auth.Expired"),
+                "access_denied" => Lang.Text("Launch.Account.Auth.Denied"),
+                "invalid_scope" => Lang.Text("Launch.Account.Auth.InvalidScope"),
+                _ => Lang.Text("Launch.Account.Auth.Rejected", ex.Error ?? ex.Message)
+            };
+            LogWrapper.Info("Profile", $"Yggdrasil Connect 登录未完成：{ex.Error} - {ex.ErrorDescription}");
+            ModBase.RunInUi(() => HintService.Hint(message, HintType.Error));
         }
         catch (Exception ex)
         {

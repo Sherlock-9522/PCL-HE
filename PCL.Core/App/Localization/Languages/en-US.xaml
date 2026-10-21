@@ -1544,6 +1544,10 @@
     <sys:String x:Key="Launch.Account.Auth.Login">Log in</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed">Third-party login failed.</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed.WithDetail">Third-party login failed.&#xA;&#xA;Original error:&#xA;{0}</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Expired">The authorization expired. Please start the login again.</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Denied">You cancelled this login on the authorization page.</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.InvalidScope">This authentication server does not grant the scopes this login needs. Please contact the server administrator.</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Rejected">The authentication server rejected this login ({0}).</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">Log out</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">Password</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Preset.LittleSkin">Preset - LittleSkin</sys:String>

@@ -1544,6 +1544,10 @@
     <sys:String x:Key="Launch.Account.Auth.Login">登录</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed">第三方登录尝试失败</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed.WithDetail">第三方登录尝试失败。&#xA;&#xA;原始错误信息：&#xA;{0}</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Expired">授权已过期，请重新发起一次登录。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Denied">你在授权页面取消了这次登录。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.InvalidScope">该验证服务器不支持本次登录所需的权限范围，请联系服务器管理员。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Rejected">验证服务器拒绝了这次登录（{0}）。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">退出登录</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">密码</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Preset.LittleSkin">预设 - LittleSkin</sys:String>
