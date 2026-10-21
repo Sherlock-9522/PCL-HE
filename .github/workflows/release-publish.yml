@@ -16,7 +16,7 @@ on:
           - Release
           - Beta
       version:
-        description: 'Version to release (e.g., 2.14.2)'
+        description: 'Full tag to release (e.g., v0.1.2)'
         required: false
         type: string
   # 推送 v* 标签即可发版，不必依赖手工触发；手工触发时 version 留空表示取标签名。
@@ -55,7 +55,7 @@ jobs:
           tool: git-cliff
 
       - name: Create local release tag
-        run: git tag -f "v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}"
+        run: git tag -f "${{ github.event.inputs.version || github.ref_name }}"
 
       - name: Generate changelog
         run: git-cliff --latest -o CHANGELOG.md
@@ -64,8 +64,8 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
-          name: Release ${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: Release ${{ github.event.inputs.version || github.ref_name }}
           body_path: CHANGELOG.md
           prerelease: ${{ (github.event.inputs.configuration || 'Beta') == 'Beta' }}
         env:
@@ -112,7 +112,7 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: |
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip.sigstore.json
@@ -126,4 +126,4 @@ jobs:
       - name: Publish Draft
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
