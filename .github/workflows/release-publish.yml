@@ -88,14 +88,18 @@ jobs:
           name: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}
           path: ./artifact
 
-      - name: Rename binaries
+      - name: Package the whole publish output
         run: |
-          mv "./artifact/PCL-HE.exe" "PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.exe"
+          # 产物是 --no-self-contained 的目录，exe 旁边还有 PCL.Core.dll 与 runtimes/ 下的原生库。
+          # 只挑 exe 上传会让下载者拿到一份缺依赖、双击即报错的文件，所以整目录打包；
+          # 进到目录里再打包，解压出来就直接是程序文件，不会多套一层 artifact/。
+          cd ./artifact
+          zip -r "../PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip" .
 
-      - name: Sign the binary
+      - name: Sign the archive
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9 # v3.5.0
         with:
-          inputs: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.exe
+          inputs: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
           verify: true
           verify-cert-identity: https://github.com/Sherlock-9522/PCL-HE/.github/workflows/release-publish.yml@refs/heads/main
           verify-oidc-issuer: https://token.actions.githubusercontent.com
@@ -106,8 +110,8 @@ jobs:
           draft: true
           tag_name: v${{ inputs.version }}
           files: |
-            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.exe
-            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.exe.sigstore.json
+            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
+            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip.sigstore.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
