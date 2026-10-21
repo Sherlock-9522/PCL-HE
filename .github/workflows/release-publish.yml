@@ -24,10 +24,6 @@ on:
     tags:
       - 'v*'
 
-env:
-  REL_VERSION: ${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
-  REL_CONFIGURATION: ${{ github.event.inputs.configuration || 'Beta' }}
-
 jobs:
   build:
     strategy:
@@ -59,7 +55,7 @@ jobs:
           tool: git-cliff
 
       - name: Create local release tag
-        run: git tag -f "v${{ env.REL_VERSION }}"
+        run: git tag -f "v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}"
 
       - name: Generate changelog
         run: git-cliff --latest -o CHANGELOG.md
@@ -68,10 +64,10 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ env.REL_VERSION }}
-          name: Release ${{ env.REL_VERSION }}
+          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
+          name: Release ${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
           body_path: CHANGELOG.md
-          prerelease: ${{ env.REL_CONFIGURATION == 'Beta' }}
+          prerelease: ${{ (github.event.inputs.configuration || 'Beta') == 'Beta' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -116,7 +112,7 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ env.REL_VERSION }}
+          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
           files: |
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip.sigstore.json
@@ -130,4 +126,4 @@ jobs:
       - name: Publish Draft
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          tag_name: v${{ env.REL_VERSION }}
+          tag_name: v${{ github.event.inputs.version || replace(github.ref_name, 'v', '') }}
