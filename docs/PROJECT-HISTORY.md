@@ -925,11 +925,27 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
   （`ModLaunch.cs:1056`，锁内 1102-1130）。要改得同时动 `ModDownloadLib.cs:716` 与 `:1740`
   两个调用方的取值时机，属结构性调整，未跑通场景前风险大于收益。
 
-### 翻译债
+### 翻译债（已清完）
 
-`zh-TW` / `en-GB` 各缺 73 个 key（`Instance.Resource.Mod.JarInJar.*` 35 个、
-`Tools.GameLink.*` 14 个、`Crash.Report.JarInJarMod.*` 9 个、`Setup.GameManage.Download.*` 9 个 等），
-`en-US` 缺 17 个。因有 zh-CN 回退，不影响使用。
+补全前的实际缺口比早先的记录更大：`zh-TW` / `en-GB` 各缺 **76** 个 key、`en-US` 缺 **20** 个
+（早先统计漏了 `Minecraft.Download.Error.*` 6 个与 `Tools.GameLink.*` 14 个这两组）。
+缺口集中在 `Instance.Resource.Mod.JarInJar.*` 35 个、`Tools.GameLink.*` 14 个、
+`Crash.Report.JarInJarMod.*` 9 个、`Setup.GameManage.Download.*` 9 个、
+`Minecraft.Download.Error.*` 6 个、`Launch.Skin.Cape.Name.*` 3 个。
+
+本次补齐方式：
+
+- `en-US` 20 条全新英译；`en-GB` 的 76 条里，56 条直接沿用 `en-US` 并做英式化
+  （`analyse` / `behaviour` / `colour` 等），其余 20 条与 `en-US` 新译同步；
+  `zh-TW` 76 条按既有译法手译，术语沿用文件内的用词统计：
+  模組 / 依賴 / 前置 / 內嵌 / 安裝器 / 逾時 / 停用（非「禁用」）/ 連線 / 大廳 /
+  日誌 / 協議 / 資料夾 / 實例 / 區域網 / 建立者（房主）/ 預設 / 網路。
+- 插入按「注释分组 + 组内字母序」定位：语言文件整体并非严格单调（`en-US` 124 处、
+  `en-GB` 96 处、`zh-TW` 99 处逆序），全局排序会打乱分组。
+- 校验：四语言 key 数对齐到 **3126**、XML 可解析、无重复 key、`{0}`/`{1}`/`{2}`
+  占位符与 `zh-CN` 逐条一致、UTF-8 无 BOM + CRLF 原样保留；
+  `dotnet build -c Release` 0 错误。
+- `fr-FR` / `ja-JP` / `es-ES` 仍只有零星条目（`zh-CN` 回退），不在本次范围。
 
 ### 版本状态
 

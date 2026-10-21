@@ -215,6 +215,10 @@
 
     <!-- Crash.Report.JarInJarMod -->
 
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictDiscouraged">不建議共存</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictIncompatible">不相容</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictNone">未發現衝突。</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictSection">=== 衝突關係（不相容 / 不建議共存）===</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.ModListDirectory">目錄：{0}</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.DuplicateEntry">{0} [{1}] &lt;-&gt; 內嵌於 {2}（{3}）</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.DuplicateHeuristic">（按模組 ID 匹配，可能包含誤報）</sys:String>
@@ -224,6 +228,11 @@
     <sys:String x:Key="Crash.Report.JarInJarMod.JarInJarNone">未發現 Jar-in-Jar 資訊</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.JarInJarSection">=== Jar-in-Jar 資訊（僅啟用模組）===</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.ModListSection">=== 模組清單 ===</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningDisabled">前置已停用 [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningMismatch">前置版本不符 [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningMissing">缺少前置 [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningNone">未發現依賴問題。</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningSection">=== 依賴警告（缺少前置 / 版本不符）===</sys:String>
 
     <!-- Crash.Suggestion -->
 
@@ -1077,6 +1086,41 @@
     <sys:String x:Key="Instance.Resource.Mod.Disabled.Message">你需要先安裝 Forge、Fabric 等模組載入器才能使用模組，請在下載頁面安裝這些實例。&#xA;如果你已經安裝過了模組載入器，那麼你很可能選擇了錯誤的實例，請點擊實例選擇按鈕切換實例。</sys:String>
     <sys:String x:Key="Instance.Resource.Mod.Disabled.SelectInstance">實例選擇</sys:String>
     <sys:String x:Key="Instance.Resource.Mod.Disabled.Title">該實例不可使用模組</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Current">✓ 目前實例使用</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.From">[內建 · 來自 {0}]</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Incompatible">⚠ 不適用於目前版本</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Versions">{0} 個版本</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.DeleteTitle">刪除此模組會影響 {0} 個依賴它的模組，請選擇處理方式</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.DisableTitle">停用此模組會影響 {0} 個依賴它的模組，請選擇處理方式</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.OnlySelf">僅操作此模組</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.WithDelete">連帶刪除依賴它的模組</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.WithDisable">連帶停用依賴它的模組</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Discouraged">不建議共存</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Incompatible">不相容</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Pair">{0} 與 {1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Tooltip">「不相容」：兩者無法同時載入，一起安裝會導致遊戲崩潰或無法啟動，需卸載其一。&#10;「不建議共存」：可以一起載入，但作者標註了相容性問題，可能出現異常或功能失效。</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Bundled">內嵌提供</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Disabled">已停用</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Installed">已安裝</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Missing">缺少</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Optional">[選用]</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.VersionMismatch">版本不符</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Empty.Message">目前實例的模組均無依賴宣告或內嵌模組，或模組清單尚未載入完成。</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Empty.Title">沒有可分析的模組關係</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Entry">模組關係</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Entry.ToolTip">檢視模組的依賴關係、缺少前置與內嵌（Jar-in-Jar）結構</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Message">這裡概覽模組間的依賴關係與內嵌結構。停用或刪除模組時會提示受影響的依賴項。</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.ParsePending.Message">內嵌模組關係仍在背景解析，此時停用或刪除的連帶依賴偵測可能不完整，可能遺漏應一併處理的模組。是否仍要繼續？</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.ParsePending.Title">模組仍在解析</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Search.Hint">搜尋模組：名稱 / ModId / 依賴</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Bundled">內嵌模組</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Conflicts">衝突關係</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Relations">模組關係</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Warnings">警告</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.Disabled">{0} 的前置已停用：{1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.Missing">{0} 缺少前置：{1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.VersionMismatch">{0} 前置版本不符：{1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.VersionMismatch.Detail">{0} {1}（偵測到：{2}）</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.DownloadMod">下載投影模組</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.Unavailable.Message">你可能需要先安裝投影模組，如果已經安裝過了投影模組請先啟動一次遊戲。&#xA;也可能是你選擇錯了實例，請點擊實例選擇按鈕切換實例。</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.Unavailable.Title">該實例不可使用投影原理圖</sys:String>
@@ -1691,6 +1735,7 @@
 
     <!-- Launch.Skin.Cape.Name -->
 
+    <sys:String x:Key="Launch.Skin.Cape.Name.Aurora">極光披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Builder">建造者披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.CherryBlossom">櫻花披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Cobalt">Cobalt 披風</sys:String>
@@ -1700,6 +1745,7 @@
     <sys:String x:Key="Launch.Skin.Cape.Name.FifteenthAnniversary">15 週年紀念披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Followers">追隨者披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Founders">創始人披風</sys:String>
+    <sys:String x:Key="Launch.Skin.Cape.Name.Hero">英雄披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Home">家園披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.MapMaker">Realms 地圖製作者披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Mcc">MCC 15 週年披風</sys:String>
@@ -1718,6 +1764,7 @@
     <sys:String x:Key="Launch.Skin.Cape.Name.PurpleHeart">紫色愛心披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Translator">Crowdin 翻譯者披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.TranslatorChinese">Crowdin 中文翻譯者披風</sys:String>
+    <sys:String x:Key="Launch.Skin.Cape.Name.Twisted">扭曲披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Vanilla">原版披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Yearn">渴望披風</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.ZombieHorse">殭屍馬披風</sys:String>
@@ -1947,7 +1994,11 @@
     <sys:String x:Key="Minecraft.Download.Error.ForgePromosResultTooShort">取得的結果過短（{0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.ForgeRecommendedTooFew">取得的推薦版本數過少（{0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallationCanceled">已取消安裝。</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerFailed">安裝器執行出錯（結束代碼 {0}）</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailedLastLine">安裝器執行出錯，末列為 {0}</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerLogUnreadable">無法讀取安裝器的輸出日誌，請查看實例資料夾下的安裝日誌</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerNoLogOutput">安裝器沒有輸出任何日誌，請查看實例資料夾</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerTimeout">安裝器執行逾時</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists">實例 {0} 已存在，是否重新下載？{1}這會覆蓋實例的 Json 和 Jar 檔案，但不會影響實例隔離的檔案。</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists.Title">實例已存在</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceDownloading">該實例正在下載中！</sys:String>
@@ -1975,6 +2026,8 @@
     <sys:String x:Key="Minecraft.Download.Error.ServerDownloading">該伺服器端正在下載中！</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.Timeout">下載源連線逾時</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.UnknownMinecraftVersion">未知的 Minecraft 版本（{0}）</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadFailed">原版下載失敗</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadTimeout">原版下載逾時</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.VersionListOperationFailed">{0} 版本清單解析失敗（{1}）</sys:String>
 
     <!-- Minecraft.Download.Modpack -->
@@ -2690,8 +2743,17 @@
     <!-- Setup.GameManage.Download -->
 
     <sys:String x:Key="Setup.GameManage.Download.AutoSelectInstance">安裝新實例後自動選定該實例</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.FileConnections">單一檔案最大連線數</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.FileConnections.ToolTip">大檔案最多同時使用的連線數。提高此值可能加快被單一連線限速的下載，但也可能更容易被下載來源限速。</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.FixAuthlib">升級部分版本的 Authlib</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.FixAuthlib.ToolTip">部分 Minecraft 版本（如 1.16.5）存在 Bug，可能導致使用離線驗證時多人遊戲被停用。&#xA;PCL-HE 可嘗試升級這些版本的 Authlib 支援庫以解決問題。&#xA;此設定僅對新安裝的實例有效。</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol">檔案下載協議</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Auto">自動選擇（建議）</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Auto.ToolTip">小檔案與批次下載優先使用 HTTP/2；大檔案分段下載使用 HTTP/1.1，以兼顧並行與相容性。</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http11">HTTP/1.1</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http11.ToolTip">所有檔案下載強制使用 HTTP/1.1。適合需要多條獨立連線提升大檔案速度的網路環境。</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http2">優先使用 HTTP/2</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http2.ToolTip">所有檔案下載優先使用 HTTP/2；如果下載來源或代理不支援，會自動回退到 HTTP/1.1。</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.InstallBehavior">安裝行為</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.SpeedLimit">速度限制</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.SpeedLimit.ToolTip">設定下載的速度上限，以避免在下載時導致其他需要連線的程式卡死</sys:String>
@@ -3341,6 +3403,9 @@
     <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">正在準備陶瓦（Terracotta）聯機環境...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">正在建立大廳</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">下載連線模組中……</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Hosting">正在建立連線房間</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Joining">正在連線至建立者的房間</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Scanning">正在掃描區域網內的 Minecraft 世界</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">大廳成員清單（共 {0} 人）</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListLoading">大廳成員清單（正在取得資訊）</sys:String>
     <sys:String x:Key="Tools.GameLink.Nat.Failed">測試失敗</sys:String>
@@ -3352,12 +3417,23 @@
     <sys:String x:Key="Tools.GameLink.Player.Host">[主機]</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoMessage">使用者名稱：{0}&#xA;連線協議用戶端識別碼：{1}&#xA;&#xA;此處資料僅供參考，請以實際遊玩體驗為準。&#xA;&#xA;若想了解 NAT 類型及其對連線體驗的影響，請前往介面左側的常見問題。</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoTitle">玩家 {0} 的詳細資訊</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Copyright">連線功能由陶瓦（Terracotta）提供，以獨立程序方式執行，其版權歸陶瓦專案所有。</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.GuestCrash">本機連線元件崩潰，請重試</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.HostCrash">建立者端的連線元件崩潰</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.InvalidResponse">陶瓦的驗證服務傳回了無效回應</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostFail">無法連線到建立者，請確認編號是否正確、建立者是否仍在房間中</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostRst">與建立者的連線被中斷</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingServerRst">與中繼伺服器的連線被中斷，請檢查網路</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Failed">陶瓦未能完成本次連線，請重試</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.GuestReady">已加入房間，回到遊戲中直接進入即可</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.HostReady">房間已建立，把上面的編號傳給朋友即可加入</sys:String>
 
     <!-- Tools.GameLink.Agreement -->
 
     <sys:String x:Key="Tools.GameLink.Agreement.Accept">我已閱讀並同意</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Body">使用大廳功能即代表你同意下列條款：&#xA;&#xA;我承諾嚴格遵守中國大陸相關法律法規，不會將大廳功能用於違法違規用途。&#xA;我承諾使用大廳功能帶來的一切風險自行承擔。&#xA;我已知曉並同意 PCL-HE 收集經處理的本機識別碼、Natayark ID 與其他資訊並在必要時提供給執法部門。&#xA;為保護未成年人個人資訊，使用連線大廳前，我確認我已滿十四歲。&#xA;&#xA;另外，你還需要同意 PCL-HE 大廳相關隱私政策及《Natayark OpenID 服務條款》。</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Description">此處列出了 PCL-HE 大廳使用的相關服務檔案及介紹</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.EasyTierInfo">了解 EasyTier 開源組網專案</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTerms">Natayark OpenID 服務條款</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTermsInfo">檢視 Natayark OpenID 服務條款</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.PrivacyPolicy">PCL-HE 大廳相關隱私政策</sys:String>

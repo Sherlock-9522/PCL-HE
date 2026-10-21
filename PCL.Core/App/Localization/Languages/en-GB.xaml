@@ -215,6 +215,10 @@
 
     <!-- Crash.Report.JarInJarMod -->
 
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictDiscouraged">Discouraged</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictIncompatible">Incompatible</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictNone">No conflicts found.</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.ConflictSection">=== Conflicts (incompatible / discouraged) ===</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.DuplicateDescription">These mods may conflict with their bundled copies and cause crashes:</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.DuplicateEntry">{0} [{1}] &lt;-&gt; bundled in {2} ({3})</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.DuplicateHeuristic">(Matched by mod ID and may include false positives.)</sys:String>
@@ -224,6 +228,11 @@
     <sys:String x:Key="Crash.Report.JarInJarMod.JarInJarSection">=== Jar-in-Jar information (enabled mods only) ===</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.ModListDirectory">Directory: {0}</sys:String>
     <sys:String x:Key="Crash.Report.JarInJarMod.ModListSection">=== Mod list ===</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningDisabled">disabled prerequisite(s) [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningMismatch">version-incompatible prerequisite(s) [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningMissing">missing prerequisite(s) [{0}]</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningNone">No dependency issues found.</sys:String>
+    <sys:String x:Key="Crash.Report.JarInJarMod.WarningSection">=== Dependency warnings (missing / version mismatch) ===</sys:String>
 
     <!-- Crash.Suggestion -->
 
@@ -1077,6 +1086,41 @@
     <sys:String x:Key="Instance.Resource.Mod.Disabled.Message">You need to install a mod loader such as Forge, Fabric, etc. to use mods. Please go to the download page to install one.&#xA;If you have already installed a mod loader, you may have selected the wrong instance. Please switch to the correct instance.</sys:String>
     <sys:String x:Key="Instance.Resource.Mod.Disabled.SelectInstance">Select an instance</sys:String>
     <sys:String x:Key="Instance.Resource.Mod.Disabled.Title">This instance cannot install mods</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Current">✓ used by this instance</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.From">[bundled · from {0}]</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Incompatible">⚠ incompatible with this version</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Bundled.Versions">{0} versions</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.DeleteTitle">Deleting this mod affects {0} mod(s) that depend on it. Choose how to proceed:</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.DisableTitle">Disabling this mod affects {0} mod(s) that depend on it. Choose how to proceed:</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.OnlySelf">Only this mod</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.WithDelete">Also delete mods that depend on it</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Cascade.WithDisable">Also disable mods that depend on it</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Discouraged">Discouraged</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Incompatible">Incompatible</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Pair">{0} and {1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Conflict.Tooltip">Incompatible: cannot load together; installing both will crash the game or prevent startup — remove one.&#10;Discouraged: can load together, but the author flagged compatibility issues that may cause bugs or broken features.</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Bundled">Bundled</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Disabled">Disabled</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Installed">Installed</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Missing">Missing</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.Optional">[optional]</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Dep.VersionMismatch">Version mismatch</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Empty.Message">None of this instance's mods declare dependencies or bundle other mods, or the mod list has not finished loading.</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Empty.Title">No mod relations to analyse</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Entry">Mod Relations</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Entry.ToolTip">View mod dependencies, missing prerequisites and bundled (Jar-in-Jar) structure</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Message">An overview of dependencies and bundled structure between mods. Disabling or deleting a mod will warn about affected dependencies.</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.ParsePending.Message">Embedded mod relationships are still being analysed in the background. Dependency cascade detection may be incomplete right now and could miss mods that should be handled together. Continue anyway?</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.ParsePending.Title">Mods still loading</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Search.Hint">Search mods: name / ModId / dependency</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Bundled">Bundled mods</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Conflicts">Conflicts</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Relations">Mod relations</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Section.Warnings">Warnings</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.Disabled">{0} has disabled prerequisite(s): {1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.Missing">{0} is missing prerequisite(s): {1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.VersionMismatch">{0} has version-incompatible prerequisite(s): {1}</sys:String>
+    <sys:String x:Key="Instance.Resource.Mod.JarInJar.Warning.VersionMismatch.Detail">{0} {1} (detected: {2})</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.DownloadMod">Download Litematica</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.Unavailable.Message">You may need to install the Litematica mod first. If you have already installed one, please launch the game once.&#xA;Alternatively, you may have selected the wrong instance. Please use the instance selection button to switch instances.</sys:String>
     <sys:String x:Key="Instance.Resource.Schematic.Unavailable.Title">Schematics unavailable for this instance</sys:String>
@@ -1691,6 +1735,7 @@
 
     <!-- Launch.Skin.Cape.Name -->
 
+    <sys:String x:Key="Launch.Skin.Cape.Name.Aurora">Aurora</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Builder">Builder</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.CherryBlossom">Cherry Blossom</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Cobalt">Cobalt</sys:String>
@@ -1700,6 +1745,7 @@
     <sys:String x:Key="Launch.Skin.Cape.Name.FifteenthAnniversary">15th Anniversary</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Followers">Follower's</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Founders">Founders</sys:String>
+    <sys:String x:Key="Launch.Skin.Cape.Name.Hero">Hero</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Home">Home</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.MapMaker">Realms MapMaker</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Mcc">MCC 15th Year</sys:String>
@@ -1718,6 +1764,7 @@
     <sys:String x:Key="Launch.Skin.Cape.Name.PurpleHeart">Purple Heart</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Translator">Translator</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.TranslatorChinese">Chinese Translator</sys:String>
+    <sys:String x:Key="Launch.Skin.Cape.Name.Twisted">Twisted</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Vanilla">Vanilla</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.Yearn">Yearn</sys:String>
     <sys:String x:Key="Launch.Skin.Cape.Name.ZombieHorse">Zombie Horse</sys:String>
@@ -1947,7 +1994,11 @@
     <sys:String x:Key="Minecraft.Download.Error.ForgePromosResultTooShort">Result too short ({0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.ForgeRecommendedTooFew">Too few recommended versions ({0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallationCanceled">Installation cancelled.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerFailed">The installer failed (exit code {0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailedLastLine">The installer failed, and the last line is {0}</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerLogUnreadable">The installer's output log could not be read. Check the installation log in the instance folder.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerNoLogOutput">The installer produced no log output. Check the instance folder.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerTimeout">The installer timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists">Instance {0} already exists. Download it again?{1}This will overwrite the instance JSON and JAR files, but will not affect version-isolated files.</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists.Title">Instance already exists</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceDownloading">This instance is already downloading!</sys:String>
@@ -1975,6 +2026,8 @@
     <sys:String x:Key="Minecraft.Download.Error.ServerDownloading">This server is already downloading!</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.Timeout">Download source connection timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.UnknownMinecraftVersion">Unknown Minecraft version ({0})</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadFailed">Vanilla download failed</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadTimeout">Vanilla download timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.VersionListOperationFailed">Failed to parse {0} version list ({1})</sys:String>
 
     <!-- Minecraft.Download.Modpack -->
@@ -2690,8 +2743,17 @@
     <!-- Setup.GameManage.Download -->
 
     <sys:String x:Key="Setup.GameManage.Download.AutoSelectInstance">Auto-select the instance after installation</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.FileConnections">Max connections per file</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.FileConnections.ToolTip">The most connections a large file may use at once. A higher value can help sources that cap each connection, but may also trigger source throttling.</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.FixAuthlib">Upgrade Authlib for some versions</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.FixAuthlib.ToolTip">Some Minecraft versions, such as 1.16.5, have a bug that may cause multiplayer to be disabled when using offline login.&#xA;PCL-HE can try to upgrade the Authlib support library for these versions to fix the issue.&#xA;This setting only applies to newly installed instances.</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol">File download protocol</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Auto">Automatic (recommended)</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Auto.ToolTip">Prefer HTTP/2 for small files and batch downloads, and use HTTP/1.1 for large segmented downloads to balance concurrency and compatibility.</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http11">HTTP/1.1</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http11.ToolTip">Force HTTP/1.1 for all file downloads. This can help environments where independent connections improve large-file throughput.</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http2">Prefer HTTP/2</sys:String>
+    <sys:String x:Key="Setup.GameManage.Download.HttpProtocol.Http2.ToolTip">Prefer HTTP/2 for all file downloads, falling back to HTTP/1.1 when the source or proxy does not support it.</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.InstallBehavior">Install behaviour</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.SpeedLimit">Speed limit</sys:String>
     <sys:String x:Key="Setup.GameManage.Download.SpeedLimit.ToolTip">Set a download speed cap to prevent other programmes that depend on the internet from freezing during downloads.</sys:String>
@@ -3341,6 +3403,9 @@
     <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">Preparing the Terracotta link environment...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">Creating lobby</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">Downloading lobby module</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Hosting">Creating the lobby</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Joining">Joining the host's lobby</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Scanning">Scanning for Minecraft worlds on the LAN</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">Lobby members ({0} total)</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListLoading">Lobby members (retrieving information)</sys:String>
     <sys:String x:Key="Tools.GameLink.Nat.Failed">Test failed</sys:String>
@@ -3352,12 +3417,23 @@
     <sys:String x:Key="Tools.GameLink.Player.Host">[Host]</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoMessage">Username: {0}&#xA;Client identifier: {1}&#xA;&#xA;This data is for reference only. Actual gameplay may vary.&#xA;&#xA;To learn about NAT types and how they affect your lobby experience, see the FAQ section on the left.</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoTitle">Player {0} details</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Copyright">The lobby feature is provided by Terracotta as a separate process; all rights belong to the Terracotta project.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.GuestCrash">The local lobby component crashed. Please try again.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.HostCrash">The host's lobby component crashed</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.InvalidResponse">Terracotta's authentication service returned an invalid response</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostFail">Could not reach the host. Check that the ID is correct and the host is still in the lobby.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostRst">The connection to the host was interrupted</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingServerRst">The connection to the relay server was interrupted. Check your network.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Failed">Terracotta could not complete the lobby setup. Please try again.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.GuestReady">You have joined the lobby. Go back to the game to connect.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.HostReady">The lobby has been created. Send the ID above to your friends to let them join.</sys:String>
 
     <!-- Tools.GameLink.Agreement -->
 
     <sys:String x:Key="Tools.GameLink.Agreement.Accept">I have read and agree</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Body">By using the lobby feature, you agree to the following terms:&#xA;&#xA;I agree to comply with applicable laws and regulations and will not use the lobby feature for illegal or prohibited purposes.&#xA;I agree to bear all risks associated with using the lobby feature.&#xA;I acknowledge and agree that PCL-HE collects processed device identifiers, Natayark ID, and other information, and may provide them to law enforcement when necessary.&#xA;To protect minors' personal information, I confirm that I am at least 14 years old before using the lobby.&#xA;&#xA;Additionally, you must also agree to the PCL-HE lobby privacy policy and the Natayark OpenID terms of service.</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Description">Service documents and introductions used by PCL-HE Lobby are listed below.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.EasyTierInfo">Learn about the EasyTier open-source networking project</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTerms">Natayark OpenID ToS</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTermsInfo">View Natayark OpenID terms of service.</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.PrivacyPolicy">PCL-HE Lobby Privacy Policy</sys:String>

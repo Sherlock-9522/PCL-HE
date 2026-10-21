@@ -1994,7 +1994,11 @@
     <sys:String x:Key="Minecraft.Download.Error.ForgePromosResultTooShort">Result too short ({0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.ForgeRecommendedTooFew">Too few recommended versions ({0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallationCanceled">Installation canceled.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerFailed">The installer failed (exit code {0})</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstallerFailedLastLine">The installer failed, and the last line is {0}</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerLogUnreadable">The installer's output log could not be read. Check the installation log in the instance folder.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerNoLogOutput">The installer produced no log output. Check the instance folder.</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.InstallerTimeout">The installer timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists">Instance {0} already exists. Download it again?{1}This will overwrite the instance JSON and JAR files, but will not affect version-isolated files.</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceAlreadyExists.Title">Instance already exists</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.InstanceDownloading">This instance is already downloading!</sys:String>
@@ -2022,6 +2026,8 @@
     <sys:String x:Key="Minecraft.Download.Error.ServerDownloading">This server is already downloading!</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.Timeout">Download source connection timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.UnknownMinecraftVersion">Unknown Minecraft version ({0})</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadFailed">Vanilla download failed</sys:String>
+    <sys:String x:Key="Minecraft.Download.Error.VanillaDownloadTimeout">Vanilla download timed out</sys:String>
     <sys:String x:Key="Minecraft.Download.Error.VersionListOperationFailed">Failed to parse {0} version list ({1})</sys:String>
 
     <!-- Minecraft.Download.Modpack -->
@@ -3397,6 +3403,9 @@
     <sys:String x:Key="Tools.GameLink.Loading.ConnectingServer">Preparing the Terracotta link environment...</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.Creating">Creating lobby</sys:String>
     <sys:String x:Key="Tools.GameLink.Loading.DownloadingModule">Downloading lobby module</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Hosting">Creating the lobby</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Joining">Joining the host's lobby</sys:String>
+    <sys:String x:Key="Tools.GameLink.Loading.Scanning">Scanning for Minecraft worlds on the LAN</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListCount">Lobby members ({0} total)</sys:String>
     <sys:String x:Key="Tools.GameLink.Member.ListLoading">Lobby members (retrieving information)</sys:String>
     <sys:String x:Key="Tools.GameLink.Nat.Failed">Test failed</sys:String>
@@ -3408,12 +3417,23 @@
     <sys:String x:Key="Tools.GameLink.Player.Host">[Host]</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoMessage">Username: {0}&#xA;Client identifier: {1}&#xA;&#xA;This data is for reference only. Actual gameplay may vary.&#xA;&#xA;To learn about NAT types and how they affect your lobby experience, see the FAQ section on the left.</sys:String>
     <sys:String x:Key="Tools.GameLink.Player.InfoTitle">Player {0} details</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Copyright">The lobby feature is provided by Terracotta as a separate process; all rights belong to the Terracotta project.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.GuestCrash">The local lobby component crashed. Please try again.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.HostCrash">The host's lobby component crashed</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.InvalidResponse">Terracotta's authentication service returned an invalid response</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostFail">Could not reach the host. Check that the ID is correct and the host is still in the lobby.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingHostRst">The connection to the host was interrupted</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Error.PingServerRst">The connection to the relay server was interrupted. Check your network.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.Failed">Terracotta could not complete the lobby setup. Please try again.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.GuestReady">You have joined the lobby. Go back to the game to connect.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Terracotta.HostReady">The lobby has been created. Send the ID above to your friends to let them join.</sys:String>
 
     <!-- Tools.GameLink.Agreement -->
 
     <sys:String x:Key="Tools.GameLink.Agreement.Accept">I have read and agree</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Body">By using the lobby feature, you agree to the following terms:&#xA;&#xA;I agree to comply with applicable laws and regulations and will not use the lobby feature for illegal or prohibited purposes.&#xA;I agree to bear all risks associated with using the lobby feature.&#xA;I acknowledge and agree that PCL-HE collects processed device identifiers, Natayark ID, and other information, and may provide them to law enforcement when necessary.&#xA;To protect minors' personal information, I confirm that I am at least 14 years old before using the lobby.&#xA;&#xA;Additionally, you must also agree to the PCL-HE lobby privacy policy and the Natayark OpenID terms of service.</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.Description">Service documents and introductions used by PCL-HE Lobby are listed below.</sys:String>
+    <sys:String x:Key="Tools.GameLink.Agreement.EasyTierInfo">Learn about the EasyTier open-source networking project</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTerms">Natayark OpenID ToS</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.NatayarkTermsInfo">View Natayark OpenID terms of service.</sys:String>
     <sys:String x:Key="Tools.GameLink.Agreement.PrivacyPolicy">PCL-HE Lobby Privacy Policy</sys:String>
