@@ -17,17 +17,25 @@ on:
           - Beta
       version:
         description: 'Version to release (e.g., 2.14.2)'
-        required: true
+        required: false
         type: string
+  # 推送 v* 标签即可发版，不必依赖手工触发；手工触发时 version 留空表示取标签名。
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REL_VERSION: ${{ inputs.version || replace(github.ref_name, 'v', '') }}
+  REL_CONFIGURATION: ${{ inputs.configuration || 'Beta' }}
 
 jobs:
   build:
     strategy:
       matrix:
         include:
-          - configuration: ${{ inputs.configuration }}
+          - configuration: ${{ inputs.configuration || 'Beta' }}
             architecture: x64
-          - configuration: ${{ inputs.configuration }}
+          - configuration: ${{ inputs.configuration || 'Beta' }}
             architecture: ARM64
       fail-fast: false
 
@@ -51,7 +59,7 @@ jobs:
           tool: git-cliff
 
       - name: Create local release tag
-        run: git tag -f "v${{ inputs.version }}"
+        run: git tag -f "v${{ env.REL_VERSION }}"
 
       - name: Generate changelog
         run: git-cliff --latest -o CHANGELOG.md
@@ -60,10 +68,10 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ inputs.version }}
-          name: Release ${{ inputs.version }}
+          tag_name: v${{ env.REL_VERSION }}
+          name: Release ${{ env.REL_VERSION }}
           body_path: CHANGELOG.md
-          prerelease: ${{ inputs.configuration == 'Beta' }}
+          prerelease: ${{ env.REL_CONFIGURATION == 'Beta' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -77,9 +85,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - configuration: ${{ inputs.configuration }}
+          - configuration: ${{ inputs.configuration || 'Beta' }}
             architecture: x64
-          - configuration: ${{ inputs.configuration }}
+          - configuration: ${{ inputs.configuration || 'Beta' }}
             architecture: ARM64
     steps:
       - name: Download Build Artifact
@@ -108,7 +116,7 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
-          tag_name: v${{ inputs.version }}
+          tag_name: v${{ env.REL_VERSION }}
           files: |
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
             PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip.sigstore.json
@@ -122,4 +130,4 @@ jobs:
       - name: Publish Draft
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          tag_name: v${{ inputs.version }}
+          tag_name: v${{ env.REL_VERSION }}
