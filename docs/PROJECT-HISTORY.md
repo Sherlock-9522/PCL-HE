@@ -968,7 +968,7 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 ### 2026-10-22　壁纸自适应与陶瓦退出
 
-`61ff7ee` 里两件事一起做：
+`d08c1a7` 里两件事一起做：
 
 - **壁纸自适应方式**补进 PCL2 新版的双向九宫格（详见 2.9）：索引 `9..17` 保持长宽比，
   并修掉「启动加载壁纸后从未应用模式」的旧 bug（VB 到 C# 移植时把 `Setup.Load` 翻成了空读）。
