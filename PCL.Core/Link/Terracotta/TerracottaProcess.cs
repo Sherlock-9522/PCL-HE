@@ -125,6 +125,19 @@ public static class TerracottaProcess
     /// <summary>
     ///     请求陶瓦优雅退出。这不会影响其他用户进程，只针对本机这个实例。
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         陶瓦是一个独立后台进程，启动器不显式关闭它，它就会一直驻留：
+    ///         既占着 EasyTier 的虚拟网卡与端口，也会让下次启动器把它当作
+    ///         “已经在运行的实例”直接复用，用户会以为“关掉启动器还在联机”。
+    ///         因此主窗体退出流程必须调用这里。
+    ///     </para>
+    ///     <para>
+    ///         本机同一时间只允许一个陶瓦实例（<c>%TEMP%/terracotta/terracotta.lock</c> 互斥），
+    ///         所以关闭当前连着的实例就等于结束本次联机；若该实例是本机其它启动器拉起的，
+    ///         在锁语义下双方共享的本来就是同一个实例，随启动器退出而结束联机同样符合预期。
+    ///     </para>
+    /// </remarks>
     public static async Task ShutdownAsync(CancellationToken ct = default)
     {
         await Gate.WaitAsync(ct).ConfigureAwait(false);

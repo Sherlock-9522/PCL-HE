@@ -144,6 +144,15 @@
                             <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.TopRight}" />
                             <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.BottomLeft}" />
                             <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.BottomRight}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopLeft}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopLeft.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.LeftCenter}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.LeftCenter.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomLeft}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomLeft.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopCenter}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopCenter.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomCenter}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomCenter.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopRight}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.TopRight.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.RightCenter}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.RightCenter.ToolTip}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomRight}" ToolTip="{DynamicResource Setup.Ui.Background.Suit.Uniform.BottomRight.ToolTip}" />
                         </local:MyComboBox>
                     </Grid>
                     <Grid x:Name="PanBackgroundOpacity" Height="22" Margin="0,0,0,7" Visibility="Collapsed">

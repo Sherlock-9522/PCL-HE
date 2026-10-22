@@ -255,6 +255,43 @@ C5: 0, C7: 0
 「PCL-HE 是由第三方独立维护的 PCL 衍生版本」；「支持 Mirror 酱加速更新」→
 「源码与问题反馈都在 GitHub 仓库」，因为 HE 的 `UpdateManager` 源列表是空的）。
 
+### 2.9 壁纸自适应方式
+
+设置 → 个性化 → 背景图片的「自适应方式」原本只有 9 项（智能 / 居中 / 适应 / 拉伸 / 平铺 /
+四个角），与 PCL2 新版的双向九宫格不是一回事。本次按 PCL2 的设定补齐：
+
+- 索引 `0..8` 的含义保持原样（老配置 `UiBackgroundSuit` 的取值不变义）。
+- 新增 `9..17` 共 9 项「保持长宽比」：`9` 居中，`10..17` 依次为
+  左上 / 左中 / 左下 / 中上 / 中下 / 右上 / 右中 / 右下。
+  实现是 `Stretch.Uniform`（完整显示、不裁切）加 `ImageBrush.AlignmentX/AlignmentY` 定位，
+  窗口尺寸变化时由 WPF 按比例重算，未占满的一侧留背景色。
+- 与「适应」（`Stretch.UniformToFill`）的区别：适应会铺满并裁掉超出部分，保持长宽比不裁。
+- 进入函数时除了原有的 `TileMode/Viewport` 复位，还补了 `AlignmentX/AlignmentY = Center`，
+  否则从「左上」切到「适应」时位置会残留。
+
+顺带修掉一个从 VB.NET 移植到 C# 时就带进来的 bug，上游 `PCL-CE` 至今仍在。
+VB 版加载壁纸后跟的是 `Setup.Load("UiBackgroundSuit", True)`（重新加载并应用该设置），
+翻成 C# 时变成了：
+
+```csharp
+FrmMain.ImgBack.Background = new MyBitmap(Address);
+_ = Config.Preference.Background.WallpaperSuitMode; // 纯粹的空读，没有副作用
+```
+
+`MyBitmap` 的隐式 `ImageBrush` 转换新建的 brush，`Stretch` 是 WPF 默认的 `Fill`；
+启动时 `ModSetup.ApplyAll()` 那次 `UiBackgroundSuit` 又因为 `ImgBack.Background` 还是
+`null` 而提前 return。结果就是**用户选什么模式都没用，壁纸永远是拉伸填满**——
+这正是「壁纸不随窗口变化保持长宽比」的根因。修复是把那行空读换成
+`ModSetup.UiBackgroundSuit(Config.Preference.Background.WallpaperSuitMode);` 。
+
+本地配置系统 `ConfigService` 没有 `Setup.Load` 那种「重新应用」的等价 API，
+所以直接调用 `ModSetup.UiBackgroundSuit` 是正确修法。
+
+验证：临时在函数里把运行时属性写进文件（`Stretch` / `AlignmentX/Y` /
+`ImgBack.ActualWidth` / `VisualTreeHelper.GetDpi`），实测 `suit=9` 得到
+`Uniform + Center/Center`、`suit=10` 得到 `Uniform + Left/Top`，
+内容区随窗口变化（`1062x635` 逻辑像素，系统缩放 1.25）。验证完即删掉诊断代码。
+
 ---
 
 ## 第 3 章　下载链路
@@ -446,6 +483,31 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 ### 5.3 创建大厅不依赖已发现的局域网世界
 
 `c4025c9` 允许在没有发现 LAN 世界时也能创建大厅（端口手动指定）。
+
+### 5.4 退出时关闭陶瓦
+
+陶瓦是独立进程：`--hmcl` 拉起后父进程写端口即退出，真正驻留的是 detached 的子进程
+（没有 `Process` 句柄）。`TerracottaProcess.ShutdownAsync()` 早就实现了
+（`GET /panic?peaceful=true`），但**全仓库没有任何调用点**——它只在进联机页
+`EnsureRunningAsync()` 时被拉起并记住 client。表现就是关掉启动器后陶瓦还在，
+占着 EasyTier 的虚拟网卡与端口，下次启动还被当作已有实例复用。
+
+修复是在 `FormMain.xaml.cs` 的 `EndProgramForce()` 里、`ETController.Exit()` 之后补上：
+
+```csharp
+using var terracottaCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+if (!TerracottaProcess.ShutdownAsync(terracottaCts.Token).Wait(TimeSpan.FromSeconds(4)))
+    ModBase.Log("[Link] 关闭陶瓦超时，已放弃等待", ModBase.LogLevel.Debug);
+```
+
+只关闭「本次会话确认使用过」的实例（`_client` 非空），不主动去杀别人的：
+陶瓦用 `%TEMP%\terracotta\terracotta.lock` 做单实例互斥，如果用户同时用 HMCL 联机，
+两个启动器共享的是同一个陶瓦进程，无条件 panic 会顺手断掉 HMCL 的联机。
+
+验证：手工用 `--hmcl` 拉起 `PCLHE/Terracotta/0.4.2/terracotta-*-windows-*.exe`，
+等端口文件写出 `{"port":N}` 后 `GET /meta` 正常应答；再 `GET /panic?peaceful=true`，
+4 秒内进程消失。注意 `/panic` 会先断开连接，PowerShell 侧会报「无法连接到远程服务器」，
+但进程确已退出——所以 `ShutdownAsync` 里把异常吞掉当「已退出」是对的。
 
 ---
 
@@ -903,6 +965,19 @@ e2ebb58  ci(release): inline the release variables
 8f4b932  ci(release): verify the signature against the ref that actually ran
 b439f00  build(ci): publish a self-contained binary so the download just runs
 ```
+
+### 2026-10-22　壁纸自适应与陶瓦退出
+
+`61ff7ee` 里两件事一起做：
+
+- **壁纸自适应方式**补进 PCL2 新版的双向九宫格（详见 2.9）：索引 `9..17` 保持长宽比，
+  并修掉「启动加载壁纸后从未应用模式」的旧 bug（VB 到 C# 移植时把 `Setup.Load` 翻成了空读）。
+  验证方式是用临时诊断输出打运行时属性（`suit=9` 得到 `Uniform + Center/Center`，
+  `suit=10` 得到 `Uniform + Left/Top`），比截图取色可靠得多。
+- **退出时关闭陶瓦**（详见 5.4）：补上 `ShutdownAsync()` 的调用点，避免 detached 的
+  `terracotta --hmcl2` 子进程在关闭启动器后继续占着 EasyTier 网卡与端口。
+
+翻译债的补齐（`c78264b`，见附录 B）也是同一天提交的。
 
 ---
 

@@ -376,7 +376,10 @@ public partial class PageSetupUI
                         ModVideoBack.VideoStop();
                         ModBase.Log("[UI] 加载背景内容：" + address);
                         ModMain.frmMain.ImgBack.Background = new MyBitmap(address);
-                        _ = Config.Preference.Background.WallpaperSuitMode;
+                        // MyBitmap 隐式转换成 ImageBrush 时不会带上适配方式，而 ImageBrush 的 Stretch
+                        // 默认是 Fill；不在这里重新应用一次，用户选择的适配模式会在每次刷新背景后
+                        // 丢失，表现为壁纸被强行拉伸、窗口缩放时长宽比跟着变形。
+                        ModSetup.UiBackgroundSuit(Config.Preference.Background.WallpaperSuitMode);
                         ModMain.frmMain.ImgBack.Visibility = Visibility.Visible;
                         if (isHint)
                                 HintService.Hint(Lang.Text("Setup.Ui.Background.Refresh.Success", ModBase.GetFileNameFromPath(address)), HintType.Success,

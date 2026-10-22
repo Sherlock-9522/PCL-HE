@@ -660,6 +660,19 @@ public partial class FormMain
         {
             ModBase.Log(ex, "关闭 EasyTier 时遇到问题", ModBase.LogLevel.Debug);
         }
+        // 陶瓦（Terracotta）同样是独立后台进程：它自带 EasyTier，不显式调用 /panic 接口就
+        // 会一直驻留，下次启动还会被当作已有实例复用，表现为「关掉启动器仍在联机」。
+        try
+        {
+            using var terracottaCts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(3));
+            if (!PCL.Core.Link.Terracotta.TerracottaProcess.ShutdownAsync(terracottaCts.Token)
+                    .Wait(TimeSpan.FromSeconds(4)))
+                ModBase.Log("[Link] 关闭陶瓦超时，已放弃等待", ModBase.LogLevel.Debug);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "关闭陶瓦时遇到问题", ModBase.LogLevel.Debug);
+        }
 
         if (UpdateManager.isUpdateWaitingRestart && !isUpdating)
             UpdateManager.UpdateRestart(false, false);

@@ -319,6 +319,9 @@ public class ModSetup
         ((ImageBrush)ModMain.frmMain.ImgBack.Background).TileMode = TileMode.None;
         ((ImageBrush)ModMain.frmMain.ImgBack.Background).Viewport = new Rect(0d, 0d, 1d, 1d);
         ((ImageBrush)ModMain.frmMain.ImgBack.Background).ViewportUnits = BrushMappingMode.RelativeToBoundingBox;
+        // 复位对齐，避免上次选择的九宫格位置残留到“适应”（UniformToFill）等模式
+        ((ImageBrush)ModMain.frmMain.ImgBack.Background).AlignmentX = AlignmentX.Center;
+        ((ImageBrush)ModMain.frmMain.ImgBack.Background).AlignmentY = AlignmentY.Center;
         switch (value)
         {
             case 1: // 居中
@@ -396,6 +399,31 @@ public class ModSetup
                 ((ImageBrush)ModMain.frmMain.ImgBack.Background).Stretch = Stretch.None;
                 ModMain.frmMain.ImgBack.Width = ((ImageBrush)ModMain.frmMain.ImgBack.Background).ImageSource.Width;
                 ModMain.frmMain.ImgBack.Height = ((ImageBrush)ModMain.frmMain.ImgBack.Background).ImageSource.Height;
+                break;
+            }
+            // 9~17：保持长宽比。Uniform 完整显示整张图片，长宽比不变，
+            // 窗口尺寸变化时由 WPF 按比例重新缩放，未占满的一侧留出背景色。
+            // 与“适应”（UniformToFill，铺满并裁切超出部分）的区别是不裁切。
+            case >= 9 and <= 17:
+            {
+                var brush = (ImageBrush)ModMain.frmMain.ImgBack.Background;
+                ModMain.frmMain.ImgBack.HorizontalAlignment = HorizontalAlignment.Stretch;
+                ModMain.frmMain.ImgBack.VerticalAlignment = VerticalAlignment.Stretch;
+                ModMain.frmMain.ImgBack.Width = double.NaN;
+                ModMain.frmMain.ImgBack.Height = double.NaN;
+                brush.Stretch = Stretch.Uniform;
+                (brush.AlignmentX, brush.AlignmentY) = value switch
+                {
+                    10 => (AlignmentX.Left, AlignmentY.Top),
+                    11 => (AlignmentX.Left, AlignmentY.Center),
+                    12 => (AlignmentX.Left, AlignmentY.Bottom),
+                    13 => (AlignmentX.Center, AlignmentY.Top),
+                    14 => (AlignmentX.Center, AlignmentY.Bottom),
+                    15 => (AlignmentX.Right, AlignmentY.Top),
+                    16 => (AlignmentX.Right, AlignmentY.Center),
+                    17 => (AlignmentX.Right, AlignmentY.Bottom),
+                    _ => (AlignmentX.Center, AlignmentY.Center) // 9：居中
+                };
                 break;
             }
         }
