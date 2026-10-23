@@ -229,6 +229,9 @@ public class ModSetup
     // 启动器
     public static void UiLauncherTransparent(int value)
     {
+        // 配置在生命周期 Loading 阶段就会被读一次，此时主窗体尚未创建（frmMain 为 null），
+        // 直接解引用会 NRE；窗体建好后会自己按配置值再取一次，这里跳过即可。
+        if (ModMain.frmMain is null) return;
         ModMain.frmMain.Opacity = value / 1000d + 0.4d;
     }
 

@@ -238,9 +238,23 @@ internal sealed class CrashModIndex
 
     private static bool _SameDisplay(CrashModInfo a, CrashModInfo b)
     {
-        return string.Equals(_Normalize(a.ModId), _Normalize(b.ModId), StringComparison.Ordinal) &&
-               string.Equals(_Normalize(a.FileName), _Normalize(b.FileName), StringComparison.Ordinal) &&
-               string.Equals(_Normalize(a.DisplayName), _Normalize(b.DisplayName), StringComparison.Ordinal);
+        // 跨来源（游戏日志、崩溃报告、Mod 列表）收集到的同一条 Mod 往往只填了其中一两个字段，
+        // 例如日志里只有文件名、Mod 列表里只有 ModId。原实现要求三个字段归一化后全部相等，
+        // 于是这类「各填一半」的同一条 Mod 永远合并不掉，索引里会出现重复条目。
+        // 改为：任一字段双方都有可比对的值且相等，即视为同一条。
+        var aModId = _Normalize(a.ModId);
+        var bModId = _Normalize(b.ModId);
+        if (aModId.Length > 0 && bModId.Length > 0 && string.Equals(aModId, bModId, StringComparison.Ordinal))
+            return true;
+
+        var aFileName = _Normalize(a.FileName);
+        var bFileName = _Normalize(b.FileName);
+        if (aFileName.Length > 0 && bFileName.Length > 0 && string.Equals(aFileName, bFileName, StringComparison.Ordinal))
+            return true;
+
+        var aDisplay = _Normalize(a.DisplayName);
+        var bDisplay = _Normalize(b.DisplayName);
+        return aDisplay.Length > 0 && bDisplay.Length > 0 && string.Equals(aDisplay, bDisplay, StringComparison.Ordinal);
     }
 
     private static string _Normalize(string? value)
