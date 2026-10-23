@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -546,19 +546,34 @@ public partial class PageSelectRight
                     ModBase.IniClearCache(Path.Combine(mcInstance.PathIndie, "options.txt"));
                     ((DynamicCacheConfigStorage)ConfigService.GetProvider(ConfigSource.GameInstance)).InvalidateCache(
                         mcInstance.PathInstance);
-                    if (isShiftPressed)
+                    // 删除大实例可能耗时很久（走回收站时尤其明显），放到后台线程执行，
+                    // 否则 UI 线程会一直卡到删除结束、看起来像卡死。参考存档页删除的写法。
+                    // 这里同时把 UIOption.AllDialogs 降为 OnlyErrorDialogs：后台线程弹不出系统进度框，
+                    // 结果统一由 HintService 告知。
+                    ModBase.RunInNewThread(() =>
                     {
-                        ModBase.DeleteDirectory(mcInstance.PathInstance);
-                        HintService.Hint(Lang.Text("Select.Instance.Delete.PermanentSuccess", mcInstance.Name),
-                            HintType.Success);
-                    }
-                    else
-                    {
-                        FileSystem.DeleteDirectory(mcInstance.PathInstance, UIOption.AllDialogs,
-                            RecycleOption.SendToRecycleBin);
-                        HintService.Hint(Lang.Text("Select.Instance.Delete.RecycleBinSuccess", mcInstance.Name),
-                            HintType.Success);
-                    }
+                        try
+                        {
+                            if (isShiftPressed)
+                            {
+                                ModBase.DeleteDirectory(mcInstance.PathInstance);
+                                HintService.Hint(Lang.Text("Select.Instance.Delete.PermanentSuccess", mcInstance.Name),
+                                    HintType.Success);
+                            }
+                            else
+                            {
+                                FileSystem.DeleteDirectory(mcInstance.PathInstance, UIOption.OnlyErrorDialogs,
+                                    RecycleOption.SendToRecycleBin);
+                                HintService.Hint(Lang.Text("Select.Instance.Delete.RecycleBinSuccess", mcInstance.Name),
+                                    HintType.Success);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ModBase.Log(ex, $"删除实例 {mcInstance.Name} 失败", ModBase.LogLevel.Hint,
+                                userSummary: Lang.Text("Select.Instance.Error.Delete", mcInstance.Name));
+                        }
+                    });
 
                     break;
                 }

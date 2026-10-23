@@ -797,21 +797,41 @@ public partial class PageInstanceOverall
                     ModBase.IniClearCache(Path.Combine(PageInstanceLeft.McInstance.PathIndie, "options.txt"));
                     ((DynamicCacheConfigStorage)ConfigService.GetProvider(ConfigSource.GameInstance)).InvalidateCache(
                         instancePath);
-                    if (isShiftPressed)
+                    // 删除大实例可能耗时很久（走回收站时尤其明显），必须放到后台线程执行，
+                    // 否则 UI 线程会一直卡到删除结束、看起来像卡死。写法与存档页删除保持一致。
+                    ModBase.RunInNewThread(() =>
                     {
-                        ModBase.DeleteDirectory(instancePath);
-                        HintService.Hint(Lang.Text("Instance.Overall.Delete.PermanentSuccess", instanceName),
-                            HintType.Success);
-                    }
-                    else
-                    {
-                        FileSystem.DeleteDirectory(instancePath, UIOption.OnlyErrorDialogs,
-                            RecycleOption.SendToRecycleBin);
-                        HintService.Hint(Lang.Text("Instance.Overall.Delete.RecycleBinSuccess", instanceName),
-                            HintType.Success);
-                    }
+                        try
+                        {
+                            if (isShiftPressed)
+                            {
+                                ModBase.DeleteDirectory(instancePath);
+                                HintService.Hint(Lang.Text("Instance.Overall.Delete.PermanentSuccess", instanceName),
+                                    HintType.Success);
+                            }
+                            else
+                            {
+                                FileSystem.DeleteDirectory(instancePath, UIOption.OnlyErrorDialogs,
+                                    RecycleOption.SendToRecycleBin);
+                                HintService.Hint(Lang.Text("Instance.Overall.Delete.RecycleBinSuccess", instanceName),
+                                    HintType.Success);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ModBase.Log(ex, $"删除实例 {instanceName} 失败", ModBase.LogLevel.Hint,
+                                userSummary: Lang.Text("Instance.Overall.Error.OperationFailed"));
+                            return;
+                        }
 
-                    break;
+                        ModBase.RunInUiWait(() =>
+                        {
+                            ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
+                                ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");
+                            ModMain.frmMain.PageBack();
+                        });
+                    });
+                    return;
                 }
                 case 2:
                 {
