@@ -801,6 +801,7 @@
     <!-- Instance -->
 
     <sys:String x:Key="Instance.Error.OperationFailed">实例操作失败。请查看错误详情。</sys:String>
+    <sys:String x:Key="Instance.Install.CoreFileMissing">实例核心文件缺失，无法开始安装。</sys:String>
     <sys:String x:Key="Instance.Install.Action.ModifyLabel">修改</sys:String>
     <sys:String x:Key="Instance.Install.Action.StartModify">开始修改</sys:String>
     <sys:String x:Key="Instance.Install.Action.StartReset">开始重置</sys:String>
@@ -1544,9 +1545,9 @@
     <sys:String x:Key="Launch.Account.Auth.Login">登录</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed">第三方登录尝试失败</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed.WithDetail">第三方登录尝试失败。&#xA;&#xA;原始错误信息：&#xA;{0}</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.Expired">授权已过期，请重新发起一次登录。</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.Denied">你在授权页面取消了这次登录。</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.InvalidScope">该验证服务器不支持本次登录所需的权限范围，请联系服务器管理员。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Expired">授权已过期，请重新发起一次登录。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Denied">你在授权页面取消了这次登录。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.InvalidScope">该验证服务器不支持本次登录所需的权限范围，请联系服务器管理员。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Rejected">验证服务器拒绝了这次登录（{0}）。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">退出登录</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">密码</sys:String>
@@ -1580,7 +1581,8 @@
     <sys:String x:Key="Launch.Account.Microsoft.LoginFailed.WithDetail">正版登录验证失败。&#xA;&#xA;原始错误信息：&#xA;{0}</sys:String>
     <sys:String x:Key="Launch.Account.Microsoft.Purchase">»  购买正版</sys:String>
     <sys:String x:Key="Launch.Account.Microsoft.Start">开始正版验证</sys:String>
-    <sys:String x:Key="Launch.Account.Microsoft.Website">»  前往官网</sys:String>
+        <sys:String x:Key="Launch.Account.Microsoft.Unavailable">微软正版登录当前不可用：应用登记仍在审核中。请先使用离线登录或第三方登录。</sys:String>
+<sys:String x:Key="Launch.Account.Microsoft.Website">»  前往官网</sys:String>
 
     <!-- Launch.Account.Offline -->
 

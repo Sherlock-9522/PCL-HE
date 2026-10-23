@@ -801,6 +801,7 @@
     <!-- Instance -->
 
     <sys:String x:Key="Instance.Error.OperationFailed">實例操作失敗。請檢視錯誤詳情。</sys:String>
+    <sys:String x:Key="Instance.Install.CoreFileMissing">實例核心檔案缺失，無法開始安裝。</sys:String>
     <sys:String x:Key="Instance.Install.Action.ModifyLabel">修改</sys:String>
     <sys:String x:Key="Instance.Install.Action.StartModify">開始修改</sys:String>
     <sys:String x:Key="Instance.Install.Action.StartReset">開始重設</sys:String>
@@ -1544,9 +1545,9 @@
     <sys:String x:Key="Launch.Account.Auth.Login">登入</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed">第三方登入嘗試失敗</sys:String>
     <sys:String x:Key="Launch.Account.Auth.LoginFailed.WithDetail">第三方登入嘗試失敗。&#xA;&#xA;原始錯誤資訊：&#xA;{0}</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.Expired">授權已過期，請重新發起一次登入。</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.Denied">你在授權頁面取消了這次登入。</sys:String>
-    <sys:String x:Key="Launch.Account.Auth.InvalidScope">該驗證伺服器不支援本次登入所需的權限範圍，請聯絡伺服器管理員。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Expired">授權已過期，請重新發起一次登入。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.Denied">你在授權頁面取消了這次登入。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.InvalidScope">該驗證伺服器不支援本次登入所需的權限範圍，請聯絡伺服器管理員。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Rejected">驗證伺服器拒絕了這次登入（{0}）。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">退出登入</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">密碼</sys:String>
@@ -1580,7 +1581,8 @@
     <sys:String x:Key="Launch.Account.Microsoft.LoginFailed.WithDetail">微軟登入驗證失敗。&#xA;&#xA;原始錯誤資訊：&#xA;{0}</sys:String>
     <sys:String x:Key="Launch.Account.Microsoft.Purchase">»   購買游戲</sys:String>
     <sys:String x:Key="Launch.Account.Microsoft.Start">開始微軟驗證</sys:String>
-    <sys:String x:Key="Launch.Account.Microsoft.Website">»   前往官網</sys:String>
+        <sys:String x:Key="Launch.Account.Microsoft.Unavailable">微軟正版登入目前無法使用：應用程式登記仍在審核中。請先使用離線登入或第三方登入。</sys:String>
+<sys:String x:Key="Launch.Account.Microsoft.Website">»   前往官網</sys:String>
 
     <!-- Launch.Account.Offline -->
 
