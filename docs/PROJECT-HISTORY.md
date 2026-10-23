@@ -998,6 +998,35 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 比对四角，证明原描边其实已经闭合（两者差异仅 81 像素，总计约 129 万），据此判定问题出在观感
 （`#3A4049` 在深色标题栏上对比度低、1.25 倍缩放下 1px 弧线不显眼）而不是漏画，这才转向
 「内缩重画 + 加层次」这条路。
+### 2026-10-24　浮钮深色配色、去 PCL-CE 化与首轮缺陷清扫
+
+这一天分三段：界面收尾、上游切割核验、以及按审查报告做的缺陷修复。
+
+- **浮钮深色配色**（`d12ef93`）：`MyExtraTextButton` 的实心态此前只有浅色一套（`#0b5bcb` 蓝底白字），
+  其余四处浮钮甚至没标 `SolidTheme`，走的是不参与深浅切换的主题色组 `ColorBrush3`（`#1370f3`），
+  所以在深色窗口下仍是蓝底——这才是「深色模式没生效」的根因。现在深色底直接取窗口标题栏色：
+  静止 `#20242C`（等于 `ColorBrushTitleBar`）、悬停 `#3A4049`（等于 `ColorBrushTitleBarEdge`），
+  浅色组保持不变。同时去掉模板里那圈白色渐变描边，做法是只清 `PanColor.BorderBrush`、
+  不动 `BorderThickness`——Border 的厚度参与布局，直接设 0 会让图标与文字整体位移 2px。
+- **DNS 换成阿里公共 DoH**（`3ae8a3f`）：`DnsQuery.cs` 的竞速列表里原先有一个 PCL-CE 的端点
+  `doh.pysio.online`，换成 `dns.alidns.com`。同一次核验还确认了另外三处早已是不可达的死代码：
+  EasyTier 下载地址、Natayark 数据拉取、Natayark OAuth 入口（分别被 `#pragma warning disable CS0162`
+  与方法开头的 `return;` 挡住）；CI 也不再注入 CurseForge Key 与 Sentry DSN，所以遥测在 Release
+  构建里直接走「未找到 Sentry DSN」返回，完全不上报。关于页「特别鸣谢」里的 Pysio 条目属署名，保留。
+- **首轮缺陷清扫**（`92fd5b1` `3b1c2e1` `ff44ebc` `c5945d3` `0af653f` `ad69a87` `11a4a6a` `9e5c20b`）：
+  按审查报告修了 19 处。最值的一组都在崩溃链上，而且它们的后果是同一个——**崩溃弹窗根本弹不出来**：
+  `ModWatcher.cs:729` 的 `CurrentLogFiles.Last()` 位于 `analyzer.Output(...)` 的实参求值阶段，
+  集合为空时异常发生在调用之前，弹窗永远不显示（改用 `LastOrDefault() ?? ""`）；
+  `CrashLogPreparer` 的 `All` 用链式 `??` 拼接，`game` 非空时整段短路掉 `debug`，
+  只出现在 debug 日志里的线索被系统性忽略。此外还有若干处：实例重命名现在会迁移 23 项
+  以实例路径为键的状态（此前改名即丢失描述、收藏、卡片类型）；`PromoteTempFile` 的覆盖语义
+  （原先「目标已存在」的守卫与 `File.Move(..., true)` 的覆盖意图互相打架，导致新下载的文件
+  永远替换不掉旧文件）；崩溃报告导出改为先写临时文件再原子替换；崩溃日志导入补上 tar/tgz；
+  `--gpu` 缺参数时不再无声退出；游戏日志页的 `frmLogRight` 判空写错等。
+
+审查里另有 4 条刻意未改，都属于「改对不难、改错代价大」的类型：`LoaderDownload` 的单文件失败
+策略、`ModLoader` 回调在 UI 线程做重活、`McInstance.PathIndie` getter 的副作用、`ModDownloadLib`
+里硬编码的「安装」长度 3。它们与此前挂着的 `ModLaunch.cs:1056` 锁内等待同型，等能跑通场景再动。
 
 ---
 
