@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -69,12 +69,27 @@ public partial class PageToolsTest
     private void BtnMemoryRelease_Click(object sender, MouseButtonEventArgs e)
     {
         // 释放工作集只是把各进程暂时用不到的物理页换出到页面文件，不会减少任何进程的内存需求。
-        // 收益因此是暂时的：那些页面在被访问时会重新读回内存。这里不碰游戏进程与自身进程。
+        // 收益因此是暂时的：那些页面在被访问时会重新读回内存。
+        // 自身进程与正在运行的游戏进程都必须排除：把游戏的工作集换出，玩家切回游戏时会明显卡顿。
         BtnMemoryRelease.IsEnabled = false;
         try
         {
             var before = KernelInterop.GetMemorySnapshot();
             var excluded = new HashSet<uint> { (uint)Environment.ProcessId };
+            // ModLaunch.mcLaunchProcess 在游戏退出时会被置回 null，所以既要判空也要确认进程还活着。
+            var gameProcess = ModLaunch.mcLaunchProcess;
+            if (gameProcess is not null)
+            {
+                try
+                {
+                    if (!gameProcess.HasExited) excluded.Add((uint)gameProcess.Id);
+                }
+                catch (Exception ex)
+                {
+                    // 进程句柄失效时 HasExited 会抛，这等价于「游戏已经不在跑」，忽略即可。
+                    ModBase.Log(ex, "[Memory] 读取游戏进程状态失败，本次不排除游戏进程", ModBase.LogLevel.Debug);
+                }
+            }
             var (succeeded, failed) = KernelInterop.EmptyWorkingSets(excluded);
             var after = KernelInterop.GetMemorySnapshot();
             // 两个字段都是 ulong：释放之后可用内存变少时直接相减会下溢成一个天文数字，

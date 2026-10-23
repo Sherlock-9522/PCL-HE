@@ -123,12 +123,28 @@ public partial class PageInstanceInstall
                 return;
 
         // 删除 LabyMod Neo 文件
+        // 这两个文件操作都必须容错：labymod-neo 目录可能早被玩家删掉，实例 JSON 也可能因外部导入
+        // 不完整而缺失。这里挂在按钮事件上，异常冒泡出去没人接就是直接崩进程。
         if ((PageInstanceLeft.McInstance.PathIndie ?? "") != (PageInstanceLeft.McInstance.PathInstance ?? "") &&
             PageInstanceLeft.McInstance.Info.HasLabyMod)
-            Directory.Delete(System.IO.Path.Combine(PageInstanceLeft.McInstance.PathIndie, "labymod-neo"), true);
+        {
+            var labyModFolder = System.IO.Path.Combine(PageInstanceLeft.McInstance.PathIndie, "labymod-neo");
+            if (Directory.Exists(labyModFolder)) ModBase.DeleteDirectory(labyModFolder);
+        }
+
         // 备份实例核心文件
-        ModBase.CopyFile(PageInstanceLeft.McInstance.PathInstance + PageInstanceLeft.McInstance.Name + ".json",
-            PageInstanceLeft.McInstance.PathInstance + @"PCLInstallBackups\" + PageInstanceLeft.McInstance.Name + ".json");
+        var instanceCoreJson =
+            PageInstanceLeft.McInstance.PathInstance + PageInstanceLeft.McInstance.Name + ".json";
+        if (!File.Exists(instanceCoreJson))
+        {
+            ModBase.Log($"[Instance] 实例核心文件缺失，无法开始安装：{instanceCoreJson}", ModBase.LogLevel.Hint);
+            HintService.Hint(Lang.Text("Instance.Install.CoreFileMissing"));
+            return;
+        }
+
+        ModBase.CopyFile(instanceCoreJson,
+            PageInstanceLeft.McInstance.PathInstance + @"PCLInstallBackups\" + PageInstanceLeft.McInstance.Name +
+            ".json");
         if (File.Exists(PageInstanceLeft.McInstance.PathInstance + PageInstanceLeft.McInstance.Name + ".jar"))
             ModBase.CopyFile(PageInstanceLeft.McInstance.PathInstance + PageInstanceLeft.McInstance.Name + ".jar",
                 PageInstanceLeft.McInstance.PathInstance + @"PCLInstallBackups\" + PageInstanceLeft.McInstance.Name +

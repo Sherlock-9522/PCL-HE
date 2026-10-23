@@ -29,6 +29,13 @@ namespace PCL
         [GeneratedRegex(@"<local:CustomEvent\s+[^>]*?\bType\s*=\s*""([^""]+)""[^>]*>")]
         private static partial Regex LocalCustomEventOpenTagRegex();
 
+        /// <summary>
+        /// 「成对开标签 + 子内容 + 闭标签」形式的 local:CustomEvent 元素，用于整段移除坏类型元素。
+        /// 注意不要退化回只匹配开标签：那样替换后闭标签会孤立残留。
+        /// </summary>
+        [GeneratedRegex(@"<local:CustomEvent\s+[^>]*?\bType\s*=\s*""([^""]+)""[^>]*>[\s\S]*?</local:CustomEvent\s*>", RegexOptions.IgnoreCase)]
+        private static partial Regex LocalCustomEventPairedRegex();
+
         [GeneratedRegex(@"<Setter\b[^>]*?\bProperty\s*=\s*""local:CustomEventService\.EventType""[^>]*?\bValue\s*=\s*""([^""]+)""[^>]*(?:/\s*>|>\s*</Setter\s*>)")]
         private static partial Regex SetterEventTypePropertyFirstRegex();
 
@@ -70,18 +77,13 @@ namespace PCL
                 return _RemoveBadCustomEventElement(match, rawValue, result);
             });
 
-            sanitized = LocalCustomEventOpenTagRegex().Replace(sanitized, match =>
+            // 「成对开标签 + 子内容」形式的坏类型元素必须整段移除。原实现只匹配了开标签，
+            // 替换串却返回「闭标签之后的尾部」，结果是孤立闭标签残留、尾部内容被重复插入，
+            // 拼出非法 XAML 后交给 GetObjectFromXML 解析必然失败。这里改用覆盖整个元素的匹配。
+            sanitized = LocalCustomEventPairedRegex().Replace(sanitized, match =>
             {
                 var rawValue = match.Groups[1].Value;
-                if (_IsBadType(rawValue, result))
-                {
-                    var elementName = "local:CustomEvent";
-                    var afterTag = sanitized[(match.Index + match.Length)..];
-                    var closeLen = FindMatchingCloseTag(afterTag, elementName);
-                    if (closeLen < 0) return match.Value;
-                    return afterTag[closeLen..];
-                }
-                return match.Value;
+                return _IsBadType(rawValue, result) ? "" : match.Value;
             });
 
             sanitized = SetterEventTypePropertyFirstRegex().Replace(sanitized, match =>
@@ -175,16 +177,14 @@ namespace PCL
                 return "";
             }, RegexOptions.Compiled);
 
-            var openTagPattern = $@"<[\w:]+[^>]*\s+local:CustomEventService\.EventType\s*=\s*""{escaped}""[^>]*>";
-            xaml = Regex.Replace(xaml, openTagPattern, match =>
+            // 同 :73 的说明：必须把整个元素（含子内容与闭标签）一次性吃掉，
+            // 只匹配开标签会让闭标签孤立残留、尾部重复插入，拼出非法 XAML。
+            var pairedPattern =
+                $@"<([\w:]+)[^>]*\s+local:CustomEventService\.EventType\s*=\s*""{escaped}""[^>]*>[\s\S]*?</\1\s*>";
+            xaml = Regex.Replace(xaml, pairedPattern, match =>
             {
-                var elementName = Regex.Match(match.Value, @"<([\w:]+)").Groups[1].Value;
-                var afterTag = xaml[(match.Index + match.Length)..];
-                var closeLen = FindMatchingCloseTag(afterTag, elementName);
-                if (closeLen < 0) return match.Value;
-
                 trackingList.Add(eventTypeValue);
-                return afterTag[closeLen..];
+                return "";
             }, RegexOptions.Compiled);
 
             var propertyElementPattern = $@"<local:CustomEventService\.EventType\s*>\s*{escaped}\s*</local:CustomEventService\.EventType\s*>";

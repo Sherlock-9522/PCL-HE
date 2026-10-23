@@ -3732,8 +3732,9 @@ public static class ModDownloadLib
                 $"{combo.input}PCLInstallBackups\\",
                 (string)combo.input);
             File.Delete($"{combo.input}.pclignore");
-            ModBase.DeleteDirectory(
-                $"{combo.input}PCLInstallBackups\\");
+            // 回滚完成后不在这里销毁备份：同一次安装只要再进入一次 Failed / Aborted，
+            // 备份目录就没了，守卫会落到 else 分支去删实例目录（旧行为会连存档一起删）。
+            // 备份统一由成功分支（Finished）清理。
         }
         else
         {
@@ -3744,20 +3745,60 @@ public static class ModDownloadLib
             ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");
     }
 
+    /// <summary>
+    ///     实例目录里出现这些子文件夹，说明用户已经真正玩过这个实例。
+    /// </summary>
+    private static readonly string[] mcUserDataFolders =
+        ["saves", "mods", "config", "logs", "crash-reports", "resourcepacks", "shaderpacks", "screenshots"];
+
+    /// <summary>
+    ///     实例目录里出现这些文件，同样说明有用户数据。
+    /// </summary>
+    private static readonly string[] mcUserDataFiles = ["options.txt", "servers.dat", "usercache.json"];
+
+    /// <summary>
+    ///     判断实例目录内是否存在用户数据（存档、mod、配置等）。
+    /// </summary>
+    private static bool McInstanceHasUserData(string instancePath)
+    {
+        foreach (var folder in mcUserDataFolders)
+        {
+            var path = Path.Combine(instancePath, folder);
+            if (Directory.Exists(path) && Directory.EnumerateFileSystemEntries(path).Any())
+                return true;
+        }
+
+        foreach (var file in mcUserDataFiles)
+            if (File.Exists(Path.Combine(instancePath, file)))
+                return true;
+
+        return false;
+    }
+
     public static void McInstallFailedClearFolder(object loader)
     {
         try
         {
             Thread.Sleep(1000); // 防止存在尚未完全释放的文件，导致清理失败（例如整合包安装）
-            if (((ModLoader.LoaderBase)loader).State == ModBase.LoadState.Failed ||
-                ((ModLoader.LoaderBase)loader).State == ModBase.LoadState.Aborted)
+            if (((ModLoader.LoaderBase)loader).State != ModBase.LoadState.Failed &&
+                ((ModLoader.LoaderBase)loader).State != ModBase.LoadState.Aborted)
+                return;
+
+            var instancePath = (string)((ModLoader.LoaderCombo)loader).input;
+
+            // 这里过去是无条件删除整个实例目录。同一次安装只要再进入一次 Failed / Aborted
+            // （回滚跑过之后备份目录已经不在了），守卫就会落到这条路径上，
+            // 而版本隔离开启时 saves / mods / config 就在这个目录里——等于直接丢用户数据。
+            // 现在只在能证明目录里没有用户数据时才清理。
+            if (McInstanceHasUserData(instancePath))
             {
-                // 删除实例文件夹
-                ModBase.Log($"[Download] 由于下载失败或取消，清理实例文件夹：{((ModLoader.LoaderCombo)loader).input}", ModBase.LogLevel.Developer);
-                var instancePath = (string)((ModLoader.LoaderCombo)loader).input;
-                    ((DynamicCacheConfigStorage)ConfigService.GetProvider(ConfigSource.GameInstance)).InvalidateCache(instancePath);
-                    ModBase.DeleteDirectory(instancePath);
+                ModBase.Log($"[Download] 实例文件夹内存在用户数据，已跳过自动清理：{instancePath}", ModBase.LogLevel.Feedback);
+                return;
             }
+
+            ModBase.Log($"[Download] 由于下载失败或取消，清理空的实例文件夹：{instancePath}", ModBase.LogLevel.Developer);
+            ((DynamicCacheConfigStorage)ConfigService.GetProvider(ConfigSource.GameInstance)).InvalidateCache(instancePath);
+            ModBase.DeleteDirectory(instancePath);
         }
         catch (Exception ex)
         {

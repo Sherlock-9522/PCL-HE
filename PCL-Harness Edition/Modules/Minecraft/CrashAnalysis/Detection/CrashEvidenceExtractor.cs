@@ -379,13 +379,8 @@ internal sealed class CrashEvidenceExtractor
 
         if (gameLog.Contains("Missing or unsupported mandatory dependencies:", StringComparison.Ordinal))
         {
-            var details = CrashRegex.All(
-                    gameLog,
-                    @"(?<=Missing or unsupported mandatory dependencies:)([\n\r]+\t(.*))+",
-                    RegexOptions.IgnoreCase)
-                .Select(item => item.Trim('\r', '\n', '\t', ' '))
-                .Distinct()
-                .ToList();
+            var details = _CollectIndentedLinesAfter(gameLog, "Missing or unsupported mandatory dependencies:");
+
 
             yield return _ModFinding(
                 CrashCause.MissingDependencyOrWrongMcVersion,
@@ -677,6 +672,40 @@ internal sealed class CrashEvidenceExtractor
             if (text?.Contains(pattern, StringComparison.Ordinal) == true)
                 yield return _Evidence(pattern, source, "pattern", pattern);
         }
+    }
+
+    /// <summary>
+    ///     取标记之后紧邻的、以 Tab 开头的连续行。
+    /// </summary>
+    /// <remarks>
+    ///     原先这里用的是嵌套量词正则（标记后接「一个或多个 换行 + Tab + 行内容」）。
+    ///     一旦日志里出现了该标记、后面却不是 Tab 缩进结构，匹配的失败路径会指数级回溯，
+    ///     把崩溃分析线程整条卡死。逐行扫描没有回溯风险，语义也更容易看清。
+    /// </remarks>
+    private static List<string> _CollectIndentedLinesAfter(string text, string marker)
+    {
+        var result = new List<string>();
+        var start = text.IndexOf(marker, StringComparison.Ordinal);
+        if (start < 0) return result;
+
+        var started = false;
+        foreach (var raw in text[(start + marker.Length)..].Split('\n'))
+        {
+            var line = raw.TrimEnd('\r');
+            if (line.StartsWith('\t'))
+            {
+                started = true;
+                var detail = line.Trim('\t', ' ').Trim();
+                if (detail.Length > 0) result.Add(detail);
+                continue;
+            }
+
+            if (started) break;                            // 连续的缩进段到此结束
+            if (string.IsNullOrWhiteSpace(line)) continue;  // 标记后的空白行不算打断
+            break;                                         // 第一行就不缩进，说明没有可用细节
+        }
+
+        return result.Distinct().ToList();
     }
 
     private static CrashFinding _ModFinding(

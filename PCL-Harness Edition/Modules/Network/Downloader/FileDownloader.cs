@@ -331,11 +331,17 @@ public static class FileDownloader
         }
     }
 
+    /// <summary>
+    ///     清理本次下载可能残留的临时文件。
+    /// </summary>
+    /// <remarks>
+    ///     只允许删 .PCLDownloading 临时文件。这里过去连 localPath 一起删，于是任意一次下载失败或取消，
+    ///     都会把已经存在的正式文件（旧 jar / mod / 资源包）直接删掉——这是数据丢失。
+    ///     下载本来就是先写临时文件、校验通过后再原子改名（PromoteTempFile），正式文件不需要在这里清。
+    /// </remarks>
     private static void CleanupTempFiles(string localPath)
     {
-        var tempPath = localPath + ModNet.NetDownloadEnd;
-        TryDeleteFile(localPath);
-        TryDeleteFile(tempPath);
+        TryDeleteFile(localPath + ModNet.NetDownloadEnd);
     }
 
     private static void TryDeleteFile(string path)
