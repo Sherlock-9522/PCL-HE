@@ -3694,9 +3694,17 @@ public static class ModDownloadLib
             {
                 if (Config.Download.AutoSelectInstance)
                 {
-                    var versionName = loader.name;
-                    ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "Version",
-                        versionName.Remove(versionName.Length - 3, 3));
+                    // 实例名不能靠裁剪 loader.name 得到：它是「实例名 + 空格 + 安装类型」拼出来的
+                    // （见本文件 McInstall 里的 new LoaderCombo(request.targetInstanceName + " " + type, ...)），
+                    // 而安装类型是本地化文案——中文「安装」是 2 个字，英文 "Reset" 却是 5 个字符；
+                    // 整合包路径（ModModpack）下 loader.name 更是 Lang.Text(...Install, instanceName) 那种完全另一种拼接。
+                    // 原实现固定砍掉末尾 3 个字符，只在中文的「安装」「重置」下恰好正确。
+                    // combo.input 是安装目标实例文件夹路径，取它的最后一段才是可靠的实例名。
+                    var instanceFolder = combo.input as string;
+                    var instanceName = string.IsNullOrEmpty(instanceFolder)
+                        ? loader.name
+                        : ModBase.GetFolderNameFromPath(instanceFolder);
+                    ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "Version", instanceName);
                 }
 
                 ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "InstanceCache",
