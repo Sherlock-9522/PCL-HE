@@ -44,9 +44,22 @@ public static class Secrets
     public static string MSOAuthClientId { get; } = EnvironmentInterop.GetSecret("MS_CLIENT_ID", readEnvDebugOnly: false).ReplaceNullOrEmpty() is { Length: > 0 } fromEnvironment ? fromEnvironment : BuiltInMSOAuthClientId;
 
     /// <summary>
-    /// CurseForge API 的 Client ID
+    /// CurseForge API Key。
+    /// <para>
+    /// 这个 Key 既不在仓库里，也不随发行包分发：CI 刻意不注入它，用户需要自己把 Key 填进
+    /// 启动器数据目录下的 <c>secrets.json</c>（见 <see cref="EnvironmentInterop.GetSecret"/>）。
+    /// </para>
     /// </summary>
     public static string CurseForgeAPIKey { get; } = EnvironmentInterop.GetSecret("CURSEFORGE_API_KEY", readEnvDebugOnly: true).ReplaceNullOrEmpty();
+
+    /// <summary>
+    /// 当前是否拿到了可用的 CurseForge API Key。
+    /// <para>
+    /// 没有 Key 时调用方应当自行降级：界面隐藏 CurseForge 来源，请求也不要发出
+    /// 空 <c>x-api-key</c>——那既拿不到数据，也平白消耗额度、还会让服务端看到异常调用。
+    /// </para>
+    /// </summary>
+    public static bool HasCurseForgeApiKey => !string.IsNullOrEmpty(CurseForgeAPIKey);
 
     /// <summary>
     /// 遥测密钥

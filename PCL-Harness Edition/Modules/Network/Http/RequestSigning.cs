@@ -21,18 +21,21 @@ public static class RequestSigning
     {
         client.Version = HttpVersion.Version20;
         client.VersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
-        if (Uri.TryCreate(url, UriKind.Absolute, out var parsedUri) 
+        if (Secrets.HasCurseForgeApiKey
+            && Uri.TryCreate(url, UriKind.Absolute, out var parsedUri)
             && (parsedUri.Host == "api.curseforge.com"
             || parsedUri.Host == "edge.forgecdn.net"
             || parsedUri.Host == "mediafilez.forgecdn.net"))
         {
             client.Headers.Add("x-api-key", Secrets.CurseForgeAPIKey);
         }
+        // 不要在 UA 里挂上游 PCL2 / PCL-CE 的名字：请求量会被算进上游的 UA 声誉里，
+        // 用户一多就可能把上游的 UA 一起拖进限流甚至封禁。这里只用自己的标识加仓库地址。
         var userAgent = !string.IsNullOrEmpty(customUserAgent)
             ? customUserAgent
             : useBrowserUserAgent
-                ? $"PCL2/{ModBase.upstreamVersion}.{ModBase.versionBranchCode} PCL-HE/{ModBase.versionStandardCode} Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
-                : $"PCL2/{ModBase.upstreamVersion}.{ModBase.versionBranchCode} PCL-HE/{ModBase.versionStandardCode}";
+                ? $"PCL-HE/{ModBase.versionStandardCode} (+https://github.com/Sherlock-9522/PCL-HE) Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+                : $"PCL-HE/{ModBase.versionStandardCode} (+https://github.com/Sherlock-9522/PCL-HE)";
         client.Headers.Add("User-Agent", userAgent);
     }
 }

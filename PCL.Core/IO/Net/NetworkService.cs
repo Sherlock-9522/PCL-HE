@@ -68,7 +68,7 @@ public partial class NetworkService
         services.ConfigureHttpClientDefaults(b => b
             .ConfigurePrimaryHttpMessageHandler(_GetSocketsHttpHandler)
             .ConfigureHttpClient(c => c.DefaultRequestHeaders
-                .UserAgent.Add(new ProductInfoHeaderValue("PCL-CE", Basics.VersionName)))
+                .UserAgent.ParseAdd($"PCL-HE/{Basics.VersionName} (+https://github.com/Sherlock-9522/PCL-HE)"))
             .SetHandlerLifetime(TimeSpan.FromMinutes(LifeTime)));
         
         // 默认的 HTTP Client
@@ -79,7 +79,10 @@ public partial class NetworkService
 
         services.AddHttpClient(CurseForgeApi).ConfigureHttpClient(c =>
         {
-            c.DefaultRequestHeaders.Add("x-api-key", Secrets.CurseForgeAPIKey);
+            // 没有 Key 时不发空的 x-api-key：服务端会把它当成一次无效调用，
+            // 既拿不到数据也白白消耗额度。相关界面依据 Secrets.HasCurseForgeApiKey 自行隐藏。
+            if (Secrets.HasCurseForgeApiKey)
+                c.DefaultRequestHeaders.Add("x-api-key", Secrets.CurseForgeAPIKey);
             c.BaseAddress = new Uri(CurseForgeApiServer);
         });
         

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Windows;
@@ -91,7 +91,7 @@ public partial class PageSetupLog
     {
         var filter = Lang.Text("Setup.Log.ExportFilter");
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var baseName = "PCL_CE_Logs_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        var baseName = "PCL_HE_Logs_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
         var tempDirName = baseName + ".tmp";
         var fileName = baseName + ".zip";
         var selectedPath = SystemDialogs.SelectSaveFile(Lang.Text("Setup.Log.ExportSaveTitle"), fileName, filter, desktopPath);

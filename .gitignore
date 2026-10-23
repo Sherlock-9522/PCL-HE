@@ -349,3 +349,10 @@ MaskFiles/
 # 本地第三方二进制与素材，仅用于开发期验证，不随仓库分发
 _vendor/
 _assets/
+
+# 本地凭据（CurseForge API Key 等），绝不允许进仓库：
+# 一旦被 GitHub 的爬虫扫到，CurseForge 会直接封禁该 Key，并连带影响上游项目。
+secrets.json
+**/secrets.json
+secrets.local.json
+*.secrets.json

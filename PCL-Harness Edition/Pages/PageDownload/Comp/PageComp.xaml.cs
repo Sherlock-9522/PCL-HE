@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -158,8 +158,14 @@ public partial class PageComp
     /// </summary>
     public ItemCollection SearchTags => ComboSearchTag.Items;
 
+    /// <summary>
+    ///     是否展示 CurseForge 来源。
+    ///     默认值取决于当前是否配了 CurseForge API Key——没有 Key 时 CurseForge 的接口全都不可用，
+    ///     界面上就不该出现一个点了必然失败的来源。Key 由使用者填在启动器数据目录的 secrets.json 里。
+    /// </summary>
     public static readonly DependencyProperty SupportCurseForgeProperty =
-        DependencyProperty.Register("SupportCurseForge", typeof(bool), typeof(PageComp), new PropertyMetadata(true));
+        DependencyProperty.Register("SupportCurseForge", typeof(bool), typeof(PageComp),
+            new PropertyMetadata(PCL.Core.App.Secrets.HasCurseForgeApiKey));
 
     public bool SupportCurseForge
     {

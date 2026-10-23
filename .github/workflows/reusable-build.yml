@@ -36,9 +36,15 @@ jobs:
 
       - name: Build Project
         env:
+          # 只允许注入「可以公开」的值：PCL_WRITE_SECRET 会让 EnvironmentInteropGenerator
+          # 把下面这些 PCL_* 变量的值明文编译进二进制，任何人都能反编译看到。
+          #
+          # PCL_CURSEFORGE_API_KEY 因此被刻意移除。CurseForge 的 API Key 一旦随发行包分发，
+          # 等于把申请来的 Key 交给所有使用者共用，官方会按「多客户端复用同一 Key」处置并封禁，
+          # 连带影响上游项目。正确做法是让使用者把 Key 填进本地 secrets.json
+          # （见 PCL.Core/Utils/OS/EnvironmentInterop.cs 的 ReadLocalSecret），没填时启动器自行降级。
           PCL_WRITE_SECRET: '1'
           PCL_MS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          PCL_CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           PCL_GITHUB_SHA: ${{ github.sha }}
         run: |
           dotnet publish "PCL-Harness Edition/Plain Craft Launcher 2.csproj" \
