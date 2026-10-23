@@ -991,7 +991,7 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
   `FormMain.xaml.cs` 的裁剪矩形由 `(0,0,w,h)` 改成 `(1,1,w-2,h-2)`，两者才真正对齐。
   标题栏下沿另加一道 `#26000000 → #00000000` 的渐隐投影，用来分开标题栏与内容区。
 - **下载按钮实心态**（`13640a6`）：`MyExtraTextButton` 新增 `SolidTheme` 实心态——浅色模式
-  `#0b5bcb` 蓝底白字、深色模式 `#121216` 黑底白字，悬停各自变亮，并经
+  `#0b5bcb` 蓝底白字、深色模式黑底白字（初版取 `#121216`，2026-10-24 改为标题栏色 `#20242C`），悬停各自变亮，并经
   `ThemeService.ColorModeChanged` 跟随启动器深浅模式切换；按钮文字改为幼圆加粗。
 
 描边一项的验证方式值得单独记下来：先按 DPI 感知分别取「窗口自绘内容」与「屏幕合成图」，逐像素
