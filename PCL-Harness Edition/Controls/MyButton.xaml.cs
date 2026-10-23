@@ -3,6 +3,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using PCL.Core.App;
+using PCL.Core.UI.Theme;
 
 namespace PCL;
 
@@ -15,7 +17,12 @@ public partial class MyButton
     {
         Normal = 0,
         Highlight = 1,
-        Red = 2
+        Red = 2,
+
+        /// <summary>
+        /// 实心强调按钮：浅色模式蓝底白字，深色模式黑底白字，随启动器深浅模式自动切换。
+        /// </summary>
+        Solid = 3
     }
 
     // 自定义事件
@@ -33,6 +40,18 @@ public partial class MyButton
         typeof(Thickness), typeof(MyButton), new PropertyMetadata((sender, e) =>
         {
             if (sender is not null) ((MyButton)sender).PanFore.Padding = (Thickness)e.NewValue;
+        }));
+
+    public static readonly DependencyProperty TextFontFamilyProperty = DependencyProperty.Register("TextFontFamily",
+        typeof(FontFamily), typeof(MyButton), new PropertyMetadata((sender, e) =>
+        {
+            if (sender is not null) ((MyButton)sender).LabText.FontFamily = (FontFamily)e.NewValue;
+        }));
+
+    public static readonly DependencyProperty TextFontWeightProperty = DependencyProperty.Register("TextFontWeight",
+        typeof(FontWeight), typeof(MyButton), new PropertyMetadata((sender, e) =>
+        {
+            if (sender is not null) ((MyButton)sender).LabText.FontWeight = (FontWeight)e.NewValue;
         }));
     
     private ColorState _ColorType = ColorState.Normal; // 配色方案
@@ -56,6 +75,19 @@ public partial class MyButton
         MouseEnter += (_, _) => Button_MouseEnter();
         MouseLeftButtonUp += (_, _) => Button_MouseUp();
         MouseLeave += (_, _) => Button_MouseLeave();
+        Loaded += (_, _) => ThemeService.ColorModeChanged += OnColorModeChanged;
+        Unloaded += (_, _) => ThemeService.ColorModeChanged -= OnColorModeChanged;
+    }
+
+    /// <summary>
+    /// 实心按钮的取色依赖启动器深浅模式，主题变化时需要重新取色。
+    /// ThemeService.ColorModeChanged 是静态事件，必须成对注销，否则会永久持有控件并泄漏整棵可视树。
+    /// </summary>
+    private void OnColorModeChanged(bool isDarkMode, ColorTheme theme)
+    {
+        if (_ColorType != ColorState.Solid)
+            return;
+        Dispatcher.Invoke(() => RefreshColor());
     }
 
     public InlineCollection Inlines => LabText.Inlines;
@@ -71,6 +103,18 @@ public partial class MyButton
         get => LabText.Padding;
         set => LabText.Padding = value;
     }
+
+    public FontFamily TextFontFamily
+    {
+        get => (FontFamily)GetValue(TextFontFamilyProperty);
+        set => SetValue(TextFontFamilyProperty, value);
+    } // 字体
+
+    public FontWeight TextFontWeight
+    {
+        get => (FontWeight)GetValue(TextFontWeightProperty);
+        set => SetValue(TextFontWeightProperty, value);
+    } // 字重
 
     public ColorState ColorType
     {
@@ -104,8 +148,27 @@ public partial class MyButton
             ColorState.Normal => IsMouseOver ? "ColorBrush3" : "ColorBrush1",
             ColorState.Highlight => IsMouseOver ? "ColorBrush3" : "ColorBrush2",
             ColorState.Red => IsMouseOver ? "ColorBrushRedLight" : "ColorBrushRedDark",
+            // 实心按钮：文字色跟随边框色，因此这里取纯白；1px 边框本身由 BorderThickness=0 隐去
+            ColorState.Solid => "ColorBrushSolidFore",
             _ => "ColorBrush1"
         };
+    }
+
+    /// <summary>
+    /// 实心按钮的底色：浅色模式蓝底、深色模式黑底，文字色由 GetBorderBrushResourceKey 给出（纯白）。
+    /// </summary>
+    private string GetSolidBackgroundResourceKey(bool hover)
+    {
+        return ThemeManager.IsDarkMode
+            ? hover ? "ColorBrushSolidBackDarkHover" : "ColorBrushSolidBackDark"
+            : hover ? "ColorBrushSolidBackHover" : "ColorBrushSolidBack";
+    }
+
+    private void RefreshSolidBackground()
+    {
+        ModAnimation.AniStop("MyButton Background " + Uuid);
+        PanFore.SetResourceReference(BackgroundProperty,
+            IsEnabled ? GetSolidBackgroundResourceKey(false) : "ColorBrushHalfWhite");
     }
 
     private void StartBorderBrushAnimation(string resourceKey, int duration)
@@ -121,6 +184,18 @@ public partial class MyButton
     {
         try
         {
+            if (_ColorType == ColorState.Solid)
+            {
+                // 实心按钮：不显示 1px 边框，边框色只作为纯白文字色使用
+                PanFore.BorderThickness = new Thickness(0);
+                if (!IsMouseOver)
+                    RefreshSolidBackground();
+            }
+            else
+            {
+                PanFore.BorderThickness = new Thickness(1);
+            }
+
             if (ControlVisualHelpers.ShouldAnimate(this)) // 防止默认属性变更触发动画
             {
                 if (IsEnabled)
@@ -177,7 +252,12 @@ public partial class MyButton
     {
         ModAnimation.AniStart(
             ModAnimation.AaColor(PanFore, BackgroundProperty,
-                _ColorType == ColorState.Red ? "ColorBrushRedBack" : "ColorBrush7", animationColorIn),
+                _ColorType == ColorState.Solid
+                    ? GetSolidBackgroundResourceKey(true)
+                    : _ColorType == ColorState.Red
+                        ? "ColorBrushRedBack"
+                        : "ColorBrush7",
+                animationColorIn),
             "MyButton Background " + Uuid);
     }
 
@@ -197,7 +277,9 @@ public partial class MyButton
     private void Button_MouseLeave()
     {
         ModAnimation.AniStart(
-            ModAnimation.AaColor(PanFore, BackgroundProperty, "ColorBrushHalfWhite", animationColorOut),
+            ModAnimation.AaColor(PanFore, BackgroundProperty,
+                _ColorType == ColorState.Solid ? GetSolidBackgroundResourceKey(false) : "ColorBrushHalfWhite",
+                animationColorOut),
             "MyButton Background " + Uuid);
         if (!isMouseDown)
             return;

@@ -3,6 +3,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using PCL.Core.App;
+using PCL.Core.UI.Theme;
 
 namespace PCL;
 
@@ -15,6 +17,30 @@ public partial class MyExtraTextButton
     // 务必放在 IsMouseDown 更新之后
     private const int animationColorIn = 120;
     private const int animationColorOut = 150;
+
+    // 实心强调主题：浅色模式蓝底白字，深色模式黑底白字，跟随启动器深浅模式自动切换。
+    // 开启后底色改用 Application.xaml 里的 ColorBrushSolidBack* 固定色组，不再参与主题色计算。
+    public static readonly DependencyProperty SolidThemeProperty = DependencyProperty.Register(
+        nameof(SolidTheme), typeof(bool), typeof(MyExtraTextButton),
+        new PropertyMetadata(false, (sender, e) => ((MyExtraTextButton)sender).RefreshColor()));
+
+    public bool SolidTheme
+    {
+        get => (bool)GetValue(SolidThemeProperty);
+        set => SetValue(SolidThemeProperty, value);
+    }
+
+    // 字体族穿透：本控件不是 Control，没有 FontFamily，只能手动透传给 LabText。
+    public static readonly DependencyProperty TextFontFamilyProperty = DependencyProperty.Register(
+        nameof(TextFontFamily), typeof(FontFamily), typeof(MyExtraTextButton),
+        new PropertyMetadata(null,
+            (sender, e) => ((MyExtraTextButton)sender).LabText.FontFamily = (FontFamily)e.NewValue));
+
+    public FontFamily TextFontFamily
+    {
+        get => (FontFamily)GetValue(TextFontFamilyProperty);
+        set => SetValue(TextFontFamilyProperty, value);
+    }
 
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string),
         typeof(MyExtraTextButton), new PropertyMetadata((sender, e) =>
@@ -35,6 +61,18 @@ public partial class MyExtraTextButton
 
         Loaded += (_, _) => RefreshColor();
         IsEnabledChanged += (_, _) => RefreshColor();
+        // 主题是静态事件，必须成对注销；Loaded 可能重复触发，故用标志位防止重复订阅。
+        Loaded += (_, _) =>
+        {
+            if (themeHooked) return;
+            themeHooked = true;
+            ThemeService.ColorModeChanged += OnColorModeChanged;
+        };
+        Unloaded += (_, _) =>
+        {
+            themeHooked = false;
+            ThemeService.ColorModeChanged -= OnColorModeChanged;
+        };
         PanClick.MouseLeftButtonDown += Button_LeftMouseDown;
         PanClick.MouseLeftButtonUp += Button_LeftMouseUp;
         PanClick.MouseLeave += Button_MouseLeave;
@@ -244,35 +282,47 @@ public partial class MyExtraTextButton
         RefreshColor(); // 直接刷新颜色以判断是否已触发 MouseLeave
     }
 
+    private bool themeHooked;
+
+    private void OnColorModeChanged(bool isDarkMode, ColorTheme theme)
+    {
+        if (!SolidTheme) return;
+        Dispatcher.Invoke(() => RefreshColor());
+    }
+
+    // 实心态下的底色资源键：浅色模式蓝、深色模式近黑，悬停各提亮一档。
+    private string GetSolidBackgroundResourceKey()
+    {
+        if (!IsEnabled) return "ColorBrushHalfWhite";
+        if (!IsMouseOver) return ThemeManager.IsDarkMode ? "ColorBrushSolidBackDark" : "ColorBrushSolidBack";
+        return ThemeManager.IsDarkMode ? "ColorBrushSolidBackDarkHover" : "ColorBrushSolidBackHover";
+    }
+
+    // 当前状态应使用的底色资源键：实心态走固定色组，其余沿用主题色组。
+    private string GetBackgroundResourceKey()
+    {
+        if (SolidTheme) return GetSolidBackgroundResourceKey();
+        return !IsEnabled ? "ColorBrushGray4" : IsMouseOver ? "ColorBrush4" : "ColorBrush3";
+    }
+
     public void RefreshColor()
     {
         try
         {
+            var colorKey = GetBackgroundResourceKey();
+            // 离开与禁用用进入时长，指向用进入时长，回到普通态用退出时长
+            var colorDuration = IsEnabled && !IsMouseOver ? animationColorOut : animationColorIn;
             if (ControlVisualHelpers.ShouldAnimate(this)) // 防止默认属性变更触发动画
             {
-                if (!IsEnabled)
-                    // 禁用
-                    ModAnimation.AniStart(
-                        ModAnimation.AaColor(PanColor, BackgroundProperty, "ColorBrushGray4", animationColorIn),
-                        "MyExtraTextButton Color " + Uuid);
-                else if (IsMouseOver)
-                    // 指向
-                    ModAnimation.AniStart(
-                        ModAnimation.AaColor(PanColor, BackgroundProperty, "ColorBrush4", animationColorIn),
-                        "MyExtraTextButton Color " + Uuid);
-                else
-                    // 普通
-                    ModAnimation.AniStart(
-                        ModAnimation.AaColor(PanColor, BackgroundProperty, "ColorBrush3", animationColorOut),
-                        "MyExtraTextButton Color " + Uuid);
+                ModAnimation.AniStart(
+                    ModAnimation.AaColor(PanColor, BackgroundProperty, colorKey, colorDuration),
+                    "MyExtraTextButton Color " + Uuid);
             }
 
             else
             {
-                ControlVisualHelpers.AnimateColorOrSetResource(PanColor, BackgroundProperty,
-                    !IsEnabled ? "ColorBrushGray4" : IsMouseOver ? "ColorBrush4" : "ColorBrush3",
-                    !IsEnabled || IsMouseOver ? animationColorIn : animationColorOut,
-                    "MyExtraTextButton Color " + Uuid, false);
+                ControlVisualHelpers.AnimateColorOrSetResource(PanColor, BackgroundProperty, colorKey,
+                    colorDuration, "MyExtraTextButton Color " + Uuid, false);
             }
         }
         catch (Exception ex)
