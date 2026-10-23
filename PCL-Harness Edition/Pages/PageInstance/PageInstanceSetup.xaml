@@ -421,7 +421,7 @@
             <local:MyExtraTextButton HorizontalAlignment="Center" Margin="0,-5,0,0"
                                      x:Name="BtnSwitch" Text="{DynamicResource Instance.Setup.OpenGlobalSettings}"
                                      LogoScale="0.9"
-                                     SvgIcon="lucide/arrow-right" />
+                                     SvgIcon="lucide/arrow-right" SolidTheme="True" TextFontFamily="幼圆" />
         </StackPanel>
     </local:MyScrollViewer>
 </local:MyPageRight>

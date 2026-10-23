@@ -90,11 +90,12 @@
             <SolidColorBrush x:Key="ColorBrushTitleBarEdge">#3A4049</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushTitleBadge">#F5FFFFFF</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushTitleBadgeText">#20242C</SolidColorBrush>
-            <!-- 实心强调按钮（下载）：浅色模式蓝底白字，深色模式黑底白字。固定色，不参与主题色计算 -->
+            <!-- 实心强调按钮（浮钮）：浅色模式蓝底白字，深色模式黑底白字。固定色，不参与主题色计算 -->
+            <!-- 深色黑底直接取自窗口标题栏，与标题栏同色系，避免纯黑在浅色壁纸上显得突兀 -->
             <SolidColorBrush x:Key="ColorBrushSolidBack">#0b5bcb</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushSolidBackHover">#1370f3</SolidColorBrush>
-            <SolidColorBrush x:Key="ColorBrushSolidBackDark">#121216</SolidColorBrush>
-            <SolidColorBrush x:Key="ColorBrushSolidBackDarkHover">#26262c</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushSolidBackDark">#20242C</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushSolidBackDarkHover">#3A4049</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushSolidFore">#ffffff</SolidColorBrush>
 
             <!-- Window -->

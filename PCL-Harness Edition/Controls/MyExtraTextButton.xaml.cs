@@ -78,6 +78,10 @@ public partial class MyExtraTextButton
         PanClick.MouseLeave += Button_MouseLeave;
         PanClick.MouseRightButtonUp += Button_RightMouseUp;
         PanClick.MouseEnter += (sender, e) => RefreshColor();
+
+        // 浮钮不留描边：模板里那圈白色渐变描边（模拟顶部打光）在高饱和实心底色上会显得脏。
+        // 只置空 BorderBrush、不动 BorderThickness，避免 Border 的布局让内容位移 2px。
+        PanColor.BorderBrush = null;
     }
 
     public string Logo
@@ -290,12 +294,14 @@ public partial class MyExtraTextButton
         Dispatcher.Invoke(() => RefreshColor());
     }
 
-    // 实心态下的底色资源键：浅色模式蓝、深色模式近黑，悬停各提亮一档。
+    // 实心态下的底色资源键：浅色模式蓝底白字，深色模式黑底白字，跟随启动器深浅模式自动切换。
+    // 深色黑底取窗口标题栏色（ColorBrushTitleBar #20242C），悬停取标题栏描边色（#3A4049），与标题栏同色系。
     private string GetSolidBackgroundResourceKey()
     {
         if (!IsEnabled) return "ColorBrushHalfWhite";
-        if (!IsMouseOver) return ThemeManager.IsDarkMode ? "ColorBrushSolidBackDark" : "ColorBrushSolidBack";
-        return ThemeManager.IsDarkMode ? "ColorBrushSolidBackDarkHover" : "ColorBrushSolidBackHover";
+        return ThemeManager.IsDarkMode
+            ? (IsMouseOver ? "ColorBrushSolidBackDarkHover" : "ColorBrushSolidBackDark")
+            : (IsMouseOver ? "ColorBrushSolidBackHover" : "ColorBrushSolidBack");
     }
 
     // 当前状态应使用的底色资源键：实心态走固定色组，其余沿用主题色组。

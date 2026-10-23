@@ -320,7 +320,7 @@
             <local:MyExtraTextButton HorizontalAlignment="Center" Margin="0,-5,0,15"
                                      x:Name="BtnSwitch" Text="{DynamicResource Setup.Launch.SwitchToInstanceSetup}" Click="BtnSwitch_Click"
                                      LogoScale="0.9"
-                                     SvgIcon="lucide/arrow-right" />
+                                     SvgIcon="lucide/arrow-right" SolidTheme="True" TextFontFamily="幼圆" />
         </StackPanel>
     </local:MyScrollViewer>
 </local:MyPageRight>
