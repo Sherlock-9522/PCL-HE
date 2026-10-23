@@ -106,9 +106,12 @@ public partial class PageInstanceInstall
         }
 
         // 确认版本隔离
+        // 按该实例「实际是否被隔离」判断，而不是看全局档位 Config.Launch.IndieSolutionV2：
+        // PathIndie 会综合全局档位、实例内的 mods/saves 目录、是否正式版、能否装 Mod 等因素算出结果，
+        // 而档位 1/3/4 下部分实例本来就不隔离（原来会漏警告），档位 2 下快照版实例仍然隔离（原来会多警告）。
         if (_selectedLoaderType is not null &&
-            (Config.Launch.IndieSolutionV2 == 0 ||
-             Config.Launch.IndieSolutionV2 == 2))
+            !string.Equals(PageInstanceLeft.McInstance.PathIndie, PageInstanceLeft.McInstance.PathInstance,
+                StringComparison.OrdinalIgnoreCase))
             if (ModMain.MyMsgBox(
                     Lang.Text("Download.Install.InstanceIsolation.Warning.Message"), Lang.Text("Download.Install.InstanceIsolation.Warning.Title"), Lang.Text("Download.Install.InstanceIsolation.Warning.Cancel"), Lang.Text("Download.Install.InstanceIsolation.Warning.Continue")) == 1)
                 return;
