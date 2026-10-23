@@ -37,7 +37,7 @@ public class DnsQuery : IDisposable
             },
             new HttpClient(proxyHandler)
             {
-                BaseAddress = new Uri("https://doh.pysio.online/")
+                BaseAddress = new Uri("https://dns.alidns.com/") // PCL-HE：原为 PCL-CE 自建 DoH（doh.pysio.online），独立切割后改用阿里公共 DNS
             },
             new HttpClient(proxyHandler)
             {
