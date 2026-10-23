@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:PCL"
@@ -100,8 +100,10 @@
                 </RadialGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Border x:Name="PanBack" BorderBrush="{DynamicResource ColorBrushTitleBarEdge}" BorderThickness="1" CornerRadius="6">
+        <Border x:Name="PanBack" BorderThickness="1" CornerRadius="7">
             <Border.Clip>
+                <!-- 内容裁剪半径 = PanEdge 的 CornerRadius(7) - BorderThickness(1)，配合内缩 1px 的 Rect，
+                     圆心与描边圆心重合于 (7,7)，内容外缘正好落在描边环的内缘上。 -->
                 <RectangleGeometry x:Name="RectForm" RadiusX="6" RadiusY="6" />
             </Border.Clip>
             <Grid x:Name="PanForm" SnapsToDevicePixels="False" UseLayoutRounding="False">
@@ -115,6 +117,15 @@
                                   Stretch="UniformToFill" IsHitTestVisible="False" Visibility="Visible"
                                   MediaEnded="VideoEnded" Volume="0" />
                 </Canvas>
+                <!-- 标题栏向内容区投下的柔和阴影，让标题栏与内容区分层更明确 -->
+                <Rectangle Grid.Row="1" VerticalAlignment="Top" Height="18" IsHitTestVisible="False">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#26000000" Offset="0" />
+                            <GradientStop Color="#00000000" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
                 <local:AnimatedBackgroundGrid Grid.Row="0" x:Name="PanTitle" Height="48"
                                               MouseLeftButtonDown="FormDragMove"
                                               WindowChrome.IsHitTestVisibleInChrome="True"
@@ -267,5 +278,10 @@
                 </controls:BlurBorder>
             </Grid>
         </Border>
+        <!-- 窗口描边：视觉圆角半径由这里决定（CornerRadius=7），Margin=0 使其与 PanBack 外框完全重合。
+             描边环占半径 6~7；内容裁剪半径取 6 且 Rect 内缩 1px，故内容外缘恰好等于描边内缘，
+             标题栏与壁纸不会再从描边外侧露出（此前的溢出正来自两者圆心/半径不齐）。 -->
+        <Border x:Name="PanEdge" Margin="0" CornerRadius="7" BorderThickness="1.5"
+                BorderBrush="{DynamicResource ColorBrushTitleBarEdge}" IsHitTestVisible="False" />
     </Grid>
 </Window>

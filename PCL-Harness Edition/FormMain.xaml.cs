@@ -726,7 +726,11 @@ public partial class FormMain
 
         if (PanBack is not null)
         {
-            RectForm.Rect = new Rect(0d, 0d, PanBack.ActualWidth, PanBack.ActualHeight);
+            // 裁剪矩形必须内缩一个 BorderThickness：这样圆心与 PanEdge 圆角的圆心重合于 (7,7)，
+            // 内容半径（6）正好等于描边内缘，描边环 [6,7] 完整压住内容最外圈。
+            // 若矩形仍从 (0,0) 起，内容会裁到半径 7（= 描边外缘），标题栏与壁纸就会从描边外侧露出半像素。
+            RectForm.Rect = new Rect(1d, 1d,
+                Math.Max(0d, PanBack.ActualWidth - 2d), Math.Max(0d, PanBack.ActualHeight - 2d));
 
             var formWidth = PanBack.ActualWidth + 0.001d;
             var formHeight = PanBack.ActualHeight + 0.001d;
