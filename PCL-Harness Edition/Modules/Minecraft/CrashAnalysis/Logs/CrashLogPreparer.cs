@@ -83,8 +83,11 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
             Debug = debug,
             CrashReport = crashReport,
             HsErr = hsErr,
+            // 这里必须是「各自独立拼接」而不是链式 ??：game 非空时链式写法会整段短路掉 debug?.Text，
+            // 让只出现在 debug 日志里的线索被系统性忽略，而 LogAll 正是规则目录的输入。
             All = string.Concat(
-                game?.Text ?? debug?.Text ?? string.Empty,
+                game?.Text ?? string.Empty,
+                debug?.Text ?? string.Empty,
                 hsErr?.Text ?? string.Empty,
                 crashReport?.Text ?? string.Empty)
         };
@@ -185,6 +188,9 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
                 StringComparer.OrdinalIgnoreCase);
 
         var text = "";
+        // 记录真正被提取进 Text 的文件：Text 由按名挑选的结果拼成，
+        // 若 FilePath 另外取 gameFiles 首个，会让「打开日志」看到的与分析用的不是同一份。
+        string? pickedLogPath = null;
 
         foreach (var name in new[]
                  {
@@ -203,6 +209,7 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
 
             text += _ExtractLauncherGameOutput(currentLog);
 
+            pickedLogPath ??= currentLog.FullPath;
             context.OutputFiles.Add(currentLog.FullPath);
             LogWrapper.Info("Crash", $"导入分析：{currentLog.FullPath}，作为启动器日志");
 
@@ -222,6 +229,7 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
 
             text += _GetHeadTailLines(currentLog.Lines, 1500, 500);
 
+            pickedLogPath ??= currentLog.FullPath;
             context.OutputFiles.Add(currentLog.FullPath);
             LogWrapper.Info("Crash", $"导入分析：{currentLog.FullPath}，作为 Minecraft 日志");
 
@@ -236,6 +244,7 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
 
             text = _GetHeadTailLines(fallback.Lines, 1500, 500);
 
+            pickedLogPath ??= fallback.FullPath;
             context.OutputFiles.Add(fallback.FullPath);
             LogWrapper.Info("Crash", $"导入分析：{fallback.FullPath}，作为兜底日志");
         }
@@ -250,7 +259,8 @@ internal sealed class CrashLogPreparer(CrashAnalysisContext context)
         {
             Kind = CrashLogKind.Game,
             Text = text.TrimEnd('\r', '\n'),
-            FilePath = gameFiles.FirstOrDefault()?.FullPath
+            // 指向真正被提取进 Text 的那个文件，保证「打开日志」看到的与分析用的是同一份。
+            FilePath = pickedLogPath
         };
     }
 
