@@ -1077,3 +1077,65 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 - 可用包：`PCL_HE_Beta_x64.zip`（78 MB，自包含单文件）、`PCL_HE_Beta_ARM64.zip`（73 MB）
 - 代码签名为自签名，分发后仍会触发 SmartScreen
 - `main` 上另有三笔未发布的界面打磨提交（见附录 A 的 2026-10-23 一节），尚未打 tag
+
+---
+
+## 附录 C　会话交接记录（2026-10-24 凌晨）
+
+本节由当班会话在交接时写下，供后续会话直接接手，不必重读代码或重新 grep。
+
+### C.1　启动即崩溃的根治（维护者报「PCL-HE 启动不了」）
+
+**现象**：进程起后 6~16 秒自行退出，`PCL/Log` 下不产生任何新日志，退出码 `-532462766`（`0xE0434352`，CLR 未处理异常）。
+
+**定位手法（可复用）**：
+- 用 `.ps1` 脚本把 exe 的 stdout/stderr 重定向到文件再读，**bash 内联 PowerShell 会把 `$` 变量吃掉，必须写成脚本文件执行**。
+- Windows 事件日志的 `.NET Runtime`（ID 1026）能拿到完整托管堆栈；WER 的 `Report.wer` 只有签名、没有堆栈。
+
+堆栈指向 `Lifecycle._CreateService` → `LifecycleContext.Fatal` → `_FatalExit` → `ForceShutdown` → `Shutdown` 抛 `InvalidOperationException`；真正的错在更早：`SingleInstanceService` 实例化失败，底层是 `Paths..cctor()` 抛 `ArgumentNullException: Value cannot be null. (Parameter 'path1')`。
+
+**根因一（真正的错）**：`Basics` 与 `Paths` 构成静态初始化循环 —— `Basics` 的静态字段初始化会间接触发 `Paths` 的静态构造，而 `Paths.DefaultDirectory => Basics.ExecutableDirectory` 又回头读 `Basics`；同一线程重入时 CLR 不等构造完成、直接返回默认值，于是拿到 `null`，`Path.Combine(null, "PCL")` 抛异常；因为它发生在静态构造函数里，整个 `Paths` 类型报废。
+
+**根因二（把错误掩盖了）**：`PCL.Core/App/IoC/LifecycleFlow.cs:181` 的 `Shutdown` 第一句是 `if (CurrentState == LifecycleState.BeforeLoading) throw new InvalidOperationException();`，而 `PCL.Core/App/IoC/LifecycleContext.cs:40` 的 `if (item.ActionLevel == ActionLevel.MsgBoxFatal) _FatalExit();` 恰恰在 BeforeLoading 阶段触发 —— 于是「记录致命错误」这个动作本身把进程抛死，原始错误一行日志都没留下。同一个 lambda 的另两条回调（`:44`、`:64`）都带 `CurrentState != LifecycleState.BeforeLoading` 守卫，只有这条漏了。
+
+**修法**（`30973b5 fix(core): break the static init cycle that killed startup`，3 文件）：
+- `PCL.Core/App/Paths.cs`：`DefaultDirectory` 改为自算，彻底切断对 `Basics` 的依赖 —— `public static string DefaultDirectory => _defaultDirectory ??= GetExecutableDirectory();`，新增 `private static string? _defaultDirectory;` 与 `private static string GetExecutableDirectory()`（先取 `Environment.ProcessPath` 的目录，失败退到 `AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar)`）。
+- `PCL.Core/App/IoC/LifecycleFlow.cs` 的 `_FatalExit()`：改为 `if (CurrentState == LifecycleState.BeforeLoading) _Exit(-1); else ForceShutdown(-1);`。
+- `PCL.Core/App/IoC/LifecycleService.cs` 的 `_CreateService` catch：补 `Console.Error.WriteLine` 诊断。
+
+**实测**：部署后 12 秒 `EXITED=False`，stderr 完全干净。
+
+### C.2　缺陷清扫总账（两轮共 20 处，全部编译 0 错误并推送）
+
+首轮 19 处见 2026-10-24 一节；第二轮新增 1 处：
+- `PCL-Harness Edition/Pages/PageInstance/PageInstanceInstall.xaml.cs`（`90c8ad2`）：隔离警告原先按全局档位 `Config.Launch.IndieSolutionV2 == 0 || == 2` 判断，而该档位有 5 档（默认 4），1/3 档下会漏警告、2 档下对快照版实例会多警告。改为按 `McInstance.PathIndie` 与 `PathInstance` 的实际比对判断。
+- 判定链（重要）：`PathIndie`（`PCL-Harness Edition/Modules/Minecraft/McInstance.cs:65-115`）按三级优先算 —— ①老 `IndieV1` 迁移；②实例目录下 `mods` 有文件或 `saves` 有子目录则自动隔离；③才轮到全局档位 switch（0=关闭 / 1=仅可装 Mod / 2=仅非正式版 / 3=前两者 / _=全部）。**该 getter 有副作用**：`:110 Config.Instance.IndieV2[PathInstance] = ShouldBeIndie();` 会把结果写进缓存；**返回值语义是反的** —— 被隔离时返回 `PathInstance`，未隔离时返回 `ModFolder.mcFolderSelected`。
+- 刻意未动：`PCL-Harness Edition/Pages/PageDownload/PageDownloadInstall.xaml.cs:2330-2340`（新建实例）仍按全局档位判断 —— 那时实例目录还没创建，不该替它写缓存。
+
+### C.3　待办（按优先级）
+
+1. **发版 v0.1.2-Alpha**（维护者定在 10-24 中午或下午）。步骤：改 `PCL-Harness Edition/metadata.json` 的 version 对象（`base` 由 `0.1.1` 升 `0.1.2`、`suffix` 填 `Alpha`、**`code` 由 `2` 递增到 `3`**）→ 提交 → `git tag v0.1.2-Alpha` → `git push origin v0.1.2-Alpha`。`code` 即 `ModBase.versionCode`（`PCL-Harness Edition/Modules/Base/ModBase.cs:47`），被 `FormMain.xaml.cs:70` 与 `UpgradeSub`/`DowngradeSub` 用来判断版本升降，**不递增老用户升级后收不到提示**。CI 由 `.github/workflows/release-publish.yml` 监听 `push tags 'v*'`，Beta 配置发 prerelease，x64 与 ARM64 双矩阵。
+2. 实机测试：正版登录取 XSTS/accessToken（微软白名单尚未提交，**当前不可用属预期**）、LittleSkin 设备代码流、Modrinth 与 CurseForge 各下一个模组验证速度与安装。
+3. 实机验收浮钮深色配色（深色底 `#20242C`、悬停 `#3A4049`、已去描边）与幼圆加粗字体。
+4. 剩余审查项（都涉并发时序，**发版后再单独排一轮**）：`PCL-Harness Edition/Modules/Network/Loaders/LoaderDownload.cs:77-83`（单文件失败即取消整批）、`PCL-Harness Edition/Modules/Base/ModLoader.cs:294`（安装回调在 UI 线程做重活）、`PCL-Harness Edition/Pages/PageDownload/ModDownloadLib.cs:716-746` 与 `:1740-1769`（在 `lock (ModJava.javaLock)` 内等 Java 下载并可能弹模态框）、`PCL-Harness Edition/Modules/Minecraft/ModLocalComp.cs:2244-2275`（属性 getter 内同步阻塞等哈希）、`PCL-Harness Edition/Modules/Network/Management/NetManager.cs` 与 `Models/DownloadFile.cs`（下载登记字段无锁）。
+5. `PCL-Harness Edition/Pages/PageLaunch/PageLaunchRight.xaml.cs:173-229` 的第三方主页预设（属 PCL2 社区功能、非 PCL-CE 残留），**待维护者裁定是否切割**。
+6. `PCL-Harness Edition/Modules/Minecraft/ModDownloadLib.cs:3698-3699` 的 `versionName.Remove(versionName.Length - 3, 3)` 与 `:3809` 的 `private const string mcInstallDefaultType = "安装"` 长度不一致（中文 2 字符 vs 砍 3 字符），属系统性中文硬编码，需先摸清 `loader.name` 完整拼接链再改。
+
+### C.4　环境与操作要点
+
+- 编译：`export DOTNET_ROOT="C:\\Users\\kingd\\.dotnet"` 后执行 `/c/Users/kingd/.dotnet/dotnet.exe build "Plain Craft Launcher 2.slnx" -c Release`（workdir 为 `PCL-HE`）。**PATH 里的 `/c/Program Files/dotnet` 没有 SDK，必须显式用 `.dotnet` 那个**。
+- 部署：`powershell.exe -NoProfile -ExecutionPolicy Bypass -File deploy.ps1`（workdir `PCL-HE`）。运行目录必须在 workspace 之外（`C:\\Users\\kingd\\PCL-HE`），否则 DSH 沙箱会给进程套 AppContainer 限制导致启动即退。
+- 拉起：`powershell.exe -NoProfile -Command 'Start-Process -FilePath "C:\\Users\\kingd\\PCL-HE\\PCL-HE.exe" -WorkingDirectory "C:\\Users\\kingd\\PCL-HE"'`（bash 里不能用双引号包 PowerShell，`$env` 会被吞）。
+- `git push` 报 `Internal Server Error` 或 `Failed to connect to github.com:443 after 21xxx ms` 都是**临时网络故障，重试即可，不是凭证问题**。
+- 提交风格：Conventional Commits + 英文标题。
+- 本机 `secrets.json` 位于 `~/AppData/Local/PCLHE/secrets.json`，只有一个键 `CURSEFORGE_API_KEY`（Key 不进仓库、不进 CI）。
+- 界面改动后必须**重新编译 + deploy.ps1 部署**才可见，源文件改动不等于运行中的程序已变。
+- `glob` 工具对含空格路径（如 `PCL-Harness Edition/LICEN*`）与 `.github/workflows/*` 返回空，需用 bash `ls`。
+
+### C.5　仓库状态（交接时刻）
+
+- `origin/main` 的 `HEAD` = `90c8ad2`，未推送计数 0，工作区干净。
+- 仓库现有 tag：`ci-workflows`、`v0.1.1`；当前 `git describe` 为 `v0.1.1-28-g90c8ad2`。
+- `PCL-HE/SECURITY.md` 已新建（中英双语，报告走 GitHub 私密漏洞通道，处理方式写明「尽力而为、非 SLA」）。
+- 三版 README 已补「本机自签名可免 SmartScreen」的第三条解除方式。
+- v0.1.1 的 GitHub release notes 已改写为中英双语精简版（中文在上，已通过 API 写回）。
