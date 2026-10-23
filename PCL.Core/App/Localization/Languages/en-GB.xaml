@@ -3100,22 +3100,22 @@
     <sys:String x:Key="Setup.Ui.Background.Suit.TopRight">Top-right</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform">Centre (keep aspect ratio)</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter">Bottom middle (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter.ToolTip">Shows the whole image at its original aspect ratio, aligned to the bottom middle. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter.ToolTip">Fills the window at the original aspect ratio, aligned to the bottom middle and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft">Bottom left (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft.ToolTip">Shows the whole image at its original aspect ratio, aligned to the bottom left. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft.ToolTip">Fills the window at the original aspect ratio, aligned to the bottom left and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight">Bottom right (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight.ToolTip">Shows the whole image at its original aspect ratio, aligned to the bottom right. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight.ToolTip">Fills the window at the original aspect ratio, aligned to the bottom right and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter">Left middle (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter.ToolTip">Shows the whole image at its original aspect ratio, aligned to the left middle. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter.ToolTip">Fills the window at the original aspect ratio, aligned to the left middle and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter">Right middle (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter.ToolTip">Shows the whole image at its original aspect ratio, aligned to the right middle. It scales with the window and may leave blank space.</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.ToolTip">Shows the whole image at its original aspect ratio, centred. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter.ToolTip">Fills the window at the original aspect ratio, aligned to the right middle and cropping the overflow. It scales with the window.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.ToolTip">Fills the window at the original aspect ratio, centred and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter">Top middle (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter.ToolTip">Shows the whole image at its original aspect ratio, aligned to the top middle. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter.ToolTip">Fills the window at the original aspect ratio, aligned to the top middle and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft">Top left (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft.ToolTip">Shows the whole image at its original aspect ratio, aligned to the top left. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft.ToolTip">Fills the window at the original aspect ratio, aligned to the top left and cropping the overflow. It scales with the window.</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight">Top right (keep aspect ratio)</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight.ToolTip">Shows the whole image at its original aspect ratio, aligned to the top right. It scales with the window and may leave blank space.</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight.ToolTip">Fills the window at the original aspect ratio, aligned to the top right and cropping the overflow. It scales with the window.</sys:String>
     <!-- Setup.Ui.Basic -->
 
     <sys:String x:Key="Setup.Ui.Basic.AdvancedMaterial">Advanced material</sys:String>

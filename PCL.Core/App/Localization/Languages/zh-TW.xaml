@@ -3100,22 +3100,22 @@
     <sys:String x:Key="Setup.Ui.Background.Suit.TopRight">置於右上</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform">置中（保持長寬比）</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter">中下（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter.ToolTip">保持原圖長寬比完整顯示並貼靠下方中間；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomCenter.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠下方中間，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft">左下（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft.ToolTip">保持原圖長寬比完整顯示並貼靠左下角；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomLeft.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠左下角，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight">右下（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight.ToolTip">保持原圖長寬比完整顯示並貼靠右下角；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.BottomRight.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠右下角，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter">左中（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter.ToolTip">保持原圖長寬比完整顯示並貼靠左側中間；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.LeftCenter.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠左側中間，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter">右中（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter.ToolTip">保持原圖長寬比完整顯示並貼靠右側中間；視窗大小變化時按比例縮放</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.ToolTip">保持原圖長寬比完整顯示並置中；視窗大小變化時按比例縮放，四周可能留白</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.RightCenter.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠右側中間，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.ToolTip">保持原圖長寬比縮放至鋪滿視窗並置中，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter">中上（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter.ToolTip">保持原圖長寬比完整顯示並貼靠上方中間；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopCenter.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠上方中間，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft">左上（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft.ToolTip">保持原圖長寬比完整顯示並貼靠左上角；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopLeft.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠左上角，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight">右上（保持長寬比）</sys:String>
-    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight.ToolTip">保持原圖長寬比完整顯示並貼靠右上角；視窗大小變化時按比例縮放</sys:String>
+    <sys:String x:Key="Setup.Ui.Background.Suit.Uniform.TopRight.ToolTip">保持原圖長寬比縮放至鋪滿視窗並貼靠右上角，超出部分被裁切；視窗大小變化時按比例縮放</sys:String>
     <!-- Setup.Ui.Basic -->
 
     <sys:String x:Key="Setup.Ui.Basic.AdvancedMaterial">高階材質</sys:String>

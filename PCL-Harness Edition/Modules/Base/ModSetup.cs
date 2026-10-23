@@ -401,9 +401,9 @@ public class ModSetup
                 ModMain.frmMain.ImgBack.Height = ((ImageBrush)ModMain.frmMain.ImgBack.Background).ImageSource.Height;
                 break;
             }
-            // 9~17：保持长宽比。Uniform 完整显示整张图片，长宽比不变，
-            // 窗口尺寸变化时由 WPF 按比例重新缩放，未占满的一侧留出背景色。
-            // 与“适应”（UniformToFill，铺满并裁切超出部分）的区别是不裁切。
+            // 9~17：保持长宽比铺满窗口。UniformToFill 按比例放大到足以覆盖整个窗口，
+            // 超出部分被裁切，由 AlignmentX/AlignmentY 决定保留哪一侧；
+            // 窗口尺寸变化时 WPF 按比例重新缩放，壁纸始终贴合窗口，不留背景色。
             case >= 9 and <= 17:
             {
                 var brush = (ImageBrush)ModMain.frmMain.ImgBack.Background;
@@ -411,7 +411,7 @@ public class ModSetup
                 ModMain.frmMain.ImgBack.VerticalAlignment = VerticalAlignment.Stretch;
                 ModMain.frmMain.ImgBack.Width = double.NaN;
                 ModMain.frmMain.ImgBack.Height = double.NaN;
-                brush.Stretch = Stretch.Uniform;
+                brush.Stretch = Stretch.UniformToFill;
                 (brush.AlignmentX, brush.AlignmentY) = value switch
                 {
                     10 => (AlignmentX.Left, AlignmentY.Top),
