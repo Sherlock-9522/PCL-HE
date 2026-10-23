@@ -105,8 +105,7 @@ public static class FileDownloader
                 expectedSize).ConfigureAwait(false))
         {
             await ValidateTempFileAsync(localPath, checker, cancellationToken).ConfigureAwait(false);
-            PromoteTempFile(localPath);
-            if (!File.Exists(localPath))
+            if (!PromoteTempFile(localPath))
                 throw new IOException($"分段下载未产生任何文件：{localPath}");
             MarkDownloadCompleted(trackedFile);
             ModBase.Log($"[Download] 分段下载成功：{localPath}");
@@ -203,8 +202,7 @@ public static class FileDownloader
             trackedFile.DownloadedBytes = downloaded;
         }
 
-        PromoteTempFile(localPath);
-        if (!File.Exists(localPath))
+        if (!PromoteTempFile(localPath))
             throw new IOException($"下载未产生任何文件：{localPath}");
         MarkDownloadCompleted(trackedFile);
         ModBase.Log($"[Download] 顺序下载成功：{localPath}");
@@ -311,24 +309,36 @@ public static class FileDownloader
         trackedFile.DownloadedBytes = Math.Max(trackedFile.DownloadedBytes, trackedFile.TotalSize);
     }
 
-    private static void PromoteTempFile(string localPath)
+    /// <summary>
+    ///     把校验通过的临时文件原子改名到正式路径。
+    /// </summary>
+    /// <returns>正式文件是否已就位。</returns>
+    /// <remarks>
+    ///     过去这里写着 <c>if (File.Exists(localPath) || !File.Exists(tempPath)) return;</c>，
+    ///     于是目标已存在时直接放弃，而下面的 <c>File.Move(..., true)</c> 本意就是要覆盖——
+    ///     两处语义互相矛盾，结果是新下载的文件永远替换不掉旧文件，临时文件还会残留。
+    ///     现在只判临时文件是否存在；改名失败如实返回 false，避免调用方把旧文件当成新下载的成果。
+    /// </remarks>
+    private static bool PromoteTempFile(string localPath)
     {
         var tempPath = localPath + ModNet.NetDownloadEnd;
-        if (File.Exists(localPath) || !File.Exists(tempPath))
-            return;
+        if (!File.Exists(tempPath))
+            return false;
 
         for (var retry = 0; retry < 5; retry++)
         {
             try
             {
                 File.Move(tempPath, localPath, true);
-                return;
+                return true;
             }
             catch (IOException) when (retry < 4)
             {
                 Thread.Sleep(100);
             }
         }
+
+        return false;
     }
 
     /// <summary>
