@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -726,7 +726,9 @@ public static class ModWatcher
                             false,
                             [
                                 version.PathInstance + version.Name + ".json",
-                                LogWrapper.CurrentLogger.CurrentLogFiles.Last(),
+                                // 日志集合可能为空（例如刚启动就崩溃），此时 Last() 会抛异常；
+                                // 而这里是 analyzer.Output 的实参求值阶段，异常会让崩溃弹窗根本不显示，故用 LastOrDefault 兜底。
+                                LogWrapper.CurrentLogger.CurrentLogFiles.LastOrDefault() ?? "",
                                 ModBase.exePath + @"PCL\LatestLaunch.bat"
                             ]);
                     }

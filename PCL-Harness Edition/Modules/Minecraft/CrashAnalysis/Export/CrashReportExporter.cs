@@ -28,8 +28,11 @@ internal sealed class CrashReportExporter
         var targetFolder = Basics.GetParentPathOrEmpty(targetZipPath);
         Directory.CreateDirectory(targetFolder);
 
-        if (File.Exists(targetZipPath))
-            File.Delete(targetZipPath);
+        // 不再提前删除已有报告：先写到同目录的临时文件，全部成功后再原子替换，
+        // 否则中途失败会把用户原有的报告也一起毁掉（删了旧的、新的又没生成）。
+        var tempZipPath = targetZipPath + ".new";
+        if (File.Exists(tempZipPath))
+            File.Delete(tempZipPath);
 
         ModBase.FeedbackInfo();
 
@@ -48,11 +51,23 @@ internal sealed class CrashReportExporter
             _WriteEnvironmentInfo(reportFolder);
             _WriteModInfo(reportFolder, context.Instance);
 
-            ZipFile.CreateFromDirectory(reportFolder, targetZipPath);
+            ZipFile.CreateFromDirectory(reportFolder, tempZipPath);
+            // overwrite: true 让替换一步到位，失败时旧报告仍然完好。
+            File.Move(tempZipPath, targetZipPath, true);
         }
         finally
         {
             CrashFileIo.DeleteDirectory(reportFolder);
+
+            if (File.Exists(tempZipPath))
+                try
+                {
+                    File.Delete(tempZipPath);
+                }
+                catch
+                {
+                    // 临时文件清理失败不影响主流程，下次导出时会先删掉它
+                }
         }
     }
 

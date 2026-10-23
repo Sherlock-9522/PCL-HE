@@ -72,10 +72,13 @@ public class MyBitmap
             }
             catch (Exception ex)
             {
-                pic = (Bitmap)System.Windows.Application.Current.TryFindResource(filePathOrResourceName);
+                // 回退到资源字典查找：Application.Current 在提前加载 / 设计期可能尚未建立，
+                // 用 ?. 与 as 而不是强制转换，避免 NRE 或 InvalidCastException 把真正的原始异常 ex 掩盖掉。
+                pic = System.Windows.Application.Current?.TryFindResource(filePathOrResourceName) as Bitmap;
                 if (pic is null)
                 {
-                    pic = new Bitmap(1, 1);
+                    // 资源字典里也没有：原实现在这里先赋值一个 1x1 占位图，但两个分支都是 throw，
+                    // 那句占位图永远执行不到，属于死代码，删掉不影响行为。
                     if (ex is ArgumentException) throw new Exception($"图片格式不支持，或图片文件损坏（{filePathOrResourceName}）", ex);
 
                     throw new Exception($"加载 MyBitmap 意外失败（{filePathOrResourceName}）", ex);

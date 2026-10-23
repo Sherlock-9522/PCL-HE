@@ -47,11 +47,20 @@ public partial class Application
                     // 调整显卡设置
                     try
                     {
+                        // --gpu 后面必须跟显卡首选项名；缺参数时不能直接取 args[1]（越界），
+                        // 否则会被下面的 catch 静默吞掉、进程无声退出，用户看不到任何原因。
+                        if (args.Length < 2)
+                        {
+                            ModMain.MyMsgBox("启动参数 --gpu 缺少显卡首选项名称，未做任何更改。", isWarn: true);
+                            Environment.Exit((int)ModBase.ProcessReturnValues.Fail);
+                        }
+
                         ModMain.SetGPUPreference(args[1].Trim('"'));
                         Environment.Exit((int)ModBase.ProcessReturnValues.TaskDone);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        ModMain.MyMsgBox($"设置显卡首选项失败：{ex.Message}", isWarn: true);
                         Environment.Exit((int)ModBase.ProcessReturnValues.Fail);
                     }
 

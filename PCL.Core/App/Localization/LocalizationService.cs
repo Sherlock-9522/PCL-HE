@@ -244,6 +244,10 @@ public sealed partial class LocalizationService
     {
         var app = Application.Current ?? Lifecycle.CurrentApplication;
 
+        // 两者都为 null 时（例如 WPF 尚未启动、或纯命令行模式）根本没有资源字典可改，
+        // 直接跳过；否则下面的 .Dispatcher 会抛 NullReferenceException。
+        if (app is null) return;
+
         if (!app.Dispatcher.CheckAccess())
         {
             app.Dispatcher.Invoke(() =>

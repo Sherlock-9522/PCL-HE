@@ -51,9 +51,13 @@ internal static class CrashFileIo
     public static bool CanExtractArchive(string archivePath)
     {
         var fileName = Path.GetFileName(archivePath);
+        // 底层 Files.ExtractFileAsync 同样支持 tar 与 tgz，此前这里漏判，
+        // 导致拖入 tar 包被无理由拒绝（异常消息却声称支持 tar）。
         return fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
                fileName.EndsWith(".gz", StringComparison.OrdinalIgnoreCase) ||
-               fileName.EndsWith(".bz2", StringComparison.OrdinalIgnoreCase);
+               fileName.EndsWith(".bz2", StringComparison.OrdinalIgnoreCase) ||
+               fileName.EndsWith(".tar", StringComparison.OrdinalIgnoreCase) ||
+               fileName.EndsWith(".tgz", StringComparison.OrdinalIgnoreCase);
     }
 
     public static void ExtractFile(string archivePath, string destinationDirectory)

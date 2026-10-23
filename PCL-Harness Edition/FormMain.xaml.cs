@@ -1982,7 +1982,8 @@ public partial class FormMain
                     {
                         if (ModMain.frmLogLeft is null)
                             ModMain.frmLogLeft = new PageLogLeft();
-                        if (ModMain.frmLogLeft is null)
+                        // 这里原本写的是 frmLogLeft，导致 frmLogRight 永远建不出来、PageChangeAnim 收到 null。
+                        if (ModMain.frmLogRight is null)
                             ModMain.frmLogRight = new PageLogRight();
                         PageChangeAnim(ModMain.frmLogLeft, ModMain.frmLogRight);
                         break;
