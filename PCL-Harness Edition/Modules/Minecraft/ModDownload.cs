@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -129,8 +129,10 @@ public static class ModDownload
             {
                 try
                 {
-                    var indexFile = DlClientAssetIndexGet(version);
-                    var indexFileInfo = new FileInfo(indexFile.LocalPath);
+                    // 索引地址为空时 DlClientAssetIndexGet 会返回 null，直接取 .LocalPath 会 NRE，
+                    // 而外层 catch 会把它包成含糊的「资源索引分析失败」，看不出真正原因。
+                    var indexFile = DlClientAssetIndexGet(version)
+                                    ?? throw new IOException("无法获取资源索引文件信息：索引地址为空。");
                     if (assetsIndexBehaviour != AssetsIndexExistsBehaviour.AlwaysDownload &&
                         indexFile.Check.Check(indexFile.LocalPath) is null)
                         task.output = new List<DownloadFile>();
@@ -155,7 +157,8 @@ public static class ModDownload
                 loadersAssetsUpdate.Add(new ModLoader.LoaderTask<string, List<DownloadFile>>(
                     Lang.Text("Minecraft.Download.Stage.AnalyzeAssetsIndex.Background"), task =>
                 {
-                    var backAssetsFile = DlClientAssetIndexGet(version);
+                    var backAssetsFile = DlClientAssetIndexGet(version)
+                                        ?? throw new IOException("无法获取资源索引文件信息：索引地址为空。");
                     realAddress = backAssetsFile.LocalPath;
                     tempAddress = ModBase.pathTemp + @"Cache\" + backAssetsFile.LocalName;
                     backAssetsFile.LocalPath = tempAddress;

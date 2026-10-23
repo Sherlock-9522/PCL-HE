@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -2642,7 +2642,12 @@ public static class ModBase
     {
         if (RunInUi()) return action();
 
-        return System.Windows.Application.Current.Dispatcher.Invoke(action);
+        // 与下面非泛型重载同样要判空：WPF 尚未启动（例如启动早期或纯命令行路径）时
+        // Application.Current 为 null，直接取 .Dispatcher 会抛 NullReferenceException。
+        // 泛型版必须交出返回值，静默兜底会掩盖问题，故抛带明确原因的异常。
+        var app = System.Windows.Application.Current
+                  ?? throw new InvalidOperationException("UI 线程不可用：Application.Current 为 null，无法在 UI 线程执行代码。");
+        return app.Dispatcher.Invoke(action);
     }
 
     /// <summary>

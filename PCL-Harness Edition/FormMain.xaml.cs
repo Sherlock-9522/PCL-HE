@@ -1733,7 +1733,9 @@ public partial class FormMain
 
             if (other is int o)
             {
-                if ((int)page == o)
+                // 与整数页面号比较：页面类型不同就不相等；类型相同时，本数据不带附加参数才算相等。
+                // 原写法把判断写反了（相等反而返回 false），导致这一分支永远得不到相等结果。
+                if ((int)page != o)
                     return false;
                 return additional is null;
             }
