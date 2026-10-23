@@ -71,6 +71,7 @@ To get past it:
 
 - **Built it yourself?** Right-click `PCL-HE.exe` → Properties → tick *Unblock* → OK. Or run `Unblock-File .\PCL-HE.exe` in PowerShell.
 - **Downloaded from Releases?** Click *More info* → *Run anyway*.
+- **Just running it on your own machine?** The repo also ships `setup-signing.ps1` and `deploy.ps1`: the first creates a self-signed certificate and installs it into your current user's trusted stores, the second uses it to sign the deployed build. Do that once and local launches stop tripping the prompt. The certificate is trusted only on that machine — on anyone else's PC the publisher still shows as unknown.
 
 Removing the prompt entirely requires buying a code signing certificate for the release artifacts. An ordinary OV certificate still reports "unknown publisher" at first until download volume builds up reputation; only an EV certificate clears it immediately.
 
