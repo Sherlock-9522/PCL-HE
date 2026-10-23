@@ -422,6 +422,35 @@ public partial class PageInstanceOverall
                 ModBase.Log(ex, "重命名实例 Json 失败");
             }
 
+            // 迁移以实例路径为键的持久状态
+            // 这些状态只存在 States.Instance 里，不跟着实例文件夹一起改名，必须手动从旧路径键复制到新路径键，
+            // 否则重命名后用户设过的描述、星标、卡片类型、自定义图标、启动次数会全部回到默认值。
+            // 注意：newPath 不带结尾反斜杠，而 McInstance.PathInstance 是带的，这里补上以保证读写同一个键。
+            var newPathKey = newPath + @"\";
+            States.Instance.LaunchCount[newPathKey] = States.Instance.LaunchCount[oldPath];
+            States.Instance.Starred[newPathKey] = States.Instance.Starred[oldPath];
+            States.Instance.CardType[newPathKey] = States.Instance.CardType[oldPath];
+            States.Instance.LogoPath[newPathKey] = States.Instance.LogoPath[oldPath];
+            States.Instance.IsLogoCustom[newPathKey] = States.Instance.IsLogoCustom[oldPath];
+            States.Instance.CustomInfo[newPathKey] = States.Instance.CustomInfo[oldPath];
+            States.Instance.Info[newPathKey] = States.Instance.Info[oldPath];
+            States.Instance.ReleaseTime[newPathKey] = States.Instance.ReleaseTime[oldPath];
+            States.Instance.State[newPathKey] = States.Instance.State[oldPath];
+            States.Instance.FabricVersion[newPathKey] = States.Instance.FabricVersion[oldPath];
+            States.Instance.LegacyFabricVersion[newPathKey] = States.Instance.LegacyFabricVersion[oldPath];
+            States.Instance.QuiltVersion[newPathKey] = States.Instance.QuiltVersion[oldPath];
+            States.Instance.LabyModVersion[newPathKey] = States.Instance.LabyModVersion[oldPath];
+            States.Instance.OptiFineVersion[newPathKey] = States.Instance.OptiFineVersion[oldPath];
+            States.Instance.HasLiteLoader[newPathKey] = States.Instance.HasLiteLoader[oldPath];
+            States.Instance.ForgeVersion[newPathKey] = States.Instance.ForgeVersion[oldPath];
+            States.Instance.NeoForgeVersion[newPathKey] = States.Instance.NeoForgeVersion[oldPath];
+            States.Instance.CleanroomVersion[newPathKey] = States.Instance.CleanroomVersion[oldPath];
+            States.Instance.VanillaVersionName[newPathKey] = States.Instance.VanillaVersionName[oldPath];
+            States.Instance.VanillaVersion[newPathKey] = States.Instance.VanillaVersion[oldPath];
+            States.Instance.ModpackVersion[newPathKey] = States.Instance.ModpackVersion[oldPath];
+            States.Instance.ModpackSource[newPathKey] = States.Instance.ModpackSource[oldPath];
+            States.Instance.ModpackId[newPathKey] = States.Instance.ModpackId[oldPath];
+
             // 刷新与提示
             HintService.Hint(Lang.Text("Instance.Overall.Name.RenameSuccess"), HintType.Success);
             PageInstanceLeft.McInstance = new McInstance(newName).Load();
