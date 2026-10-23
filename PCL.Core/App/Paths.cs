@@ -15,8 +15,28 @@ public static class Paths
 {
     /// <summary>
     /// The default directory used for relative path combining.
+    /// <para>
+    /// 刻意不取 <c>Basics.ExecutableDirectory</c>：<c>Basics</c> 的静态字段初始化会间接触发
+    /// <c>Paths</c> 的静态构造，而这里若回头读 <c>Basics</c>，就构成静态初始化循环。
+    /// 循环期间 CLR 不等待、直接返回默认值，取到的将是 null，
+    /// 接着 Path.Combine 抛 ArgumentNullException，整个 Paths 类型报废
+    /// （表现为启动即退出且不留任何日志）。此处自行计算，切断依赖。
+    /// </para>
     /// </summary>
-    public static string DefaultDirectory => Basics.ExecutableDirectory;
+    public static string DefaultDirectory => _defaultDirectory ??= GetExecutableDirectory();
+
+    private static string? _defaultDirectory;
+
+    private static string GetExecutableDirectory()
+    {
+        var processPath = Environment.ProcessPath;
+        if (!string.IsNullOrEmpty(processPath))
+        {
+            var directory = Path.GetDirectoryName(processPath);
+            if (!string.IsNullOrEmpty(directory)) return directory;
+        }
+        return AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+    }
 
     private static string _data;
     private static string _sharedData;
@@ -58,6 +78,14 @@ public static class Paths
     public static string GetSpecialPath(Special folder, string relative)
     {
         var folderPath = Environment.GetFolderPath(folder);
+        // GetFolderPath 在用户配置未加载等异常环境下可能返回空值；直接交给 Path.Combine 会抛
+        // ArgumentNullException，而这里处于静态构造函数中，一旦抛出整个 Paths 类型都不可用、
+        // 启动器连第一屏都进不去（表现为启动即退出且不留日志）。退回到程序目录保证仍能启动。
+        if (string.IsNullOrEmpty(folderPath))
+        {
+            Console.Error.WriteLine($"[Paths] GetFolderPath({folder}) 返回空值，已退回程序目录：{DefaultDirectory}");
+            folderPath = DefaultDirectory;
+        }
         return Path.Combine(folderPath, relative);
     }
 
@@ -75,6 +103,10 @@ public static class Paths
         const string oldName = "PCLCE";
 #endif
         // fill paths
+        // DefaultDirectory 取自 Basics.ExecutableDirectory，但静态构造顺序并不保证 Basics 已就绪：
+        // 一旦拿到的还是默认值 null，Path.Combine 会抛 ArgumentNullException，而这里在静态构造函数中，
+        // 整个 Paths 类型会因此不可用，连锁导致 SingleInstanceService 等预加载服务实例化失败，
+        // 表现为「启动即退出、且不留任何日志」。AppContext.BaseDirectory 不依赖任何托管初始化，用它兜底。
         _data = Path.Combine(DefaultDirectory, "PCL");
         _sharedData = GetSpecialPath(Special.ApplicationData, name);
         _sharedLocalData = GetSpecialPath(Special.LocalApplicationData, name);

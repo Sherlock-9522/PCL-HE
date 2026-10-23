@@ -147,6 +147,11 @@ partial class Lifecycle
         }
         catch (Exception ex)
         {
+            // 预加载阶段日志服务尚未就绪，致命错误只会滞留在 _PendingLogs 里、随进程一起消失，
+            // 表现为「启动即退且不留任何日志」。这里额外往标准错误写一份，
+            // 保证从控制台或重定向就能直接看出是哪个服务、什么原因。
+            Console.Error.WriteLine($"[Lifecycle] 注册服务项实例化失败: {fullname}");
+            Console.Error.WriteLine(ex);
             SystemContext.Fatal($"注册服务项实例化失败: {fullname}", ex);
             throw;
         }

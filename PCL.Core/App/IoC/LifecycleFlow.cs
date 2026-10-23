@@ -111,7 +111,12 @@ partial class Lifecycle
 
     private static void _FatalExit()
     {
-        ForceShutdown(-1);
+        // BeforeLoading 阶段 CurrentState 尚未离开初始值，Shutdown 的第一句就是
+        // 「在 BeforeLoading 阶段调用即 throw」，于是记录致命错误的过程本身会把进程抛死，
+        // 原始错误与待写日志一起蒸发（表现为不留任何日志、退出码 0xE0434352）。
+        // _Exit 没有状态前置检查，此时直接走它，保证能把错误写出去再退出。
+        if (CurrentState == LifecycleState.BeforeLoading) _Exit(-1);
+        else ForceShutdown(-1);
     }
 
     private static void _Exit(int statusCode = 0)
