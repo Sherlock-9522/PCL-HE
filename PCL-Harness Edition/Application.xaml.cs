@@ -159,6 +159,9 @@ public partial class Application
     // 结束
     private static void _ApplicationSessionEnding(object sender, SessionEndingCancelEventArgs e)
     {
+        // 系统注销/关机时主窗体可能尚未创建（例如启动阶段就被注销），直接解引用会 NRE；
+        // 此时也没有需要收尾的界面与联机进程，直接返回即可。
+        if (ModMain.frmMain is null) return;
         ModMain.frmMain.EndProgram(false);
     }
 

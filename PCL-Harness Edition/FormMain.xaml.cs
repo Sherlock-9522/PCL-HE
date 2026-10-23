@@ -61,8 +61,6 @@ public partial class FormMain
         // 刷新主题
         // ThemeCheckAll(False)
         // ThemeRefreshColor()
-        ThemeService.ColorModeChanged += (_, _) => ThemeManager.ThemeRefresh();
-        ThemeService.ColorThemeChanged += theme => ThemeManager.ThemeRefresh((int)theme);
         // 窗体参数初始化
         ModMain.frmMain = this;
         ModMain.frmLaunchLeft = new PageLaunchLeft();
@@ -97,6 +95,10 @@ public partial class FormMain
         HintWrapper.OnShow += HintService.HintWrapper_OnShow;
         // 加载 UI
         InitializeComponent();
+        // 主题事件订阅必须放在 InitializeComponent 之后：ThemeRefresh 会遍历已创建的控件，
+        // 若在控件树建好之前被触发，会访问到尚未初始化的元素。
+        ThemeService.ColorModeChanged += (_, _) => ThemeManager.ThemeRefresh();
+        ThemeService.ColorThemeChanged += theme => ThemeManager.ThemeRefresh((int)theme);
         Opacity = 0d;
         try
         {
