@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using PCL.Core.App;
 using PCL.Core.App.Localization;
@@ -16,7 +16,8 @@ internal sealed class CrashDialogPresenter(CrashAnalysisContext context)
         bool isHandAnalyze,
         List<string>? extraFiles)
     {
-        ModMain.frmMain.ShowWindowToTop();
+        // 主窗体可能尚未建立（例如启动期就崩溃），此时不能直接解引用，否则 NRE 会让整个弹窗都出不来。
+        ModMain.frmMain?.ShowWindowToTop();
 
         var crashContent = _formatter.Format(context, isHandAnalyze);
         var resultText = crashContent.Text;
