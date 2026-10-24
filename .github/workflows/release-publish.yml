@@ -103,6 +103,11 @@ jobs:
             architecture: ARM64
             variant: slim
     steps:
+      # 打包步骤需要从仓库里取 PCL-Harness Edition/LICENCE 一起放进压缩包，
+      # 所以这里必须先检出源码；否则工作目录里没有这个文件，打包会直接失败。
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Download Build Artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
