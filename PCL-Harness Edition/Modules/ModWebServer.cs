@@ -306,41 +306,9 @@ public static class ModWebServer
         return true;
     }
 
-    public static void StartNaidAuthorize(Action? completeCallback = null)
-    {
-        Exception? resultEx = null;
-        StartOAuthWaitingCallback("NatayarkID",
-            $"https://account.naids.com/oauth2/authorize?response_type=code&client_id={Secrets.NatayarkClientId}&redirect_uri=%r",
-            (success, parameters, content) =>
-            {
-                OAuthCompleteStatus? status;
-                if (!success)
-                {
-                    ModMain.MyMsgBox(content, isWarn: true);
-                    completeCallback?.Invoke();
-                    return null;
-                }
-
-
-                var code = parameters["code"];
-
-                try
-                {
-                    NatayarkProfileManager.GetNaidDataAsync(code, port: ushort.Parse(parameters["Port"])).Wait();
-                }
-                catch (AggregateException ex)
-                {
-                    resultEx = ex.InnerExceptions[0];
-                }
-
-                if (resultEx is null)
-                    status = OAuthCompleteStatus.Complete(NatayarkProfileManager.NaidProfile.Username);
-                else
-                    status = OAuthCompleteStatus.Failed("获取用户信息失败，请尝试重新登录", resultEx);
-                completeCallback?.Invoke();
-                return status;
-            });
-    }
+    // PCL-HE：原第三方账号（Natayark ID）的网页授权入口已整体移除。
+    // 陶瓦联机使用自己的账号体系，启动器不再打开任何第三方授权页，也不再接收其 OAuth 回调。
+    // 上面的 StartOAuthWaitingCallback 作为通用本地回调设施保留，当前没有调用方。
 
     #endregion
 }

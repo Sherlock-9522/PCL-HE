@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PCL.Core.IO.Net;
 using PCL.Core.IO.Net.Http;
+using PCL.Core.Logging;
 using PCL.Core.Minecraft.IdentityModel;
 using PCL.Core.Minecraft.IdentityModel.Extensions.JsonWebToken;
 using PCL.Core.Minecraft.IdentityModel.Extensions.YggdrasilConnect;
@@ -23,10 +24,14 @@ namespace PCL.Core.Minecraft.Profile.Authentication;
 
 public sealed class YggdrasilConnectProvider : IAuthenticateProvider
 {
+    /// <summary>
+    ///     内置的第三方账号服务客户端 ID。这里的值必须是本项目自行注册的应用，
+    ///     而不是上游项目注册的应用 —— 否则白名单与配额都算在上游头上。
+    /// </summary>
     private static readonly IReadOnlyDictionary<string, string> _BuiltInClientIds =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["littleskin.cn"] = "1514"
+            ["littleskin.cn"] = "1637"
         };
 
     /// <summary>
@@ -34,11 +39,15 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
     /// </summary>
     private const string ClientIdOverridePrefix = "PCL_OAUTH_CLIENT_ID_";
 
+    // 权限说明：PlayerProfiles.Read 用于登录后在启动器内列出账号下的全部角色，
+    // 由用户自己挑选；MinecraftToken.Create 用于把该角色换成真正的 Minecraft 令牌。
+    // 注意 PlayerProfiles.Read 与 PlayerProfiles.Select 互斥，同时申请会被拒绝（invalid_scope）。
     private static readonly string[] _Scopes =
     [
         "openid",
         "offline_access",
-        "Yggdrasil.PlayerProfiles.Select",
+        "Yggdrasil.PlayerProfiles.Read",
+        "Yggdrasil.MinecraftToken.Create",
         "Yggdrasil.Server.Join"
     ];
 
@@ -141,13 +150,25 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
     {
         if (string.IsNullOrWhiteSpace(profile.AccessToken)) return false;
         _EnsureInitialized();
-        // 协议要求：使用访问令牌请求用户信息端点以验证其有效性
-        // （正常返回用户信息 = 有效；invalid_token 错误 = 无效）
-        using var response = await HttpRequest.Create(_options.Meta!.UserInfoEndpoint)
-            .WithBearerToken(profile.AccessToken)
-            .SendAsync(NetworkService.GetClient(), cancellationToken: token)
-            .ConfigureAwait(false);
-        return response.IsSuccess;
+        // 这里存的是 Minecraft 令牌而不是 OAuth 访问令牌，因此改为向角色列表接口确认它仍然有效
+        // （正常返回角色数组 = 有效；401/403 = 已失效，交由上层走静默刷新）
+        try
+        {
+            using var response = await HttpRequest.Create(_GetServerRoot() + "/sessionserver/session/minecraft/profile")
+                .WithBearerToken(profile.AccessToken)
+                .SendAsync(NetworkService.GetClient(), cancellationToken: token)
+                .ConfigureAwait(false);
+            return response.IsSuccess;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogWrapper.Debug(ex, "Profile", "校验第三方账号令牌失败，将尝试静默刷新");
+            return false;
+        }
     }
 
     private async Task<AuthenticationResult> _CompleteAsync(AuthorizeResult oauth, AuthenticationRequest request,
@@ -165,6 +186,10 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
             profile ??= userInfo?.SelectedProfile;
             if (available.Length == 0) available = userInfo?.AvailableProfiles ?? [];
         }
+        // ID 令牌与用户信息都没带角色时，用 PlayerProfiles.Read 主动拉一次角色列表，
+        // 这样即便服务端只在用户信息里返回当前角色，启动器也能让用户改选其他角色
+        if (available.Length == 0)
+            available = await _GetAvailableProfilesAsync(oauth.AccessToken!, token).ConfigureAwait(false);
         if (profile is null && !request.ForceReselectProfile &&
             request.ExistingProfile is { Uuid: { } existingUuid } && !string.IsNullOrWhiteSpace(existingUuid))
         {
@@ -190,14 +215,17 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
         if (profile is null)
             throw new IdentityModelAuthenticationException("invalid_profile", "Yggdrasil Connect returned no player profile.");
 
+        // OAuth 访问令牌只能访问账号服务，进游戏必须换成所选角色对应的 Minecraft 令牌
+        var minecraftToken = await _CreateMinecraftTokenAsync(oauth.AccessToken!, profile.Id, token).ConfigureAwait(false);
+
         return new AuthenticationResult
         {
             ProfileType = ProfileType.YggdrasilConnect,
             UserName = profile.Name,
             Uuid = profile.Id,
-            AccessToken = oauth.AccessToken!,
+            AccessToken = minecraftToken.AccessToken!,
             RefreshToken = oauth.RefreshToken ?? request.RefreshToken!,
-            ClientToken = profile.Id,
+            ClientToken = minecraftToken.ClientToken ?? profile.Id,
             TokenType = oauth.TokenType!,
             ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(oauth.ExpiresIn!.Value),
             Provider = "yggdrasil-connect",
@@ -242,13 +270,78 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
         }
     }
 
+    /// <summary>
+    ///     取账号服务的根地址（去掉 Yggdrasil 的 /authserver 段），用于访问角色列表等接口。
+    /// </summary>
+    private string _GetServerRoot()
+    {
+        var server = _GetServerAddress().TrimEnd('/');
+        return server.EndsWith("/authserver", StringComparison.OrdinalIgnoreCase)
+            ? server[..^"/authserver".Length]
+            : server;
+    }
+
+    /// <summary>
+    ///     列出当前账号下的全部角色。需要 PlayerProfiles.Read 权限；
+    ///     任何失败都退化为空数组，由调用方回退到令牌自带的角色信息。
+    /// </summary>
+    private async Task<YggdrasilProfile[]> _GetAvailableProfilesAsync(string accessToken, CancellationToken token)
+    {
+        try
+        {
+            using var response = await HttpRequest.Create(_GetServerRoot() + "/sessionserver/session/minecraft/profile")
+                .WithBearerToken(accessToken)
+                .SendAsync(NetworkService.GetClient(), cancellationToken: token)
+                .ConfigureAwait(false);
+            if (!response.IsSuccess)
+            {
+                LogWrapper.Warn("Profile",
+                    $"获取第三方账号的角色列表失败（HTTP {(int)response.StatusCode}），将使用令牌自带的角色信息");
+                return [];
+            }
+            var profiles = await response.AsJsonAsync<YggdrasilProfile[]>(cancellationToken: token).ConfigureAwait(false);
+            return profiles ?? [];
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogWrapper.Warn(ex, "Profile", "获取第三方账号的角色列表时出错，将使用令牌自带的角色信息");
+            return [];
+        }
+    }
+
+    /// <summary>
+    ///     用 OAuth 访问令牌与选定的角色 UUID 换取 Minecraft 令牌。需要 MinecraftToken.Create 权限。
+    /// </summary>
+    private async Task<MinecraftTokenResult> _CreateMinecraftTokenAsync(string accessToken, string uuid,
+        CancellationToken token)
+    {
+        using var response = await HttpRequest.CreatePost(_GetServerRoot() + "/authserver/oauth")
+            .WithBearerToken(accessToken)
+            .WithJsonContent(new MinecraftTokenRequest { Uuid = uuid })
+            .SendAsync(NetworkService.GetClient(), cancellationToken: token)
+            .ConfigureAwait(false);
+        if (!response.IsSuccess)
+        {
+            var detail = await response.AsStringAsync().ConfigureAwait(false);
+            throw new IdentityModelAuthenticationException("minecraft_token_failed",
+                $"无法用所选角色换取 Minecraft 令牌（HTTP {(int)response.StatusCode}）：{detail}");
+        }
+        var result = await response.AsJsonAsync<MinecraftTokenResult>(cancellationToken: token).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(result?.AccessToken))
+            throw new IdentityModelAuthenticationException("minecraft_token_failed",
+                "第三方账号服务未返回 Minecraft 访问令牌。");
+        return result!;
+    }
+
     private async Task<string?> _GetServerNameAsync(CancellationToken token)
     {
         try
         {
-            var root = _GetServerAddress().TrimEnd('/');
-            if (root.EndsWith("/authserver", StringComparison.OrdinalIgnoreCase))
-                root = root[..^"/authserver".Length];
+            var root = _GetServerRoot();
             using var response = await HttpRequest.Create(root)
                 .SendAsync(NetworkService.GetClient(), cancellationToken: token)
                 .ConfigureAwait(false);
@@ -292,5 +385,17 @@ public sealed class YggdrasilConnectProvider : IAuthenticateProvider
         [JsonPropertyName("aud")] public required string? Audience { get; init; }
         [JsonPropertyName("selectedProfile")] public YggdrasilProfile? SelectedProfile { get; init; }
         [JsonPropertyName("availableProfiles")] public YggdrasilProfile[]? AvailableProfiles { get; init; }
+    }
+
+    private sealed record MinecraftTokenRequest
+    {
+        [JsonPropertyName("uuid")] public required string Uuid { get; init; }
+    }
+
+    private sealed record MinecraftTokenResult
+    {
+        [JsonPropertyName("accessToken")] public string? AccessToken { get; init; }
+        [JsonPropertyName("clientToken")] public string? ClientToken { get; init; }
+        [JsonPropertyName("selectedProfile")] public YggdrasilProfile? SelectedProfile { get; init; }
     }
 }

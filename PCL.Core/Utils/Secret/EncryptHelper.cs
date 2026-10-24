@@ -17,7 +17,22 @@ namespace PCL.Core.Utils.Secret;
 public static class EncryptHelper
 {
 
-    private static readonly byte[] _Key = "PCL CE Encryption Key"u8.ToArray();
+    /// <summary>
+    /// DPAPI 的附加熵值（secondary entropy）。它本身不是密钥，只是让同一用户下的其它进程
+    /// 无法直接解开密钥文件；真正的密钥是 UserKey.bin 里由 DPAPI 保护的那 32 字节随机数。
+    /// </summary>
+    private static readonly byte[] _Key = "PCL-HE Encryption Key"u8.ToArray();
+
+    /// <summary>
+    /// 历史熵值，仅用于读取早期版本写下的 UserKey.bin（那时熵值取自上游项目的标识）。
+    /// 读取时会先试 <see cref="_Key"/>，失败再回退到这里；一旦成功就立刻用新熵值重写，
+    /// 此后再不会用到它。以字节字面量保存，源码中不再出现上游名称。
+    /// </summary>
+    private static readonly byte[] _LegacyKey =
+    [
+        0x50, 0x43, 0x4C, 0x20, 0x43, 0x45, 0x20, 0x45, 0x6E, 0x63, 0x72,
+        0x79, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x4B, 0x65, 0x79
+    ];
     public static (IEncryptionProvider Provider, uint Version) DefaultProvider => _DefaultProvider.Value;
     private static readonly Lazy<(IEncryptionProvider Provider, uint Version)> _DefaultProvider = new(_SelectBestEncryption);
 
@@ -228,21 +243,53 @@ public static class EncryptHelper
         }
     }
 
-    /// <summary>读取密钥；v1 密钥会在解密成功后惰性迁移为 v2。内容不可用时抛出。</summary>
+    /// <summary>读取密钥；v1 密钥迁移为 v2，用历史熵值保护的密钥就地换成新熵值。内容不可用时抛出。</summary>
     private static byte[] _ReadKey(string keyFile)
     {
         var data = EncryptionData.FromBytes(File.ReadAllBytes(keyFile));
         switch (data.Version)
         {
             case 2:
+                if (_TryUnprotectCng(data.Data, _Key, out var cngKey)) return cngKey;
+                if (_TryUnprotectCng(data.Data, _LegacyKey, out cngKey))
+                {
+                    // 早期版本用另一组熵值保护：解开后立刻按新熵值重写，此后不再需要回退
+                    if (_TryProtect(cngKey, out var rewritten) && _WriteKeyFile(keyFile, rewritten))
+                        LogWrapper.Info("Encryption", $"用户密钥的 DPAPI 熵值已更新：{keyFile}");
+                    return cngKey;
+                }
+                // 两种熵值都解不开：用新熵值再解一次，让原始异常（含 HRESULT）照原样抛出
                 return CngProtectedData.Unprotect(data.Data, _Key, DataProtectionScope.CurrentUser);
             case 1:
-                var legacyKey = ProtectedData.Unprotect(data.Data, _Key, System.Security.Cryptography.DataProtectionScope.CurrentUser);
-                if (_TryProtect(legacyKey, out var migrated) && _WriteKeyFile(keyFile, migrated))
+                byte[] v1Key;
+                try
+                {
+                    v1Key = ProtectedData.Unprotect(data.Data, _Key, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                }
+                catch (Exception ex) when (_IsKeyUnusable(ex))
+                {
+                    v1Key = ProtectedData.Unprotect(data.Data, _LegacyKey, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                }
+                if (_TryProtect(v1Key, out var migrated) && _WriteKeyFile(keyFile, migrated))
                     LogWrapper.Info("Encryption", $"用户密钥已迁移至 version 2（CNG DPAPI）：{keyFile}");
-                return legacyKey;
+                return v1Key;
             default:
                 throw new NotSupportedException($"Unsupported key version: {data.Version}");
+        }
+    }
+
+    /// <summary>用指定熵值解 CNG DPAPI 密文；解不开返回 false 而不抛出，供回退路径判断。</summary>
+    private static bool _TryUnprotectCng(byte[] cipher, byte[] entropy, out byte[] key)
+    {
+        try
+        {
+            key = CngProtectedData.Unprotect(cipher, entropy, DataProtectionScope.CurrentUser);
+            return true;
+        }
+        catch (Exception ex) when (_IsKeyUnusable(ex))
+        {
+            key = [];
+            return false;
         }
     }
 

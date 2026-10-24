@@ -698,39 +698,10 @@ public partial class PageToolsGameLink
 
     private void LabNatayarkUserName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        // PCL-HE：Natayark 登录入口已停用（不访问 account.naids.com）。
-        return;
-#pragma warning disable CS0162 // 以下为 PCL-CE 原有实现，保留以备对照
-        // If Not IsLobbyAvailable Then
-        // Hint("大厅功能暂不可用，请稍后再试", HintType.Critical)
-        // Exit Sub
-        // End If
-
-        if (string.IsNullOrWhiteSpace(States.Link.NaidRefreshToken))
-        {
-            // 当前未登录，显示登录选项
-            if (ModMain.MyMsgBox(Lang.Text("Tools.GameLink.Natayark.LoginPrompt"), Lang.Text("Tools.GameLink.Natayark.LoginTitle"), Lang.Text("Tools.GameLink.Natayark.Continue"), Lang.Text("Common.Action.Cancel")) == 1)
-            {
-                LabNatayarkUserName.Text = Lang.Text("Tools.GameLink.Natayark.BrowserContinue");
-                LabNatayarkUserName.Opacity = 0.6d;
-                BtnNatayarkUserName.IsEnabled = false;
-                ModWebServer.StartNaidAuthorize(() =>
-                {
-                    ModBase.RunInUi(() => BtnNatayarkUserName.IsEnabled = true);
-                    HintService.Hint(Lang.Text("Tools.GameLink.Natayark.LoginComplete"), HintType.Success);
-                    ReloadNaidData();
-                });
-            }
-        }
-        // 当前已登录，显示登出选项
-        else if (ModMain.MyMsgBox(Lang.Text("Tools.GameLink.Natayark.LogoutConfirm"), Lang.Text("Tools.GameLink.Natayark.LogoutTitle"), Lang.Text("Common.Action.Confirm"), Lang.Text("Common.Action.Cancel")) == 1)
-        {
-            States.Link.NaidRefreshTokenConfig.Reset();
-            States.Link.NaidRefreshToken = "";
-            LabNatayarkUserName.Text = Lang.Text("Tools.GameLink.Natayark.Login");
-            ModBase.Log("[Link] 已退出登录 Natayark Network");
-            HintService.Hint(Lang.Text("Tools.GameLink.Natayark.LogoutComplete"), HintType.Success, false);
-        }
+        // PCL-HE：第三方账号（Natayark ID）的登录与登出入口已整体移除，不再打开任何授权页，
+        // 也不再接收其 OAuth 回调。陶瓦联机使用自己的账号体系，此控件仅作账号名展示。
+        _ = sender;
+        _ = e;
     }
 
     #endregion

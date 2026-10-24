@@ -12,10 +12,13 @@ namespace PCL.Core.Minecraft.IdentityModel.Extensions.YggdrasilConnect;
 
 public record YggdrasilOptions:OpenIdOptions
 {
+    // 角色由启动器自己挑：Read 拿角色列表、MinecraftToken.Create 把选中的角色换成游戏令牌。
+    // Read 与 Select 互斥，不能同时申请。
     private readonly string[] _scopesRequired =
     [
         "openid",
-        "Yggdrasil.PlayerProfiles.Select",
+        "Yggdrasil.PlayerProfiles.Read",
+        "Yggdrasil.MinecraftToken.Create",
         "Yggdrasil.Server.Join"
     ];
 

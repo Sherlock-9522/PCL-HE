@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using PCL.Core.App;
 using PCL.Core.App.Localization;
@@ -316,6 +316,7 @@ public partial class PageLoginAuth
                 "expired_token" => Lang.Text("Launch.Account.Auth.Expired"),
                 "access_denied" => Lang.Text("Launch.Account.Auth.Denied"),
                 "invalid_scope" => Lang.Text("Launch.Account.Auth.InvalidScope"),
+                "minecraft_token_failed" => Lang.Text("Launch.Account.Auth.MinecraftTokenFailed"),
                 _ => Lang.Text("Launch.Account.Auth.Rejected", ex.Error ?? ex.Message)
             };
             LogWrapper.Info("Profile", $"Yggdrasil Connect 登录未完成：{ex.Error} - {ex.ErrorDescription}");
