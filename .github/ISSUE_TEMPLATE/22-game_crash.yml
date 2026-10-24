@@ -1,7 +1,8 @@
 name: "Minecraft 崩溃 / Minecraft Crash"
-description: "PCL CE 提示 “Minecraft 出现错误”，或游戏崩溃 / PCL CE shows 'Minecraft encountered an error', or Minecraft crashes"
+description: "PCL-HE 提示 “Minecraft 出现错误”，或游戏崩溃 / PCL-HE shows 'Minecraft encountered an error', or Minecraft crashes"
 title: "[C#]: "
 type: "崩溃"
+labels: ["bug"]
 body:
   - type: checkboxes
     id: "yml-1"
@@ -9,7 +10,7 @@ body:
       label: "检查项 / Checklist"
       description: "请逐个检查下列项目，并勾选确认 / Please review each item below and check the boxes to confirm."
       options:
-        - label: "**我已尝试使用 [HMCL](https://hmcl.huangyuhui.net/download) 启动，HMCL 没有出现问题**（如果 HMCL 也无法启动就一般不是 PCL CE 导致的问题，请 **不要** 提交反馈） / **I have tried launching with [HMCL](https://hmcl.huangyuhui.net/download), and HMCL works without issues**. If HMCL also fails to launch, the problem is usually not caused by PCL CE, so please **do not** submit feedback."
+        - label: "**我已尝试使用 [HMCL](https://hmcl.huangyuhui.net/download) 启动，HMCL 没有出现问题**（如果 HMCL 也无法启动就一般不是 PCL-HE 导致的问题，请 **不要** 提交反馈） / **I have tried launching with [HMCL](https://hmcl.huangyuhui.net/download), and HMCL works without issues**. If HMCL also fails to launch, the problem is usually not caused by PCL-HE, so please **do not** submit feedback."
           required: true
         - label: "我已在 [Issues 页面](https://github.com/Sherlock-9522/PCL-HE/issues?q=is%3Aissue+) 中搜索，确认了这一 Bug 未被提交过 / I have searched the [Issues page](https://github.com/Sherlock-9522/PCL-HE/issues?q=is%3Aissue+) and confirmed that this bug has not been reported yet."
           required: true
@@ -29,13 +30,15 @@ body:
   - type: textarea
     id: "yml-3"
     attributes:
-      label: "PCL CE 错误报告、日志与附件 / PCL CE Error Report, Logs & Attachments"
-      description: "上传 PCL CE 提供的错误报告 (在崩溃时选择导出错误报告)。如果没有，请在游戏崩溃后不要关掉启动器，使用 `设置-查看日志-导出日志` 得到日志压缩包并上传 / Upload the error report provided by PCL CE by choosing to export the error report when the crash occurs. If it is unavailable, do not close the launcher after Minecraft crashes; use `Settings → Logs → Export log` and upload the exported log archive."
+      label: "PCL-HE 错误报告、日志与附件 / PCL-HE Error Report, Logs & Attachments"
+      description: "上传 PCL-HE 提供的错误报告 (在崩溃时选择导出错误报告)。如果没有，请在游戏崩溃后不要关掉启动器，使用 `设置-查看日志-导出日志` 得到日志压缩包并上传 / Upload the error report provided by PCL-HE by choosing to export the error report when the crash occurs. If it is unavailable, do not close the launcher after Minecraft crashes; use `Settings → Logs → Export log` and upload the exported log archive."
       placeholder: |
         先点击这个文本框，然后再将文件直接拖拽到文本框中以上传。
         如果缺少相关错误报告或日志用于分析问题，此 Issue 可能会被直接关闭。
+        日志中的 Minecraft 访问令牌（--accessToken）已由启动器自动打码；但截图、配置文件与你自行填写的密钥不会被处理，上传前请自行检查。
         Click this text box first, then drag and drop files here to upload.
         If the required error report or logs are missing, this issue may be closed directly.
+        Minecraft access tokens (--accessToken) in the logs are already masked by the launcher; screenshots, config files and any keys you entered yourself are not, so please double-check before uploading.
     validations:
       required: true
   - type: textarea

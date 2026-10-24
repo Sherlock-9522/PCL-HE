@@ -1549,6 +1549,7 @@
     <sys:String x:Key="Launch.Account.Auth.Denied">You cancelled this login on the authorization page.</sys:String>
     <sys:String x:Key="Launch.Account.Auth.InvalidScope">This authentication server does not grant the scopes this login needs. Please contact the server administrator.</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Rejected">The authentication server rejected this login ({0}).</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.MinecraftTokenFailed">The account service did not return a Minecraft token. This application may not have the MinecraftToken.Create permission yet — please contact the authentication server administrator.</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">Log out</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">Password</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Preset.LittleSkin">Preset - LittleSkin</sys:String>
@@ -3524,7 +3525,7 @@
 
     <!-- Tools.Test -->
 
-    <sys:String x:Key="Tools.Test.CeNotice">For ease of maintenance, this feature is not included in the Community Edition...</sys:String>
+    <sys:String x:Key="Tools.Test.CeNotice">For ease of maintenance, this feature is not included in PCL-HE...</sys:String>
     <sys:String x:Key="Tools.Test.Crash.ManualCrash">Manual crash</sys:String>
     <sys:String x:Key="Tools.Test.Crash.Title">Crash test</sys:String>
     <sys:String x:Key="Tools.Test.Dependency.Checking">Checking environment...</sys:String>
@@ -3702,5 +3703,47 @@
     <sys:String x:Key="Watcher.Start">Started Minecraft log monitoring</sys:String>
     <sys:String x:Key="Watcher.WindowLoaded">Minecraft window loaded: {0} ({1})</sys:String>
     <sys:String x:Key="Watcher.WindowMaximized">Minecraft window maximized: {0}</sys:String>
+
+
+    <!-- Memory optimization -->
+    <sys:String x:Key="Launch.Right.MemoryOpt.Title">Memory optimization (new)</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Body">An optional new feature: when you allow it, the launcher reclaims memory pages the system is not using before the game starts, so the game gets more available physical memory. It never terminates any process and never touches your saves or settings.</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Warning">Note: full execution requires administrator authorization. At the moment of cleanup, unused memory pages of every program are moved out of physical memory; the next access to them is slower and a brief stutter may occur, and modified pages must be written back to disk. Do not run it while a game is running, and do not use it frequently.</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Disclaimer">Disclaimer: this feature is provided as-is and only runs after you have read the notes above and enabled it yourself. Any stutter, data loss or system abnormality caused by using it is your own responsibility; we are not liable for it.</sys:String>
+    <sys:String x:Key="Launch.Memory.Optimizing">Optimizing memory in the background…</sys:String>
+    <sys:String x:Key="Launch.Memory.Result">Memory optimization finished: available memory +{0} MB, took {1} ms</sys:String>
+    <sys:String x:Key="Launch.Memory.SkippedGameRunning">A game process is already running, so this memory optimization was skipped (to avoid affecting the game)</sys:String>
+    <sys:String x:Key="Launch.Memory.LightOnlyHint">Light escort only this time (deep cleanup is not authorised yet). For the full system-wide clean, click 'Deep cleanup' once in Tools → Toolbox and accept the admin prompt; later launches in this session will then run it automatically without prompting.</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Title">Light escort</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Description">Only trims the launcher's own working set — pages it holds but is not using right now. No administrator rights, no risk, safe at any time; the cost is a short redraw delay when you switch back to the launcher.</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Run">Run light escort</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Result">Light escort finished: {0} MB trimmed, took {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Title">Deep cleanup (system-wide)</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Description">One kernel-level call reclaims unused memory pages across the whole system, on the same order as similar tools (over 2 GB released in our tests). Requires administrator authorization.</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Run">Run deep cleanup</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Running">Running deep cleanup, please wait… (a UAC prompt may have appeared)</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Result">Deep cleanup finished: available memory +{0} MB, took {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Failed">Deep cleanup could not finish: {0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Title">Game is running</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Message">System-wide cleanup cannot exclude any process, so the game memory pages are moved out of physical memory too and the game will stutter for a few seconds afterwards while they are read back from disk. Clean up now anyway?</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Confirm">Clean up anyway</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.ElevationFailed">Deep cleanup could not finish: the elevated helper failed to start (the administrator prompt may have been cancelled)</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Timeout">Deep cleanup could not finish: the elevated helper did not answer within 2 minutes</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Title">In-game boost (recommended while playing)</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Description">Leaves the game itself completely untouched: it only pages out memory that other programs are not using right now, and raises the game process memory priority to the highest level so the system evicts it last under pressure. No stutter, no administrator rights, safe to use at any time while the game is running.</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Run">Run in-game boost</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Running">Trimming other programs' memory; the game is not affected…</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Result">In-game boost finished: reclaimed {0} MB from other programs, {1} processes handled, {2} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.PriorityRaised">Memory priority raised for {0} game process(es)</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Failed">In-game boost could not finish: {0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Title">No running game detected</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Message">The whole point of in-game boost is to leave the game out. No game process was found, so continuing will trim every process it can open except the launcher — close to a deep clean but without administrator rights, so the coverage is smaller. Continue anyway?</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Confirm">Run anyway</sys:String>
+    <sys:String x:Key="Tools.Memory.Danger.Note">Note: at the moment of execution every program memory pages are moved out of physical memory; the next access must read them back, which may cause a brief stutter, and writing modified pages back keeps the disk busy for a few seconds. Do not run it while a game or another heavy program is running, and do not use it frequently.</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize">Optimize memory before starting the game</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.Description">Runs one memory cleanup before the game process is created, so the game gets more available physical memory. The cleanup must finish before the game starts, so it adds a little startup time (under 1 second in our tests).</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.ToolTip">Note: full execution requires administrator authorization. At the moment of cleanup every program memory pages are moved out of physical memory, the next access is slower and a brief stutter may occur; do not run it while a game is running, and do not use it frequently. This feature is provided as-is, at your own risk.</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize">Optimize memory before starting the game</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize.ToolTip">Note: at the moment of cleanup every program memory pages are moved out of physical memory, which may cause a brief stutter; full execution requires administrator authorization. With follow-global the value in Settings then Launch is used. This feature is provided as-is, at your own risk.</sys:String>
 
 </ResourceDictionary>

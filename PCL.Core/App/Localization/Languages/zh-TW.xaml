@@ -1549,6 +1549,7 @@
     <sys:String x:Key="Launch.Account.Auth.Denied">你在授權頁面取消了這次登入。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.InvalidScope">該驗證伺服器不支援本次登入所需的權限範圍，請聯絡伺服器管理員。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Rejected">驗證伺服器拒絕了這次登入（{0}）。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.MinecraftTokenFailed">帳號服務沒有回傳遊戲權杖，可能是這個應用程式還沒取得 MinecraftToken.Create 權限，請聯絡驗證伺服器管理員。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">退出登入</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">密碼</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Preset.LittleSkin">預設 - LittleSkin</sys:String>
@@ -3702,5 +3703,47 @@
     <sys:String x:Key="Watcher.Start">開始 Minecraft 日誌監控</sys:String>
     <sys:String x:Key="Watcher.WindowLoaded">Minecraft 視窗已載入：{0}（{1}）</sys:String>
     <sys:String x:Key="Watcher.WindowMaximized">已最大化 Minecraft 視窗：{0}</sys:String>
+
+
+    <!-- 記憶體最佳化 -->
+    <sys:String x:Key="Launch.Right.MemoryOpt.Title">記憶體最佳化（新功能）</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Body">這是一項可選的新功能：在你允許時，於啟動遊戲前把系統中暫不使用的記憶體分頁集中回收，讓遊戲拿到更充裕的可用實體記憶體。它不會終止任何處理程序，也不會修改你的存檔與設定。</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Warning">注意：完整執行需要系統管理員授權。清理的瞬間，所有程式暫不使用的記憶體分頁都會被移出實體記憶體，之後首次存取會略慢，可能出現短暫卡頓；已修改的分頁需要寫回磁碟。請不要在遊戲執行中執行，也不要頻繁使用。</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Disclaimer">免責聲明：本功能依「現狀」提供，只在你讀過上面的說明並自願開啟後才會執行。使用它造成的卡頓、資料遺失或系統異常，由使用者自行承擔，我們不為此負責。</sys:String>
+    <sys:String x:Key="Launch.Memory.Optimizing">正在背景進行記憶體最佳化…</sys:String>
+    <sys:String x:Key="Launch.Memory.Result">記憶體最佳化完成：可用記憶體增加 {0} MB，耗時 {1} ms</sys:String>
+    <sys:String x:Key="Launch.Memory.SkippedGameRunning">偵測到遊戲處理程序已在執行，已略過本次記憶體最佳化（避免影響遊戲）</sys:String>
+    <sys:String x:Key="Launch.Memory.LightOnlyHint">本次僅執行輕量護航（尚未授權深度清理）。想獲得龍貓那種全系統效果：到「工具 → 百寶箱」點一次「深度清理」並同意管理員授權，本次執行期間後續啟動都會免授權自動深度最佳化。</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Title">輕量護航</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Description">只整理啟動器自身的記憶體佔用，把它佔著但暫時用不到的頁面換出。不需要管理員授權，零風險，可隨時執行；代價是切回啟動器時需要重新繪製，可能有一點遲滯。</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Run">執行輕量護航</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Result">輕量護航完成：整理出 {0} MB，耗時 {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Title">深度清理（全系統）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Description">一次核心層級呼叫，把全系統暫不使用的記憶體分頁集中回收，效果與同類工具同一量級（實測可釋放 2 GB 以上）。需要系統管理員授權。</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Run">執行深度清理</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Running">正在執行深度清理，請稍候…（UAC 授權視窗可能已經彈出）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Result">深度清理完成：可用記憶體增加 {0} MB，耗時 {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Failed">深度清理未能完成：{0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Title">遊戲正在執行</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Message">全系統清理無法排除任何處理序，遊戲的記憶體分頁也會被移出實體記憶體，緊接著遊戲會卡頓數秒（分頁需要從磁碟重新讀回）。確定現在清理嗎？</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Confirm">仍然清理</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.ElevationFailed">深度清理未能完成：提權處理程序啟動失敗（可能是取消了管理員授權）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Timeout">深度清理未能完成：等待提權子處理程序超過 2 分鐘</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Title">遊戲內護航（遊戲執行中推薦）</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Description">完全不動遊戲本身：只把其他程式暫時用不到的記憶體頁換出，同時把遊戲行程的記憶體優先順序提到最高，讓系統在記憶體吃緊時盡量最後換出遊戲。遊戲不會因此卡頓，也不需要管理員授權，遊戲執行中隨時可用。</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Run">執行遊戲內護航</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Running">正在整理其他程式的記憶體，遊戲不受影響…</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Result">遊戲內護航完成：其他程式騰出 {0} MB，處理 {1} 個行程，耗時 {2} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.PriorityRaised">已把 {0} 個遊戲行程的記憶體優先順序提到最高</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Failed">遊戲內護航未能完成：{0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Title">沒有偵測到正在執行的遊戲</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Message">遊戲內護航的意義就是把遊戲排除在外。目前沒有找到遊戲行程，繼續執行會按「除啟動器外所有可處理的行程」清理，效果接近深度清理但不需要管理員權限，覆蓋面會小一些。仍要執行嗎？</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Confirm">仍然執行</sys:String>
+    <sys:String x:Key="Tools.Memory.Danger.Note">注意：執行瞬間全部程式的記憶體分頁都會被移出實體記憶體，之後首次存取需重新讀回，可能出現短暫卡頓；已修改的分頁寫回時磁碟會有數秒忙碌。請勿在遊戲或其他高負載程式執行時執行，也不要頻繁使用。</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize">啟動遊戲前進行記憶體最佳化</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.Description">在遊戲處理程序建立之前先做一次記憶體清理，讓遊戲拿到更充裕的可用實體記憶體。清理必須趕在遊戲啟動之前完成，因此會佔用一點啟動時間（實測不到 1 秒）。</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.ToolTip">注意：完整執行需要系統管理員授權。清理瞬間系統內全部程式的記憶體分頁會被移出實體記憶體，之後首次存取略慢，可能出現短暫卡頓；請勿在遊戲執行中執行，也不要頻繁使用。本功能依「現狀」提供，後果自負。</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize">啟動遊戲前進行記憶體最佳化</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize.ToolTip">注意：清理瞬間系統內全部程式的記憶體分頁會被移出實體記憶體，可能造成短暫卡頓；完整執行需要系統管理員授權。選擇「跟隨全域設定」時使用「設定 → 啟動」中的開關值。本功能依「現狀」提供，後果自負。</sys:String>
 
 </ResourceDictionary>

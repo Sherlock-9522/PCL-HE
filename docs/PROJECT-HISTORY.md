@@ -423,17 +423,26 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 
 ### 4.4 第三方登录：LittleSkin 的 OAuth 应用
 
-`YggdrasilConnectProvider.cs:26-30` 的 `_BuiltInClientIds` 里 `["littleskin.cn"] = "1514"`
-是**上游 PCL-CE 注册的应用**，所以授权页显示「登录至 PCL CE」。
+`YggdrasilConnectProvider.cs` 的 `_BuiltInClientIds` 里 `["littleskin.cn"] = "1637"`
+是本项目自己在 LittleSkin 注册的应用（应用名
+`Plain Craft Launcher (PCL) - Harness Edition`、回调 `https://open.littleskin.cn/oauth/callback`），
+不再是上游 PCL-CE 的 `1514`——授权页不会再显示「登录至 PCL CE」。
 
-已在 LittleSkin 建了独立应用：客户端 ID **1637**、应用名
-`Plain Craft Launcher (PCL) - Harness Edition`、回调 `https://open.littleskin.cn/oauth/callback`。
-但**白名单还没申请**（要发邮件到 `support@littleskin.in`），所以 `_BuiltInClientIds`
-暂时仍指向 `1514`——换掉会直接登不上。
+**白名单还没申请**（要发邮件到 `support@littleskin.in`）。
+切到 1637 后、白名单批下来之前**登不上是预期现象**（未登记的设备代码流应用会被拒）。
+临时可用性可以设环境变量 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游应用。
 
-**注意**：LittleSkin 文档明确 `Yggdrasil.PlayerProfiles.Read` 与 `.Select` **不可同时申请**，
-同时用会在设备代码流里报 `invalid_scope`。当前 `_Scopes` 是
-`openid` / `offline_access` / `Yggdrasil.PlayerProfiles.Select` / `Yggdrasil.Server.Join`，**没有 `Read`**，不冲突。
+**权限选择**：LittleSkin 文档明确 `Yggdrasil.PlayerProfiles.Read` 与 `.Select` **不可同时申请**，
+同时用会在设备代码流里报 `invalid_scope`。本项目选 **`Read`**：设备代码流不再强制用户在网页
+选角色，登录后在启动器内列出账号下全部角色自行挑选。当前 `_Scopes` 是
+`openid` / `offline_access` / `Yggdrasil.PlayerProfiles.Read` / `Yggdrasil.MinecraftToken.Create` /
+`Yggdrasil.Server.Join`，`YggdrasilOptions._scopesRequired` 同步为其中四项（不含 `offline_access`）。
+
+**令牌换发**：LittleSkin 的 OAuth 访问令牌只能访问账号服务，进游戏必须用
+`POST /authserver/oauth`（body `{"uuid": "<角色 UUID>"}`，需 `Yggdrasil.MinecraftToken.Create`）
+换成 Yggdrasil 的 Minecraft 令牌。`_CompleteAsync` 在角色确定后自动换发，
+`ValidateAsync` 改用该令牌请求 `/sessionserver/session/minecraft/profile` 判断有效性，
+老档案里的 OAuth 令牌会因此校验失败并触发一次静默刷新完成迁移。
 
 `6413ee7` 加了环境变量覆盖机制：`PCL_OAUTH_CLIENT_ID_<主机名大写、点与连字符换下划线>`，
 例如 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN`。三个调用点语义一致：
@@ -1038,7 +1047,9 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
   需要在 Minecraft 侧完成应用登记，或用已获授权的客户端 ID。
 - **LittleSkin 第三方登录**：独立 OAuth 应用（客户端 ID `1637`）已在 LittleSkin 建好，
   但**设备代码流白名单尚未申请**（需发邮件到 `support@littleskin.in`）。
-  在此之前 `_BuiltInClientIds` 仍指向上游的 `1514`，换掉会直接登不上。
+  代码已于 2026-10-24 切到 `1637`，权限改为 `PlayerProfiles.Read` + `MinecraftToken.Create`
+  （角色在启动器内选择）。白名单批下来之前用 1637 登录会失败，属预期现象；
+  临时可用性可通过环境变量 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游应用。
 
 ### 已明确延后的工作
 

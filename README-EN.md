@@ -16,6 +16,9 @@
 
 </div>
 
+> [!WARNING]
+> This is an early **v0.1.2-Alpha** testing release. It may contain defects that break launching, corrupt data, or cause worse problems. Back up your `.minecraft` and instance configuration first. Report problems in [Issues](https://github.com/Sherlock-9522/PCL-HE/issues) with logs attached; **do not report issues with this distribution to the upstream PCL or PCL-CE repositories**.
+
 PCL-HE is an independent third-party derivative work based on [Plain Craft Launcher](https://github.com/Meloong-Git/PCL), developed on top of [PCL Community Edition](https://github.com/PCL-Community/PCL-CE) as its direct upstream.
 
 **This distribution is not affiliated with Chengdu Guapilong Technology Co., Ltd., the official PCL team, or the official PCL Community team, and does not represent or carry the endorsement of any of them.**
@@ -28,8 +31,22 @@ PCL-HE is an independent third-party derivative work based on [Plain Craft Launc
 | **Privacy** | Telemetry is fully severed: no usage data is collected or uploaded. The Natayark account system and the upstream lobby service are disabled |
 | **Updates** | As an independent distribution, it never fetches versions, announcements, or binaries from any upstream update service |
 | **Visuals** | An original splash animation, a deepened main-page blue gradient, an independent opacity slider for the player profile panel, and a low-opacity mascot watermark |
+| **Memory** | Ships a standalone subproject, [PCL.MemoryOptimizer](PCL.MemoryOptimizer/README.md): light, in-game boost (no elevation, never touches the game) and a deep clean that calls a kernel interface after a single UAC prompt. No process is ever terminated |
 | **Features** | Four direct Chunkbase entries on the saves page (seed map / stronghold / nether fortress / end city) and a schematics folder shortcut on the instance overview page |
 | **Compliance** | The About page lists every upstream project that informed the design, along with their sponsorship channels |
+
+## 🧠 Memory optimizer
+
+The memory optimizer under Tools → Toolbox has been rebuilt as a standalone subproject, [PCL.MemoryOptimizer](PCL.MemoryOptimizer/README.md), shipped with the launcher and maintainable on its own. It has three modes:
+
+- **Light** — no administrator rights needed; trims only the launcher's own working set. Small win, zero risk.
+- **In-game boost** — no administrator rights needed; leaves the game out entirely, trims the working set of background programs (browser, chat, editor) and raises the game process memory priority to the highest level. Nothing of the game is touched, so it is safe to use **while the game is running**.
+- **Deep clean** — one UAC prompt, after which a short-lived elevated process calls a kernel interface to trim working sets system-wide. Measured: available memory up by roughly 2.4 GB, with no process terminated.
+
+You can also tick **optimize memory before launch** under Settings → Game memory. If deep clean was already authorised during this run, launching goes straight to it without asking again.
+
+> ⚠️ Deep clean moves the memory pages of programs you are using into the page file, so switching back to them briefly stutters, and it should not be used while a game is running. It relieves current memory pressure; it does not make any program use less memory.
+
 
 ## 🌱 Origins and How This Is Built
 
@@ -121,3 +138,5 @@ And every [contributor](https://github.com/PCL-Community/PCL-CE/graphs/contribut
 This is an independently maintained third-party project. **Please do not report issues with this distribution to the upstream PCL or PCL-CE repositories.**
 
 Report problems in [this repository's issues](https://github.com/Sherlock-9522/PCL-HE/issues) and attach the log archive produced by Settings → View Log → Export Log.
+
+> Minecraft access tokens (`--accessToken`) in the log are masked automatically by the launcher, but screenshots, config files and any keys you entered yourself are not. Please check before uploading — do not paste account passwords or private keys into a public issue.

@@ -1549,6 +1549,7 @@
     <sys:String x:Key="Launch.Account.Auth.Denied">你在授权页面取消了这次登录。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.InvalidScope">该验证服务器不支持本次登录所需的权限范围，请联系服务器管理员。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Rejected">验证服务器拒绝了这次登录（{0}）。</sys:String>
+    <sys:String x:Key="Launch.Account.Auth.MinecraftTokenFailed">账号服务没有返回游戏令牌，可能是这个应用还没有获得 MinecraftToken.Create 权限，请联系验证服务器管理员。</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Logout">退出登录</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Password">密码</sys:String>
     <sys:String x:Key="Launch.Account.Auth.Preset.LittleSkin">预设 - LittleSkin</sys:String>
@@ -3702,5 +3703,47 @@
     <sys:String x:Key="Watcher.Start">开始 Minecraft 日志监控</sys:String>
     <sys:String x:Key="Watcher.WindowLoaded">Minecraft 窗口已加载：{0}（{1}）</sys:String>
     <sys:String x:Key="Watcher.WindowMaximized">已最大化 Minecraft 窗口：{0}</sys:String>
+
+
+    <!-- 内存优化 -->
+    <sys:String x:Key="Launch.Right.MemoryOpt.Title">内存优化（新功能）</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Body">这是一项可选的新功能：在你允许时，于启动游戏前把系统中暂不使用的内存页集中回收，让游戏拿到更充裕的可用物理内存。它不终止任何进程，也不会修改你的存档与设置。</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Warning">注意：完整执行需要管理员授权。清理的瞬间，所有程序暂不使用的内存页都会被移出物理内存，之后首次访问会略慢，可能出现短暂卡顿；已修改的页需要写回磁盘。请不要在游戏运行中执行，也不要频繁使用。</sys:String>
+    <sys:String x:Key="Launch.Right.MemoryOpt.Disclaimer">免责声明：本功能按「现状」提供，只在你读过上面的说明并自愿开启后才会运行。使用它造成的卡顿、数据丢失或系统异常，由使用者自行承担，我们不为此负责。</sys:String>
+    <sys:String x:Key="Launch.Memory.Optimizing">正在后台进行内存优化…</sys:String>
+    <sys:String x:Key="Launch.Memory.Result">内存优化完成：可用内存增加 {0} MB，耗时 {1} ms</sys:String>
+    <sys:String x:Key="Launch.Memory.SkippedGameRunning">检测到游戏进程已在运行，已跳过本次内存优化（避免影响游戏）</sys:String>
+    <sys:String x:Key="Launch.Memory.LightOnlyHint">本次仅执行轻量护航（尚未授权深度清理）。想获得龙猫那种全系统效果：到「工具 → 百宝箱」点一次「深度清理」并同意管理员授权，本次运行期间后续启动都会免授权自动深度优化。</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Title">轻量护航</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Description">只整理启动器自身的内存占用，把它占着但暂时用不到的页面换出。不需要管理员授权，零风险，可随时执行；代价是切回启动器时需要重新渲染，可能有一点迟滞。</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Run">执行轻量护航</sys:String>
+    <sys:String x:Key="Tools.Memory.Light.Result">轻量护航完成：整理出 {0} MB，耗时 {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Title">深度清理（全系统）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Description">一次内核级调用，把全系统暂不使用的内存页集中回收，效果与同类工具同一量级（实测可释放 2 GB 以上）。需要管理员授权。</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Run">执行深度清理</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Running">正在执行深度清理，请稍候…（UAC 授权窗口可能已经弹出）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Result">深度清理完成：可用内存增加 {0} MB，耗时 {1} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Failed">深度清理未能完成：{0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Title">游戏正在运行</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Message">全系统清理无法排除任何进程，游戏的内存页也会被移出物理内存，紧接着游戏会卡顿几秒（页面需要从磁盘重新读回）。确定现在清理吗？</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.GameRunning.Confirm">仍然清理</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.ElevationFailed">深度清理未能完成：提权进程启动失败（可能是取消了管理员授权）</sys:String>
+    <sys:String x:Key="Tools.Memory.Deep.Timeout">深度清理未能完成：等待提权子进程超过 2 分钟</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Title">游戏内护航（游戏运行中推荐）</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Description">完全不动游戏本身：只把其他程序暂时用不到的内存页换出，同时把游戏进程的内存优先级提到最高，让系统在内存紧张时尽量最后换出游戏。游戏不会因此卡顿，也不需要管理员授权，游戏运行中随时可用。</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Run">执行游戏内护航</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Running">正在整理其他程序的内存，游戏不受影响…</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Result">游戏内护航完成：其他程序腾出 {0} MB，处理 {1} 个进程，耗时 {2} ms</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.PriorityRaised">已把 {0} 个游戏进程的内存优先级提到最高</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.Failed">游戏内护航未能完成：{0}</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Title">没有检测到正在运行的游戏</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Message">游戏内护航的意义就是把游戏排除在外。当前没有找到游戏进程，继续执行会按「除启动器外所有可处理的进程」清理，效果接近深度清理但不需要管理员权限，覆盖面会小一些。仍要执行吗？</sys:String>
+    <sys:String x:Key="Tools.Memory.Game.NoGame.Confirm">仍然执行</sys:String>
+    <sys:String x:Key="Tools.Memory.Danger.Note">注意：执行瞬间全部程序的内存页都会被移出物理内存，之后首次访问需重新读回，可能出现短暂卡顿；已修改的页写回时磁盘会有数秒繁忙。请勿在游戏或其他重负载程序运行时执行，也不要频繁使用。</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize">启动游戏前进行内存优化</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.Description">在游戏进程创建之前先做一次内存清理，让游戏拿到更充裕的可用物理内存。清理必须赶在游戏启动之前完成，因此会占用一点启动时间（实测不到 1 秒）。</sys:String>
+    <sys:String x:Key="Setup.Launch.MemoryOptimize.ToolTip">注意：完整执行需要管理员授权。清理瞬间系统内全部程序的内存页会被移出物理内存，之后首次访问略慢，可能出现短暂卡顿；请勿在游戏运行中执行，也不要频繁使用。本功能按「现状」提供，后果自负。</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize">启动游戏前进行内存优化</sys:String>
+    <sys:String x:Key="Instance.Setup.MemoryOptimize.ToolTip">注意：清理瞬间系统内全部程序的内存页会被移出物理内存，可能造成短暂卡顿；完整执行需要管理员授权。选择「跟随全局设置」时使用「设置 → 启动」中的开关值。本功能按「现状」提供，后果自负。</sys:String>
 
 </ResourceDictionary>

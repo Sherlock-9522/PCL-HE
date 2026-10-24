@@ -2,6 +2,7 @@ name: "综合 Bug 反馈 / General Bug Report"
 description: "遇见了与启动器功能相关的 Bug / Report a bug related to launcher features"
 title: "[C#]: "
 type: "Bug"
+labels: ["bug"]
 body:
   - type: checkboxes
     id: "yml-1"
@@ -48,9 +49,11 @@ body:
         如果有相关截图或文件，也请一并上传。
         请勿自行判断是否需要日志，日志文件并不仅仅包含发生错误的信息，还可能包含其它关键信息。
         如果缺少相关日志用于分析问题，此 Issue 可能会被直接关闭。
+        日志中的 Minecraft 访问令牌（--accessToken）已由启动器自动打码；但截图、配置文件与你自行填写的密钥不会被处理，上传前请自行检查。
         Click this text box first, then drag and drop files here to upload.
         Please also upload any relevant screenshots or files.
         Do not decide on your own whether logs are needed. Logs may contain not only error messages, but other key information as well.
         If the required logs are missing, this issue may be closed directly.
+        Minecraft access tokens (--accessToken) in the logs are already masked by the launcher; screenshots, config files and any keys you entered yourself are not, so please double-check before uploading.
     validations:
       required: true
