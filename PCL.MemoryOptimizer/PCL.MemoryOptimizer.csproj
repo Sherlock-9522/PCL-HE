@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>PCL.MemoryOptimizer</RootNamespace>
+    <AssemblyName>PCL.MemoryOptimizer</AssemblyName>
+    <Configurations>Debug;CI;Release;Beta</Configurations>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
+    <!-- 独立子项目：零第三方依赖，不引用 PCL.Core，可单独构建与单测 -->
+    <Version>0.3.0</Version>
+    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <FileVersion>0.3.0.0</FileVersion>
+    <Description>PCL-HE 内存优化器：把暂时用不到的物理内存页换出，不结束任何进程。</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

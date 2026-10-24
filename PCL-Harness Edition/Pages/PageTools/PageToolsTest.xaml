@@ -16,12 +16,48 @@
                         <local:MyButton x:Name="BtnMemoryRefresh" MinWidth="100"
                                         Text="{DynamicResource Common.Action.Refresh}" Margin="0,0,15,15"
                                         Click="BtnMemoryRefresh_Click" />
-                        <local:MyButton x:Name="BtnMemoryRelease" MinWidth="150"
-                                        Text="{DynamicResource Tools.Memory.Release}" Margin="0,0,15,15"
-                                        Click="BtnMemoryRelease_Click" />
                     </WrapPanel>
+
+                    <!-- 轻量护航：只整理启动器自身工作集，不触碰任何其他进程 -->
+                    <TextBlock Text="{DynamicResource Tools.Memory.Light.Title}" FontWeight="Bold"
+                               Margin="0,8,0,0" />
+                    <TextBlock Text="{DynamicResource Tools.Memory.Light.Description}" TextWrapping="Wrap"
+                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
+                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
+                        <local:MyButton x:Name="BtnMemoryLight" MinWidth="150"
+                                        Text="{DynamicResource Tools.Memory.Light.Run}" Margin="0,0,15,15"
+                                        Click="BtnMemoryLight_Click" />
+                    </WrapPanel>
+
+                    <!-- 深度清理：清空全系统工作集，需要管理员授权 -->
+                    <TextBlock Text="{DynamicResource Tools.Memory.Deep.Title}" FontWeight="Bold"
+                               Margin="0,8,0,0" />
+                    <TextBlock Text="{DynamicResource Tools.Memory.Deep.Description}" TextWrapping="Wrap"
+                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
+                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
+                        <local:MyButton x:Name="BtnMemoryDeep" MinWidth="150"
+                                        Text="{DynamicResource Tools.Memory.Deep.Run}" Margin="0,0,15,15"
+                                        Click="BtnMemoryDeep_Click" />
+                    </WrapPanel>
+                    <TextBlock x:Name="TextMemoryDeepState" TextWrapping="Wrap" Opacity="0.75" FontSize="12.5"
+                               Margin="0,8,0,0" Visibility="Collapsed" />
+                    <!-- 游戏内护航：把游戏完整排除在外，游戏跑着也能随时用 -->
+                    <TextBlock Text="{DynamicResource Tools.Memory.Game.Title}" FontWeight="Bold"
+                               Margin="0,14,0,0" />
+                    <TextBlock Text="{DynamicResource Tools.Memory.Game.Description}" TextWrapping="Wrap"
+                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
+                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
+                        <local:MyButton x:Name="BtnMemoryGame" MinWidth="150"
+                                        Text="{DynamicResource Tools.Memory.Game.Run}" Margin="0,0,15,15"
+                                        Click="BtnMemoryGame_Click" />
+                    </WrapPanel>
+                    <TextBlock x:Name="TextMemoryGameState" TextWrapping="Wrap" Opacity="0.75" FontSize="12.5"
+                               Margin="0,8,0,0" Visibility="Collapsed" />
+                    <TextBlock Text="{DynamicResource Tools.Memory.Danger.Note}" TextWrapping="Wrap"
+                               Foreground="{DynamicResource ColorBrushRedLight}" FontSize="12.5"
+                               Margin="0,2,0,0" />
                     <TextBlock Text="{DynamicResource Tools.Memory.Note}" TextWrapping="Wrap" Opacity="0.6"
-                               FontSize="12" />
+                               FontSize="12" Margin="0,8,0,0" />
                 </StackPanel>
             </local:MyCard>
 

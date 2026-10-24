@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using PCL.Core.App;
+using PCL.Core.App.Essentials;
 using PCL.Core.App.Tools;
 using PCL.Core.IO;
 using PCL.Core.IO.Net;
@@ -45,6 +46,8 @@ public partial class PageToolsTest
 
     #region 内存优化
 
+    private bool memoryOptimizeRunning;
+
     private void RefreshMemoryStatus()
     {
         try
@@ -66,51 +69,246 @@ public partial class PageToolsTest
 
     private void BtnMemoryRefresh_Click(object sender, MouseButtonEventArgs e) => RefreshMemoryStatus();
 
-    private void BtnMemoryRelease_Click(object sender, MouseButtonEventArgs e)
+    private enum MemoryOptimizeKind
     {
-        // 释放工作集只是把各进程暂时用不到的物理页换出到页面文件，不会减少任何进程的内存需求。
-        // 收益因此是暂时的：那些页面在被访问时会重新读回内存。
-        // 自身进程与正在运行的游戏进程都必须排除：把游戏的工作集换出，玩家切回游戏时会明显卡顿。
-        BtnMemoryRelease.IsEnabled = false;
+        /// <summary>轻量护航：只整理启动器自身，不碰其他程序。</summary>
+        Light,
+
+        /// <summary>深度清理：经提权子进程清空全系统工作集。</summary>
+        Deep,
+
+        /// <summary>游戏内护航：绝不触碰游戏进程，只整理其他程序。</summary>
+        Game,
+    }
+
+    /// <summary>轻量护航：只整理启动器自身的工作集，不触碰任何其他进程，不需要管理员授权。</summary>
+    private void BtnMemoryLight_Click(object sender, MouseButtonEventArgs e) => RunMemoryOptimize(MemoryOptimizeKind.Light);
+
+    /// <summary>深度清理：经提权子进程清空全系统工作集，需要一次管理员授权（UAC）。</summary>
+    private void BtnMemoryDeep_Click(object sender, MouseButtonEventArgs e) => RunMemoryOptimize(MemoryOptimizeKind.Deep);
+
+    /// <summary>游戏内护航：把游戏完整排除在外并提高它的内存优先级，游戏运行中随时可用，不需要管理员授权。</summary>
+    private void BtnMemoryGame_Click(object sender, MouseButtonEventArgs e) => RunMemoryOptimize(MemoryOptimizeKind.Game);
+
+    private void RunMemoryOptimize(MemoryOptimizeKind kind)
+    {
+        if (memoryOptimizeRunning) return;
+        var deep = kind == MemoryOptimizeKind.Deep;
+        var game = kind == MemoryOptimizeKind.Game;
+
+        // 游戏内护航靠「排除游戏进程」实现，因此必须先知道游戏是谁；没有游戏也该能清后台，先问一句再跑。
+        var gameProcessIds = new HashSet<uint>();
+        if (game)
+        {
+            gameProcessIds = CollectGameProcessIds();
+            if (gameProcessIds.Count == 0 &&
+                ModMain.MyMsgBox(Lang.Text("Tools.Memory.Game.NoGame.Message"),
+                    Lang.Text("Tools.Memory.Game.NoGame.Title"),
+                    Lang.Text("Tools.Memory.Game.NoGame.Confirm"),
+                    Lang.Text("Common.Action.Cancel")) != 1)
+            {
+                ModBase.Log("[Memory] 没有检测到正在运行的游戏，用户取消了本次游戏内护航", ModBase.LogLevel.Hint);
+                return;
+            }
+        }
+
+        // 深度清理会清空全系统工作集且命令本身无法排除任何进程：游戏在跑时执行必然让它从磁盘重读全部页面。
+        // 游戏运行中不再一律拒绝：内核命令无法排除任何进程，游戏一定会被一起清到，
+        // 所以把代价讲清楚、由用户自己决定要不要现在清（内存确实吃紧时这是唯一能腾出空间的办法）。
+        if (deep && ModLaunch.mcLaunchProcess is { HasExited: false })
+        {
+            if (ModMain.MyMsgBox(Lang.Text("Tools.Memory.Deep.GameRunning.Message"),
+                    Lang.Text("Tools.Memory.Deep.GameRunning.Title"),
+                    Lang.Text("Tools.Memory.Deep.GameRunning.Confirm"),
+                    Lang.Text("Common.Action.Cancel")) != 1)
+            {
+                ModBase.Log("[Memory] 游戏正在运行，用户取消了本次深度清理", ModBase.LogLevel.Hint);
+                return;
+            }
+        }
+
+        memoryOptimizeRunning = true;
+        BtnMemoryLight.IsEnabled = false;
+        BtnMemoryDeep.IsEnabled = false;
+        BtnMemoryGame.IsEnabled = false;
+        if (deep)
+        {
+            // 深度清理要等一次 UAC 授权，可能几十秒没有反馈，必须在界面上说明正在发生什么。
+            TextMemoryDeepState.Text = Lang.Text("Tools.Memory.Deep.Running");
+            TextMemoryDeepState.Visibility = Visibility.Visible;
+        }
+        else if (game)
+        {
+            TextMemoryGameState.Text = Lang.Text("Tools.Memory.Game.Running");
+            TextMemoryGameState.Visibility = Visibility.Visible;
+        }
+
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                var report = kind switch
+                {
+                    MemoryOptimizeKind.Deep => RunDeepOptimize(),
+                    MemoryOptimizeKind.Game =>
+                        PCL.MemoryOptimizer.MemoryOptimizer.RunGameBoost(gameProcessIds, CancellationToken.None),
+                    _ => PCL.MemoryOptimizer.MemoryOptimizer.RunGuarded(CancellationToken.None),
+                };
+                if (report is null) return; // 已在内部给出提示
+                string message;
+                switch (kind)
+                {
+                    case MemoryOptimizeKind.Deep:
+                        // 深度清理报告可用内存增量、耗时与原生状态码；失败时把提权子进程给出的原因带给用户。
+                        var nativeStatus = $"NTSTATUS 0x{report.NativeStatus:X8}";
+                        message = report.Succeeded
+                            ? Lang.Text("Tools.Memory.Deep.Result", report.FreedAvailableMb, report.ElapsedMilliseconds) +
+                              $" ({nativeStatus})"
+                            : Lang.Text("Tools.Memory.Deep.Failed",
+                                string.IsNullOrWhiteSpace(report.ErrorMessage) ? nativeStatus : report.ErrorMessage!);
+                        break;
+                    case MemoryOptimizeKind.Game:
+                        // 游戏内护航的收益体现在全系统工作集上：游戏那部分一点没动，其余程序被换出了。
+                        message = Lang.Text("Tools.Memory.Game.Result", report.WorkingSetReducedMb,
+                            report.ProcessedCount, report.ElapsedMilliseconds);
+                        if (report.PriorityRaisedCount > 0)
+                        {
+                            message += "\n" + Lang.Text("Tools.Memory.Game.PriorityRaised", report.PriorityRaisedCount);
+                        }
+                        break;
+                    default:
+                        message = Lang.Text("Tools.Memory.Light.Result", report.WorkingSetReducedMb,
+                            report.ElapsedMilliseconds);
+                        break;
+                }
+                ModBase.Log($"[Memory] {GetMemoryOptimizeKindName(kind)}完成：{message}（工作集减少 {report.WorkingSetReducedMb:F0} MB，" +
+                            $"处理 {report.ProcessedCount} 个、跳过 {report.SkippedCount} 个、无法处理 {report.FailedCount} 个）");
+                Dispatcher.Invoke(() =>
+                {
+                    HintService.Hint(message);
+                    RefreshMemoryStatus();
+                });
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "内存优化失败", ModBase.LogLevel.Hint,
+                    userSummary: kind switch
+                    {
+                        MemoryOptimizeKind.Deep => string.Format(Lang.Text("Tools.Memory.Deep.Failed"), ex.Message),
+                        MemoryOptimizeKind.Game => string.Format(Lang.Text("Tools.Memory.Game.Failed"), ex.Message),
+                        _ => Lang.Text("Tools.Memory.ReleaseFailed"),
+                    });
+            }
+            finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    TextMemoryDeepState.Visibility = Visibility.Collapsed;
+                    TextMemoryDeepState.Text = string.Empty;
+                    TextMemoryGameState.Visibility = Visibility.Collapsed;
+                    TextMemoryGameState.Text = string.Empty;
+                    BtnMemoryLight.IsEnabled = true;
+                    BtnMemoryDeep.IsEnabled = true;
+                    BtnMemoryGame.IsEnabled = true;
+                    memoryOptimizeRunning = false;
+                });
+            }
+        }, "MemoryOptimize");
+    }
+
+    private static string GetMemoryOptimizeKindName(MemoryOptimizeKind kind) => kind switch
+    {
+        MemoryOptimizeKind.Deep => "深度清理",
+        MemoryOptimizeKind.Game => "游戏内护航",
+        _ => "轻量护航",
+    };
+
+    /// <summary>
+    /// 收集要保护的游戏进程：当前启动的这个游戏，以及同名的其他实例
+    /// （多开整合包时同一个 javaw 名字下可能同时跑着另一个游戏，不能把它清掉）。
+    /// 没有正在运行的游戏时返回空集合。
+    /// </summary>
+    private static HashSet<uint> CollectGameProcessIds()
+    {
+        var result = new HashSet<uint>();
+        var game = ModLaunch.mcLaunchProcess;
+        if (game is not { HasExited: false })
+        {
+            return result;
+        }
+
         try
         {
-            var before = KernelInterop.GetMemorySnapshot();
-            var excluded = new HashSet<uint> { (uint)Environment.ProcessId };
-            // ModLaunch.mcLaunchProcess 在游戏退出时会被置回 null，所以既要判空也要确认进程还活着。
-            var gameProcess = ModLaunch.mcLaunchProcess;
-            if (gameProcess is not null)
-            {
-                try
-                {
-                    if (!gameProcess.HasExited) excluded.Add((uint)gameProcess.Id);
-                }
-                catch (Exception ex)
-                {
-                    // 进程句柄失效时 HasExited 会抛，这等价于「游戏已经不在跑」，忽略即可。
-                    ModBase.Log(ex, "[Memory] 读取游戏进程状态失败，本次不排除游戏进程", ModBase.LogLevel.Debug);
-                }
-            }
-            var (succeeded, failed) = KernelInterop.EmptyWorkingSets(excluded);
-            var after = KernelInterop.GetMemorySnapshot();
-            // 两个字段都是 ulong：释放之后可用内存变少时直接相减会下溢成一个天文数字，
-            // 先转成 double 再减才能保留符号。
-            double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 1024d / 1024d;
-            double availableGb = after.AvailablePhysical / 1024d / 1024d / 1024d;
-            TextMemoryStatus.Text = string.Format(Lang.Text("Tools.Memory.Status"),
-                after.TotalPhysical / 1024d / 1024d / 1024d, availableGb, after.MemoryLoadPercent,
-                after.CommitLimit / 1024d / 1024d / 1024d, after.CommitAvailable / 1024d / 1024d / 1024d);
-            HintService.Hint(string.Format(Lang.Text("Tools.Memory.ReleaseResult"), freedMb, succeeded, failed));
-            ModBase.Log($"[Memory] 释放工作集：成功 {succeeded} 个进程，失败 {failed} 个，可用内存变化 {freedMb:F1} MB");
+            result.Add((uint)game.Id);
         }
         catch (Exception ex)
         {
-            ModBase.Log(ex, "释放内存失败", ModBase.LogLevel.Hint,
-                userSummary: Lang.Text("Tools.Memory.ReleaseFailed"));
+            ModBase.Log(ex, "[Memory] 读取游戏进程 ID 失败", ModBase.LogLevel.Debug);
+            return result;
         }
-        finally
+
+        try
         {
-            BtnMemoryRelease.IsEnabled = true;
+            foreach (var process in Process.GetProcessesByName(game.ProcessName))
+            {
+                try
+                {
+                    result.Add((uint)process.Id);
+                }
+                catch (Exception ex)
+                {
+                    ModBase.Log(ex, "[Memory] 读取同名游戏进程 ID 失败", ModBase.LogLevel.Debug);
+                }
+                finally
+                {
+                    process.Dispose();
+                }
+            }
         }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Memory] 枚举同名游戏进程失败", ModBase.LogLevel.Debug);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 经提权子进程执行内核命令（信息类 80 / 命令 2）。
+    /// 返回 null 表示未执行或执行失败，此时已经提示过用户。
+    /// </summary>
+    private static PCL.MemoryOptimizer.OptimizationReport? RunDeepOptimize()
+    {
+        PCL.MemoryOptimizer.OptimizationReport? report = null;
+        using var done = new ManualResetEventSlim(false);
+        PromoteService.Append("memory-deep-clean", result =>
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(result)) report = PCL.MemoryOptimizer.MemoryOptimizer.Deserialize(result);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "[Memory] 解析提权返回的内存报告失败", ModBase.LogLevel.Debug);
+            }
+            finally
+            {
+                done.Set();
+            }
+        });
+        if (!PromoteService.Activate())
+        {
+            ModBase.Log("[Memory] 提权进程启动失败（可能是用户取消了授权）", ModBase.LogLevel.Hint,
+                userSummary: Lang.Text("Tools.Memory.Deep.ElevationFailed"));
+            return null;
+        }
+        done.Wait(TimeSpan.FromMinutes(2));
+        if (report is null)
+        {
+            ModBase.Log("[Memory] 深度清理未在时限内返回结果", ModBase.LogLevel.Hint,
+                userSummary: Lang.Text("Tools.Memory.Deep.Timeout"));
+        }
+        return report;
     }
 
     #endregion
