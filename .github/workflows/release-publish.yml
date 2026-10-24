@@ -133,7 +133,7 @@ jobs:
           # 进到目录里再打包，解压出来就直接是程序文件，不会多套一层 artifact/。
           # 同时把《PCL 存储库合理使用指南》随包分发：指南要求「继续使用本文件作为指南」，
           # 只放在仓库里而下载包中看不到，容易被质疑没有随附协议。
-          cp "../PCL-Harness Edition/LICENCE" ./artifact/LICENCE
+          cp "PCL-Harness Edition/LICENCE" ./artifact/LICENCE
           cd ./artifact
           zip -r "../${{ steps.pkg.outputs.name }}.zip" .
 
