@@ -595,7 +595,9 @@ double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 
 
 用户评价「有点效果，但相比龙猫纯血优化还不够」，要求**以后再做深度优化**，
 并且希望内存优化作为仓库里的一个**独立项目**随启动器一同发布、独立维护，
-在 GitHub 上更新「已实测可用 / 不保证完全无问题」之类的说明。这部分尚未开工。
+在 GitHub 上更新「已实测可用 / 不保证完全无问题」之类的说明。
+
+**2026-10-24 已收尾**：该功能已重写为仓库内独立子项目 `PCL.MemoryOptimizer`（独立 csproj、独立版本号、README 与 DESIGN），随启动器一同发布，不再单独出可执行程序（深清必须复用启动器已授权的提权通道，独立 exe 会绕过「游戏是否在跑」的确认）。能力分三档：轻量护航（只整理启动器自身）、游戏内护航（排除游戏进程，整理后台程序并把游戏内存优先级提到最高）、深度清理（经 UAC 授权调用内核接口整理全系统工作集，实测可用内存 +2.4 GB、进程数不变）。免责说明写在 `PCL.MemoryOptimizer/README.md` 与 `docs/RELEASE-NOTES-v0.1.2-Alpha.md`。
 
 ---
 
@@ -1125,9 +1127,9 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 ### C.3　待办（按优先级）
 
-1. **发版 v0.1.2-Alpha**（维护者定在 10-24 中午或下午）。步骤：改 `PCL-Harness Edition/metadata.json` 的 version 对象（`base` 由 `0.1.1` 升 `0.1.2`、`suffix` 填 `Alpha`、**`code` 由 `2` 递增到 `3`**）→ 提交 → `git tag v0.1.2-Alpha` → `git push origin v0.1.2-Alpha`。`code` 即 `ModBase.versionCode`（`PCL-Harness Edition/Modules/Base/ModBase.cs:47`），被 `FormMain.xaml.cs:70` 与 `UpgradeSub`/`DowngradeSub` 用来判断版本升降，**不递增老用户升级后收不到提示**。CI 由 `.github/workflows/release-publish.yml` 监听 `push tags 'v*'`，Beta 配置发 prerelease，x64 与 ARM64 双矩阵。
+1. ~~**发版 v0.1.2-Alpha**（维护者定在 10-24 中午或下午）~~ —— **2026-10-24 21:12 已完成**：7 个提交推送到 `main`（`a606c7d` 内存优化子项目 → `d8f78c9` 启动挂钩 → `3c39913` 便携与独立文件名 → `ce393d0` 界面修复 → `0e33569` 合规切割 → `89ffdbf` CI 四产物 → `c5ed56c` 发版准备），annotated tag `v0.1.2-Alpha` 推送后 `Release publish` 与 `Build (CI)` 两个工作流全部 success，GitHub 上已生成 prerelease，含四个产物：`PCL-HE_v0.1.2-Alpha_win-{x64,arm64}_{self-contained,framework-dependent}.zip` 及各自 `.sigstore.json`。本地下载复核：自包含包内 `PCL-HE.exe` 87.4 MB（zip 77.8 MB）、精简包内 `PCL-HE.exe` 24.7 MB（zip 11.6 MB），两者均含 `CONFIG/README.txt` 便携目录，无 pdb 夹带。发布说明已由 git-cliff 自动生成改为 `docs/RELEASE-NOTES-v0.1.2-Alpha.md` 全文（中上英下，单独一节详述内存优化重做），自动生成的提交明细折叠在文末。原始步骤记录如下：改 `PCL-Harness Edition/metadata.json` 的 version 对象（`base` 由 `0.1.1` 升 `0.1.2`、`suffix` 填 `Alpha`、**`code` 由 `2` 递增到 `3`**）→ 提交 → `git tag v0.1.2-Alpha` → `git push origin v0.1.2-Alpha`。`code` 即 `ModBase.versionCode`（`PCL-Harness Edition/Modules/Base/ModBase.cs:47`），被 `FormMain.xaml.cs:70` 与 `UpgradeSub`/`DowngradeSub` 用来判断版本升降，**不递增老用户升级后收不到提示**。CI 由 `.github/workflows/release-publish.yml` 监听 `push tags 'v*'`，Beta 配置发 prerelease，x64 与 ARM64 双矩阵。
 2. 实机测试：正版登录取 XSTS/accessToken（微软白名单尚未提交，**当前不可用属预期**）、LittleSkin 设备代码流、Modrinth 与 CurseForge 各下一个模组验证速度与安装。
-3. 实机验收浮钮深色配色（深色底 `#20242C`、悬停 `#3A4049`、已去描边）与幼圆加粗字体。
+3. 实机验收浮钮深色配色（深色底 `#20242C`、悬停 `#3A4049`、图标固定白色 `ColorBrushSolidFore`）与操作按钮字体（2026-10-24 已回退为系统默认字体 + 常规字重，幼圆方案废弃：幼圆只有单一字重，`FontWeight=Bold` 由 WPF 合成加粗，小字号中文会糊成一团）。
 4. 剩余审查项（都涉并发时序，**发版后再单独排一轮**）：`PCL-Harness Edition/Modules/Network/Loaders/LoaderDownload.cs:77-83`（单文件失败即取消整批）、`PCL-Harness Edition/Modules/Base/ModLoader.cs:294`（安装回调在 UI 线程做重活）、`PCL-Harness Edition/Pages/PageDownload/ModDownloadLib.cs:716-746` 与 `:1740-1769`（在 `lock (ModJava.javaLock)` 内等 Java 下载并可能弹模态框）、`PCL-Harness Edition/Modules/Minecraft/ModLocalComp.cs:2244-2275`（属性 getter 内同步阻塞等哈希）、`PCL-Harness Edition/Modules/Network/Management/NetManager.cs` 与 `Models/DownloadFile.cs`（下载登记字段无锁）。
 5. `PCL-Harness Edition/Pages/PageLaunch/PageLaunchRight.xaml.cs:173-229` 的第三方主页预设（属 PCL2 社区功能、非 PCL-CE 残留），**待维护者裁定是否切割**。
 6. `PCL-Harness Edition/Modules/Minecraft/ModDownloadLib.cs:3698-3699` 的 `versionName.Remove(versionName.Length - 3, 3)` 与 `:3809` 的 `private const string mcInstallDefaultType = "安装"` 长度不一致（中文 2 字符 vs 砍 3 字符），属系统性中文硬编码，需先摸清 `loader.name` 完整拼接链再改。
