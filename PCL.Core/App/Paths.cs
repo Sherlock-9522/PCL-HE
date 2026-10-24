@@ -108,9 +108,41 @@ public static class Paths
         // 整个 Paths 类型会因此不可用，连锁导致 SingleInstanceService 等预加载服务实例化失败，
         // 表现为「启动即退出、且不留任何日志」。AppContext.BaseDirectory 不依赖任何托管初始化，用它兜底。
         _data = Path.Combine(DefaultDirectory, "PCL");
-        _sharedData = GetSpecialPath(Special.ApplicationData, name);
-        _sharedLocalData = GetSpecialPath(Special.LocalApplicationData, name);
         _temp = Path.Combine(Path.GetTempPath(), name);
+
+        // 便携模式：发布包内预置一个空的 CONFIG 文件夹（见 CI 打包步骤），它存在就把「共享配置」
+        // 与「可再生的本地缓存」一并收进该文件夹，玩家目录下只剩启动器、CONFIG、PCL、.minecraft 四样，
+        // 安装即带走、卸载即删净，不必往 AppData 写东西。文件夹不存在（旧版本升级、玩家自行删除或
+        // 用开发目录直接运行）则完全沿用 AppData，行为与从前一致。
+        // 注意：本方法处于静态构造函数中，任何异常都会让整个 Paths 类型报废、启动即退出且不留日志，
+        // 因此这里只做「能读能写就启用」，其余一律安静退回 AppData。
+        var portableRoot = Path.Combine(DefaultDirectory, "CONFIG");
+        var portable = false;
+        try
+        {
+            if (Directory.Exists(portableRoot))
+            {
+                Directory.CreateDirectory(portableRoot); // 已存在，仅确认可写
+                portable = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[Paths] CONFIG 目录不可用，已退回 AppData：{ex.Message}");
+        }
+
+        if (portable)
+        {
+            _sharedData = portableRoot;
+            _sharedLocalData = Path.Combine(portableRoot, "Local");
+            TryMigrateFromAppData(name);
+        }
+        else
+        {
+            _sharedData = GetSpecialPath(Special.ApplicationData, name);
+            _sharedLocalData = GetSpecialPath(Special.LocalApplicationData, name);
+        }
+
         OldSharedData = GetSpecialPath(Special.ApplicationData, oldName);
 #if DEBUG
         // read environment variables
@@ -124,5 +156,46 @@ public static class Paths
         Directory.CreateDirectory(_sharedData);
         Directory.CreateDirectory(_sharedLocalData);
         Directory.CreateDirectory(_temp);
+    }
+
+    /// <summary>
+    /// 便携模式首次启动时，把 AppData 下的既有配置搬进 CONFIG，避免老用户升级后设置「丢失」。
+    /// <para>
+    /// 只在源目录存在时执行，且只复制目标缺失的文件（玩家在新位置改过的值不会被旧值顶掉）。
+    /// Local 侧的实例锁与运行时缓存不搬：它们随时可重建，搬动锁文件反而会干扰单实例判定。
+    /// 任何失败都静默跳过——配置服务随后会自行写入默认值。
+    /// </para>
+    /// </summary>
+    private static void TryMigrateFromAppData(string name)
+    {
+        try
+        {
+            var legacyShared = GetSpecialPath(Special.ApplicationData, name);
+            if (!Directory.Exists(legacyShared)) return;
+            Directory.CreateDirectory(_sharedData);
+            CopyMissing(legacyShared, _sharedData);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[Paths] 便携模式迁移旧配置失败，将使用空配置：{ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 递归复制目录内容，同名文件保持目标现值、不覆盖。
+    /// </summary>
+    private static void CopyMissing(string source, string target)
+    {
+        foreach (var file in Directory.GetFiles(source))
+        {
+            var destination = Path.Combine(target, Path.GetFileName(file));
+            if (!File.Exists(destination)) File.Copy(file, destination);
+        }
+        foreach (var directory in Directory.GetDirectories(source))
+        {
+            var destination = Path.Combine(target, Path.GetFileName(directory));
+            Directory.CreateDirectory(destination);
+            CopyMissing(directory, destination);
+        }
     }
 }

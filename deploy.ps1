@@ -20,6 +20,19 @@ Start-Sleep -Seconds 2
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 Copy-Item -Path (Join-Path $source '*') -Destination $target -Recurse -Force
 
+# 预置便携模式标记目录：启动器检测到它就优先把共享配置与本地缓存写进这里，
+# 运行目录下只剩「启动器 + CONFIG + PCL + .minecraft」；删掉本目录即退回 AppData。
+$portable = Join-Path $target 'CONFIG'
+New-Item -ItemType Directory -Force -Path $portable | Out-Null
+$portableReadme = Join-Path $portable 'README.txt'
+if (-not (Test-Path $portableReadme)) {
+    @(
+        'PCL-HE 便携模式目录。'
+        '启动器会把共享配置与本地缓存写在同级的 PCL 文件夹，本目录用于存放便携数据。'
+        '删除本目录后，配置会退回 %APPDATA%\PCLHE。'
+    ) | Set-Content -Path $portableReadme -Encoding UTF8
+}
+
 # 用本机的自签名证书给 exe 签名，避免每次启动都被 Defender 提示发布者未知。
 # 证书在首次运行时创建并导入「受信任的根证书颁发机构」与「受信任的发布者」。
 $cert = Get-ChildItem Cert:\CurrentUser\My |

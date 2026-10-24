@@ -517,8 +517,8 @@ public partial class PageSelectLeft : IRefreshable
                 case 1:
                 {
                     // 删除配置文件
-                    if (File.Exists(folder.Location + "PCL.ini"))
-                        File.Delete(folder.Location + "PCL.ini");
+                    if (File.Exists(folder.Location + "PCL-HE.ini"))
+                        File.Delete(folder.Location + "PCL-HE.ini");
                     if (Directory.Exists(folder.Location + @"versions\"))
                         foreach (var Version in new DirectoryInfo(folder.Location + @"versions\")
                                      .EnumerateDirectories())
@@ -660,7 +660,7 @@ public partial class PageSelectLeft : IRefreshable
 
     public static void RefreshCurrent(string folder)
     {
-        ModBase.WriteIni(Path.Combine(folder, "PCL.ini"), "InstanceCache", "");
+        ModBase.WriteIni(Path.Combine(folder, "PCL-HE.ini"), "InstanceCache", "");
         if (folder == ModFolder.mcFolderSelected)
             ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
                 ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");

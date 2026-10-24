@@ -90,7 +90,7 @@ public static class ModInstanceList
             // 如果没有可用实例，清空缓存并跳过后续处理
             if (!folderList.Any())
             {
-                ModBase.WriteIni(Path.Combine(path, "PCL.ini"), "InstanceCache", "");
+                ModBase.WriteIni(Path.Combine(path, "PCL-HE.ini"), "InstanceCache", "");
                 McMcInstanceSelected = null;
                 States.Game.SelectedInstance = "";
                 ModBase.Log("[Minecraft] 未找到可用 Minecraft 实例");
@@ -103,7 +103,7 @@ public static class ModInstanceList
 
             // 尝试使用缓存
             var useCache = !mcInstanceListForceRefresh &&
-                           ModBase.Val(ModBase.ReadIni(Path.Combine(path, "PCL.ini"), "InstanceCache")) ==
+                           ModBase.Val(ModBase.ReadIni(Path.Combine(path, "PCL-HE.ini"), "InstanceCache")) ==
                            folderListCheck;
 
             if (useCache)
@@ -120,7 +120,7 @@ public static class ModInstanceList
             {
                 mcInstanceListForceRefresh = false;
                 ModBase.Log("[Minecraft] 文件夹列表变更或缓存无效，重载所有实例");
-                ModBase.WriteIni(Path.Combine(path, "PCL.ini"), "InstanceCache", folderListCheck.ToString());
+                ModBase.WriteIni(Path.Combine(path, "PCL-HE.ini"), "InstanceCache", folderListCheck.ToString());
                 mcInstanceList = InitMcInstanceListWithoutCache(path);
             }
 
@@ -130,7 +130,7 @@ public static class ModInstanceList
                 return;
 
             // 尝试读取已储存的选择
-            var savedSelection = ModBase.ReadIni(Path.Combine(path, "PCL.ini"), "Version");
+            var savedSelection = ModBase.ReadIni(Path.Combine(path, "PCL-HE.ini"), "Version");
             if (!string.IsNullOrEmpty(savedSelection))
                 foreach (var card in mcInstanceList)
                 foreach (var instance in card.Value)
@@ -170,7 +170,7 @@ public static class ModInstanceList
         }
         catch (Exception ex)
         {
-            ModBase.WriteIni(Path.Combine(path, "PCL.ini"), "InstanceCache", ""); // 要求下次重新加载
+            ModBase.WriteIni(Path.Combine(path, "PCL-HE.ini"), "InstanceCache", ""); // 要求下次重新加载
             ModBase.Log(
                 ex,
                 Lang.Text("Select.Instance.Error.ListLoad"),
@@ -185,18 +185,18 @@ public static class ModInstanceList
         var results = new Dictionary<McInstanceCardType, List<PCL.McInstance>>();
         try
         {
-            var cardCount = int.Parse(ModBase.ReadIni(path + "PCL.ini", "CardCount", (-1).ToString()));
+            var cardCount = int.Parse(ModBase.ReadIni(path + "PCL-HE.ini", "CardCount", (-1).ToString()));
             if (cardCount == -1)
                 return null;
             for (int i = 0, loopTo = cardCount - 1; i <= loopTo; i++)
             {
                 var cardType =
-                    (McInstanceCardType)int.Parse(ModBase.ReadIni(path + "PCL.ini", "CardKey" + (i + 1),
+                    (McInstanceCardType)int.Parse(ModBase.ReadIni(path + "PCL-HE.ini", "CardKey" + (i + 1),
                         "0"));
                 var instanceList = new List<PCL.McInstance>();
 
                 // 循环读取实例
-                foreach (var folder in ModBase.ReadIni(path + "PCL.ini", "CardValue" + (i + 1), ":").Split(":"))
+                foreach (var folder in ModBase.ReadIni(path + "PCL-HE.ini", "CardValue" + (i + 1), ":").Split(":"))
                 {
                     if (string.IsNullOrEmpty(folder))
                         continue;
@@ -583,15 +583,15 @@ public static class ModInstanceList
 
         #region 保存卡片缓存
 
-        ModBase.WriteIni(path + "PCL.ini", "CardCount", results.Count.ToString());
+        ModBase.WriteIni(path + "PCL-HE.ini", "CardCount", results.Count.ToString());
         for (int i = 0, loopTo = results.Count - 1; i <= loopTo; i++)
         {
-            ModBase.WriteIni(path + "PCL.ini", "CardKey" + (i + 1),
+            ModBase.WriteIni(path + "PCL-HE.ini", "CardKey" + (i + 1),
                 ((int)results.Keys.ElementAtOrDefault(i)).ToString());
             var value = "";
             foreach (var Instance in results.Values.ElementAtOrDefault(i))
                 value += Instance.Name + ":";
-            ModBase.WriteIni(path + "PCL.ini", "CardValue" + (i + 1), value);
+            ModBase.WriteIni(path + "PCL-HE.ini", "CardValue" + (i + 1), value);
         }
 
         #endregion

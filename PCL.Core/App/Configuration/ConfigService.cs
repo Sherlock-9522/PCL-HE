@@ -47,7 +47,7 @@ public sealed partial class ConfigService
     /// <summary>
     /// 本地配置文件路径。
     /// </summary>
-    public static string LocalConfigPath { get; } = Path.Combine(Paths.Data, "config.v1.yml");
+    public static string LocalConfigPath { get; } = Path.Combine(Paths.Data, "config.pclhe.v1.yml");
 
     #region Getters & Setters
 
@@ -177,15 +177,8 @@ public sealed partial class ConfigService
             },
             () => // local config file
             {
-                // try migrate
-                if (!File.Exists(LocalConfigPath)) _TryMigrate(LocalConfigPath, [
-                    new ConfigMigration
-                    {
-                        From = Path.Combine(Paths.Data, "setup.ini"),
-                        To = LocalConfigPath,
-                        OnMigration = CatIniMigration
-                    }
-                ]);
+                // 不从上游 PCL2 / PCL-CE 的 setup.ini 迁移：那是它们自己的文件，
+                // 读它会让两边配置互相覆盖；改名后本地配置从默认值开始。
                 // load
                 var fileProvider = new YamlFileProvider(LocalConfigPath);
                 _localConfigProvider = new FileConfigStorage(fileProvider);
@@ -198,17 +191,10 @@ public sealed partial class ConfigService
                     {
                         ArgumentNullException.ThrowIfNull(argument);
                         var dir = Path.GetFullPath(argument.ToString()!);
-                        var configPath = Path.Combine(dir, "PCL", "config.v1.yml");
-                        // 这里原本检查的是 dir（目录），File.Exists 对它恒为 false，
-                        // 于是每次构造实例配置都会尝试迁移，旧 setup.ini 会反复覆盖用户改动。
-                        if (!File.Exists(configPath)) _TryMigrate(dir, [
-                            new ConfigMigration
-                            {
-                                From = Path.Combine(dir, "PCL", "setup.ini"),
-                                To = configPath,
-                                OnMigration = CatIniMigration
-                            }
-                        ]);
+                        // 实例配置使用 PCL-HE 专属文件名：上游 PCL2 / PCL-CE 在实例目录下
+                        // 也用 PCL\config.v1.yml 与 PCL\Setup.ini，共用会互相覆盖。
+                        // 这里不再从它们的 Setup.ini 迁移，实例独立设置从默认值开始。
+                        var configPath = Path.Combine(dir, "PCL", "config.pclhe.v1.yml");
                         var fileProvider = new YamlFileProvider(configPath);
                         var storage = new FileConfigStorage(fileProvider);
                         return storage;
@@ -223,19 +209,6 @@ public sealed partial class ConfigService
         void SharedJsonMigration(string from, string to)
         {
             File.Copy(from, to);
-        }
-        void CatIniMigration(string from, string to)
-        {
-            var lines = File.ReadAllLines(from);
-            var yamlProvider = new YamlFileProvider(to);
-            foreach (var line in lines)
-            {
-                if (line.IsNullOrWhiteSpace()) continue;
-                var kv = line.Split(':', 2);
-                if (kv.Length != 2) continue;
-                yamlProvider.Set(kv[0], kv[1]);
-            }
-            yamlProvider.Sync();
         }
     }
 

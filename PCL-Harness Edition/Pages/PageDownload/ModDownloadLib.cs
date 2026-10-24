@@ -3704,10 +3704,10 @@ public static class ModDownloadLib
                     var instanceName = string.IsNullOrEmpty(instanceFolder)
                         ? loader.name
                         : ModBase.GetFolderNameFromPath(instanceFolder);
-                    ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "Version", instanceName);
+                    ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "Version", instanceName);
                 }
 
-                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "InstanceCache",
+                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "InstanceCache",
                     ""); // 清空缓存（合并安装会先生成文件夹，这会在刷新时误判为可以使用缓存）
                 ModBase.DeleteDirectory($"{combo.input}PCLInstallBackups\\");
                 HintService.Hint($"{loader.name}{Lang.Text("Common.Status.Success")}",

@@ -243,7 +243,7 @@ public partial class PageInstanceOverall
                 PageInstanceLeft.McInstance.displayType = (McInstanceCardType)States.Instance.CardType[PageInstanceLeft.McInstance.PathInstance];
                 ModMain.frmInstanceLeft.RefreshModDisabled();
 
-                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "InstanceCache", ""); // 要求刷新缓存
+                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "InstanceCache", ""); // 要求刷新缓存
                 ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
                     ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");
             }
@@ -277,7 +277,7 @@ public partial class PageInstanceOverall
 
                 States.Instance.CardType[PageInstanceLeft.McInstance.PathInstance] =
                     (int)McInstanceCardType.Hidden;
-                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "InstanceCache", ""); // 要求刷新缓存
+                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "InstanceCache", ""); // 要求刷新缓存
                 ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
                     ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");
             }
@@ -407,8 +407,8 @@ public partial class PageInstanceOverall
                 ModBase.WriteFile(Path.Combine(newPath, "PCL", "Setup.ini"),
                     ModBase.ReadFile(Path.Combine(newPath, "PCL", "Setup.ini")).Replace(oldPath, newPath));
             // 更改已选中的实例
-            if ((ModBase.ReadIni(ModFolder.mcFolderSelected + "PCL.ini", "Version") ?? "") == (oldName ?? ""))
-                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "Version", newName);
+            if ((ModBase.ReadIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "Version") ?? "") == (oldName ?? ""))
+                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "Version", newName);
             // 写入实例 Json，并删除旧的 Json
             try
             {
@@ -456,7 +456,7 @@ public partial class PageInstanceOverall
             PageInstanceLeft.McInstance = new McInstance(newName).Load();
             if (ModInstanceList.McMcInstanceSelected is not null &&
                 ModInstanceList.McMcInstanceSelected.Equals(PageInstanceLeft.McInstance))
-                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "Version", newName);
+                ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "Version", newName);
             Reload();
             ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
                 ModLoader.LoaderFolderRunType.ForceRun, 1, @"versions\");
@@ -511,7 +511,7 @@ public partial class PageInstanceOverall
             States.Instance.LogoPath[PageInstanceLeft.McInstance.PathInstance] = newLogo;
             States.Instance.IsLogoCustom[PageInstanceLeft.McInstance.PathInstance] = !string.IsNullOrEmpty(newLogo);
             // 刷新显示
-            ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL.ini", "InstanceCache", ""); // 要求刷新缓存
+            ModBase.WriteIni(ModFolder.mcFolderSelected + "PCL-HE.ini", "InstanceCache", ""); // 要求刷新缓存
             PageInstanceLeft.McInstance = new McInstance(PageInstanceLeft.McInstance.Name).Load();
             Reload();
             ModLoader.LoaderFolderRun(ModInstanceList.mcInstanceListLoader, ModFolder.mcFolderSelected,
