@@ -706,6 +706,11 @@ csproj 里 `<PublishSingleFile>true</PublishSingleFile>`，而 workflow 传了 `
 - `v0.1.1`（2026-10-21）：首个 Release，prerelease，含 `PCL_HE_Beta_x64.zip`（78 MB）
   与 `PCL_HE_Beta_ARM64.zip`（73 MB），各带 `.sigstore.json`
 
+
+- `v0.1.2-Alpha`（2026-10-24）：四产物 `{x64,ARM64} × {self-contained,framework-dependent}`，均带 `.sigstore.json`；包内为 `PCL-HE.exe` + `LICENCE` + `CONFIG/`。
+  - **当天重发过一次**。首发版本的正版劝导被弱化（详见 9.5），合规修复后按维护者要求删掉旧 tag 与 Release、重建同名 tag 重新发布。
+  - 重发踩了两个坑，都写进了 workflow：① `rename_and_release` 任务原来**没有 checkout**，新增的「把 LICENCE 复制进包里」步骤找不到源文件，四个打包任务全挂（`cp: cannot stat`）；补上 checkout 后正常。② 复制命令最初写成 `cp "../PCL-Harness Edition/LICENCE"`，但该步骤的工作目录是仓库根，`../` 会指到检出目录之外，同样失败——正确写法是相对仓库根的 `PCL-Harness Edition/LICENCE`。
+  - 打包成功后才执行 sigstore 验签与上传，所以这类失败会表现为「build 全绿、rename_and_release 全红、publish_draft 被跳过」，Release 不会生成。
 ### 7.8 推送 GitHub 的不稳定
 
 本机到 `github.com:443` 常年不稳，`api.github.com` 反而正常。可用配方：
