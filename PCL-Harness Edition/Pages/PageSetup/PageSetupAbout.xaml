@@ -24,6 +24,7 @@
                         <RowDefinition Height="45" />
                         <RowDefinition Height="45" />
                         <RowDefinition Height="45" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40" />
@@ -99,6 +100,14 @@
                         local:CustomEventService.EventData="https://github.com/PCL-Community/PCL2-CE"
                         local:CustomEventService.EventType="OpenUrl"
                         Text="{DynamicResource Setup.About.SourceCode}" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.ColumnSpan="3"
+                        Margin="0,12,0,0"
+                        FontSize="12.5"
+                        Foreground="{DynamicResource ColorBrush2}"
+                        TextWrapping="Wrap"
+                        Text="{DynamicResource Setup.About.ThirdPartyNotice}" />
                 </Grid>
             </local:MyCard>
             <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Setup.About.Inspiration.Title}">

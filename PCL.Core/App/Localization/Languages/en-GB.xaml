@@ -2549,6 +2549,7 @@
     <sys:String x:Key="Setup.About.OriginalAuthor.Info">The original author of Plain Craft Launcher!</sys:String>
     <sys:String x:Key="Setup.About.OriginalAuthor.Name">LTCat (龙腾猫跃)</sys:String>
     <sys:String x:Key="Setup.About.SourceCode">Source code</sys:String>
+    <sys:String x:Key="Setup.About.ThirdPartyNotice">PCL-HE is a third-party derivative created independently from Plain Craft Launcher, developed on top of PCL Community Edition as its direct upstream. It is not affiliated with, endorsed by, or acting on behalf of the PCL official team or the PCL Community team.</sys:String>
     <sys:String x:Key="Setup.About.SponsorOriginalAuthor">Sponsor original author</sys:String>
     <sys:String x:Key="Setup.About.Title">About</sys:String>
     <sys:String x:Key="Setup.About.UpstreamLegal.CopyrightText">Copyright © 龙腾猫跃 2016. All Rights Reserved.&#xD;Computer Software Copyright Registration No.: 2020SR0875133&#xD;Report violations to: hexdragon@vip.qq.com&#xD;NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</sys:String>

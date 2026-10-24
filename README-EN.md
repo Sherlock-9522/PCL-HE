@@ -125,6 +125,21 @@ The environment variable takes precedence over the built-in value. A restart is 
 
 This distribution is never charged for. Both licenses above continue to apply to it.
 
+
+### Compliance with the *PCL Repository Fair Use Guidelines*
+
+This project falls under **heavy use** as defined by the guidelines. Point-by-point:
+
+| Requirement | How this project meets it |
+| --- | --- |
+| State clearly that this is a third-party derivative made independently from PCL | Stated at the top of this file, at the bottom of the first card on the *About* page, and in the supplementary note inside `LICENCE` |
+| Name must start with Plain Craft Launcher (PCL) and carry a third-party suffix | Window title and program name are both `Plain Craft Launcher - Harness Edition`; `HE` stands for Harness Edition and marks a third-party modification |
+| The *first* item on the About page must be LTCat's attribution and donation link; source is public; this guideline file stays in use | The first row of the first card on the *About* page is LTCat's attribution with the *Sponsor the original author* button (Afdian); source is public on this repository; the full guideline text is kept in `LICENCE` and shipped inside every release archive |
+| In-game purchase prompts and donation prompts must be at least as strong as upstream `McLaunchPrecheck` | The genuine-copy prompt appears on **every** offline launch, identical to upstream; no "do not ask again" weakening of any kind |
+| No feature resembling PCL's donation-unlock | No donation-unlock feature exists; the primary UI hue is blue (default `CatBlue`, all selectable themes stay within the 235°–275° blue range) |
+
+> This project does not provide Minecraft game files; it is only a launcher and management tool.
+
 ## ❤️ Credits
 
 - **[LTCat (龙腾猫跃)](https://github.com/Meloong-Git)** — original author of Plain Craft Launcher, [Afdian](https://ifdian.net/a/LTCat)

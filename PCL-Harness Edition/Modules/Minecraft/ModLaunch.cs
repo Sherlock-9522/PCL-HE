@@ -138,7 +138,9 @@ public static class ModLaunch
         #endif
 
         // 正版购买提示
-        if (!ProfileService.HasMicrosoftProfile && !Config.Launch.PurchaseHintDismissed)
+        // 注意：《PCL 存储库合理使用指南》重度使用第 4 条要求本劝导与上游 McLaunchPrecheck 一致或更激进，
+        // 因此这里不得加入任何「已回绝就不再提示」的弱化逻辑（常量、配置项、静态标志都不行）。
+        if (!ProfileService.HasMicrosoftProfile)
         {
             if (Lang.IsFeaturesUnrestricted)
             {
@@ -148,8 +150,6 @@ public static class ModLaunch
                     1)
                     ModBase.OpenWebsite(
                         "https://www.xbox.com/zh-cn/games/store/minecraft-java-bedrock-edition-for-pc/9nxp44l49shj");
-                else
-                    Config.Launch.PurchaseHintDismissed = true; // 点「下次一定」后不再重复打扰
             }
             else
             {                
@@ -170,7 +170,6 @@ public static class ModLaunch
                     }
                     case 3:
                     {
-                        Config.Launch.PurchaseHintDismissed = true; // 点「返回」＝已明确知晓未登录正版，不再重复打扰
                         throw new Exception("$$");
                     }
                 }

@@ -508,11 +508,6 @@ public static partial class Config
         [ConfigItem<bool>("LaunchMemoryOptimizeBeforeLaunch", false, ConfigSource.Local)] public partial bool OptimizeMemoryBeforeLaunch { get; set; }
 
         /// <summary>
-        /// 是否已经回绝过正版购买提示：玩家点过「下次一定」后置为 true，此后不再重复打扰。
-        /// </summary>
-        [ConfigItem<bool>("LaunchPurchaseHintDismissed", false, ConfigSource.Local)] public partial bool PurchaseHintDismissed { get; set; }
-
-        /// <summary>
         /// 优先 IP 协议栈。
         /// </summary>
         [ConfigItem<JvmPreferredIpStack>("LaunchPreferredIpStack", JvmPreferredIpStack.Default)] public partial JvmPreferredIpStack PreferredIpStack { get; set; }

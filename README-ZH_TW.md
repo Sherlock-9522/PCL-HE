@@ -127,6 +127,21 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 本發行版不以任何形式向接收者收費。上文兩份授權繼續適用於本發行版。
 
+
+### 對《PCL 儲存庫合理使用指南》的遵守情況
+
+本專案屬於指南中的**重度使用**情形，逐條對比如下：
+
+| 要求 | 本專案的做法 |
+| --- | --- |
+| 明確表示是第三方基於 PCL 獨立二次創作的產物 | 見本檔案開頭、「關於」頁面首張卡片底部說明及 `LICENCE` 中的補充說明 |
+| 名稱以 Plain Craft Launcher (PCL) 開頭並帶第三方後綴 | 視窗標題與程式名均為 `Plain Craft Launcher - Harness Edition`，`HE` 即 Harness Edition，表示第三方修改版 |
+| 關於頁面首位給出龍騰貓躍署名與贊助連結、公開原始碼、繼續使用本指南 | 「關於」頁面首張卡片第一行即龍騰貓躍署名與「贊助原作者」按鈕（愛發電）；原始碼公開於本倉庫；《合理使用指南》原文完整保留在 `LICENCE` 中，並隨發佈包一同分發 |
+| Minecraft 正版購買勸導與贊助勸導不低於上游 `McLaunchPrecheck` | 離線啟動時**每次**都會彈出正版購買勸導，與上游行為一致，未做任何「已回絕就不再提示」的弱化 |
+| 不含與 PCL 贊助解鎖類似的功能或表現 | 無任何贊助解鎖功能；介面主色相為藍色（預設 `CatBlue`，全部可選主題均在藍色區間 235°–275°） |
+
+> 本專案不提供 Minecraft 遊戲本體的下載，僅作為啟動與管理工具。
+
 ## ❤️ 致謝
 
 - **[龍騰貓躍](https://github.com/Meloong-Git)** —— Plain Craft Launcher 原作者，[愛發電](https://ifdian.net/a/LTCat)

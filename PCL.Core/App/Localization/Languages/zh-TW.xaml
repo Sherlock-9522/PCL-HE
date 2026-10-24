@@ -2549,6 +2549,7 @@
     <sys:String x:Key="Setup.About.OriginalAuthor.Info">Plain Craft Launcher 的原作者！</sys:String>
     <sys:String x:Key="Setup.About.OriginalAuthor.Name">龙腾猫跃（龍騰貓躍）</sys:String>
     <sys:String x:Key="Setup.About.SourceCode">檢視原始碼</sys:String>
+    <sys:String x:Key="Setup.About.ThirdPartyNotice">PCL-HE 是第三方基於 Plain Craft Launcher 獨立進行二次創作的產物，以 PCL Community Edition 為直接上游基礎繼續開發；與 PCL 官方及 PCL Community 官方團隊之間不存在隸屬關係，也不代表其立場或受到其背書。</sys:String>
     <sys:String x:Key="Setup.About.SponsorOriginalAuthor">贊助原作者</sys:String>
     <sys:String x:Key="Setup.About.Title">關於</sys:String>
     <sys:String x:Key="Setup.About.UpstreamLegal.CopyrightText">Copyright © 龙腾猫跃 2016. All Rights Reserved.&#xD;電腦軟體著作權登記號：2020SR0875133&#xD;違法違規行為檢舉投訴信箱：hexdragon@vip.qq.com&#xD;非 MINECRAFT 官方產品。未經 MOJANG 或 MICROSOFT 批准，也不與 MOJANG 或 MICROSOFT 關聯。</sys:String>

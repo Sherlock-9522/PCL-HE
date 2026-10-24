@@ -48,13 +48,15 @@ Four packages this time, two per architecture (`win-x64`, `win-arm64`):
 ### 修复
 
 - 启动时报「解压文件失败」：启动阶段链中间插入了一步类型不匹配的环节，导致后续步骤拿到空输入而崩溃。
-- 离线启动的「下次一定」每次都会再弹一次；现在只提示一次。
 - 深色主题下启动进度条仍是蓝色、右下角电源按钮蓝底黑符，与深色界面不协调。
 - 「新建档案」按钮只有中间一小块能点，点击边缘无响应。
 - 深色主题下右下角电源按钮的图标跟着主题变成深灰，几乎看不见；现已固定为白色。
 - 操作按钮上的「开始下载」等文字用了幼圆并叠加合成加粗，笔画糊在一起；已恢复为系统默认字体与常规字重。
 
 ### 合规清理
+- 离线启动的正版购买劝导恢复为与上游 `McLaunchPrecheck` 一致的**每次提示**，不再做「已回绝就不再提示」的弱化。
+- 「关于」页面首张卡片底部新增说明：本项目是第三方基于 Plain Craft Launcher 独立二次创作的产物。
+- 发布包内随附 `LICENCE` 文件，《PCL 存储库合理使用指南》原文完整随包分发。
 
 - 移除上游沿用的加密熵值、第三方账号（Natayark）网页授权入口，以及崩溃提示里的上游指向文案。
 - 上游项目、贡献者、开发参考与许可证署名**全部保留**。
@@ -89,13 +91,15 @@ Supporting changes:
 ### Fixes
 
 - "Failed to extract files" at launch: a stage with a mismatched generic type sat in the middle of the launch chain, leaving the next step with a null input.
-- The offline "maybe later" prompt reappeared on every launch; it now appears once.
 - In dark theme the launch progress bar stayed blue and the power button had black glyphs on a blue disc.
 - The "new profile" button only responded near its centre; clicks on the edges did nothing.
 - In dark theme the power button glyph followed the theme into dark grey and was barely visible; it is now fixed to white.
 - Action-button labels such as "start download" used a font with a single weight plus synthetic bold, smearing the strokes together; they are back to the system default font at normal weight.
 
 ### Compliance cleanup
+- The genuine-copy prompt on offline launch is back to **every launch**, identical to upstream `McLaunchPrecheck`; the "do not ask again" weakening is gone.
+- The first card on the About page now states that this project is a third-party derivative created independently from Plain Craft Launcher.
+- Every release archive now ships the `LICENCE` file, so the full text of the *PCL Repository Fair Use Guidelines* travels with the build.
 
 - Removed the inherited encryption entropy value, the third-party (Natayark) web authorisation entry, and upstream-referencing wording in crash dialogs.
 - Upstream projects, contributors, development references and licence attributions are **all retained**.

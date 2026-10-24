@@ -850,7 +850,7 @@ open(path, "wb").write(data)
 - `.github/FUNDING.yml`（龙腾猫跃 爱发电）
 - 数据目录名 `PCL`（`PCL.Core/App/Paths.cs`）
 - 语言文件里的 `PCL Community Edition` 致谢
-- `EncryptHelper` 的 DPAPI salt（见 7.2）
+- 「关于」页与 README 里的爱发电赞助链接（《PCL 存储库合理使用指南》重度使用第 3 条硬性要求）
 
 ### 9.2 已清理的内容
 
@@ -874,6 +874,30 @@ open(path, "wb").write(data)
 
 `PCL-Harness Edition/LICENCE` 保留上游 PCL 的自定义许可证原文。产品名改动后，
 `metadata.json` 里的 licence URL 同步指向新仓库路径（`(PCL-Harness%20Edition/LICENCE)`）。
+
+### 9.5 对《PCL 存储库合理使用指南》的逐条核对（2026-10-24 晚）
+
+有人指出「UI 用了 PCL 那一套，但没遵循龙猫的开源协议」。逐条核对原文后，结论是**方向对了一半、指错了地方**：五条硬性要求里四条本来就合规，真正踩线的是第 4 条——而且是自己造成的。
+
+原文在 `PCL-Harness Edition/LICENCE`（5904 字节），包含《PCL 分发有限许可》《PCL 存储库合理使用指南》与【PCL-HE 补充说明】。要注意：《分发有限许可》只授予「原样副本」的复制分发权，改作衍生走的是《合理使用指南》的「重度使用」路径。
+
+| 要求 | 结论 | 证据 |
+| --- | --- | --- |
+| 第三方二次创作声明 | 有，但界面缺失（已补） | `README.md`、`LICENCE` 补充说明有；「关于」页原本没有 |
+| 名称以 PCL 开头 + 第三方后缀 | 合规 | 窗口标题 `Plain Craft Launcher - Harness Edition`，`metadata.json` 的 `name` 同 |
+| 关于页**首位**署名 + 赞助链接 + 公开源码 + 保留指南 | 合规 | 第一张卡片第一行即龙腾猫跃，紧邻「赞助原作者」按钮（爱发电）；仓库公开；指南原文完整保留 |
+| 正版劝导不低于上游 `McLaunchPrecheck` | **不合规** | 上游基线是 `if (!ProfileService.HasMicrosoftProfile)` 每次提示；此前为了「别老弹窗」改成 `&& !Config.Launch.PurchaseHintDismissed`，点一次「下次一定」就永久不再提示 |
+| 主色相蓝 + 无赞助解锁 | 合规 | 默认 `ColorTheme.CatBlue`；四个主题色相 235/255/268/275 全在蓝色区间；全仓无赞助解锁类功能 |
+
+修复三步：
+
+1. **回滚劝导逻辑**：`ModLaunch.cs` 判据恢复为 `if (!ProfileService.HasMicrosoftProfile)`，删掉 `Config.Launch.PurchaseHintDismissed` 配置项与全部三处置位。每次离线启动都会提示，与上游一致。
+2. **关于页明示**：第一张卡片底部新增一行小字，声明这是第三方基于 PCL 独立二次创作的产物。
+3. **随包分发许可证**：发布 workflow 在打包前把 `LICENCE` 复制进产物目录，四个 zip 里都会带上。
+
+三份 README 各加了一节「对《PCL 存储库合理使用指南》的遵守情况」，把上面这张表公开写出来。
+
+**铁律**：以后任何以「减少打扰」「优化体验」为名的改动，都不得削弱 `McLaunchPrecheck` 的正版购买劝导与赞助劝导。《合理使用指南》第 4 条要求「与上游一致或更激进」，弱化即违约——常量、配置项、静态标志都不行。
 
 ---
 
