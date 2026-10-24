@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,6 +35,7 @@ public partial class PageInstanceSetup
         RadioRamType1.Check += RadioBoxChange;
         SliderRamCustom.Change += SliderChange;
         SliderRamInitialCustom.Change += SliderChange;
+        ComboMemoryOptimize.SelectionChanged += ComboMemoryOptimize_SelectionChanged;
 
         ComboServerLoginRequire.SelectionChanged += ComboServerLogin_Changed;
         TextServerAuthServer.TextChanged += TextBoxChange;
@@ -110,6 +111,7 @@ public partial class PageInstanceSetup
             SliderRamCustom.Value = Config.Instance.CustomMemorySize[PageInstanceLeft.McInstance.PathInstance];
             SliderRamInitialCustom.Value = Config.Instance.CustomInitialMemorySize[PageInstanceLeft.McInstance.PathInstance];
             RamType(ramType);
+            ComboMemoryOptimize.SelectedIndex = Config.Instance.MemoryOptimizeSolution[PageInstanceLeft.McInstance.PathInstance];
 
             // 服务器
             TextServerEnter.Text = Config.Instance.ServerToEnter[PageInstanceLeft.McInstance.PathInstance];
@@ -252,6 +254,17 @@ public partial class PageInstanceSetup
         SliderRamCustom.IsEnabled = type == 1;
         // 锁定内存为全局配置，启用时 -Xms 恒等于 -Xmx，初始内存设置不生效
         SliderRamInitialCustom.IsEnabled = type == 1 && !Config.Launch.LockMemory;
+    }
+
+    /// <summary>
+    ///     启动前内存优化（0 跟随全局 / 1 开启 / 2 关闭）。
+    /// </summary>
+    private void ComboMemoryOptimize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ModAnimation.AniControlEnabled != 0)
+            return;
+
+        ComboChange(ComboMemoryOptimize, e);
     }
 
     /// <summary>

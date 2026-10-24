@@ -212,6 +212,26 @@
                                    TextTrimming="None" Margin="2,3,0,0" FontSize="16"
                                    Foreground="{DynamicResource ColorBrushMemory}" HorizontalAlignment="Left" />
                     </Grid>
+                    <Grid Margin="0,13,2,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{DynamicResource Instance.Setup.MemoryOptimize}" VerticalAlignment="Center"
+                                   Margin="0,0,20,0">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{DynamicResource Instance.Setup.MemoryOptimize.ToolTip}"
+                                               Foreground="{DynamicResource ColorBrushRedLight}" TextWrapping="Wrap" MaxWidth="330" />
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <local:MyComboBox x:Name="ComboMemoryOptimize" Grid.Column="1" Tag="VersionMemoryOptimize">
+                            <local:MyComboBoxItem Content="{DynamicResource Instance.Setup.FollowGlobal}" IsSelected="True" />
+                            <local:MyComboBoxItem Content="{DynamicResource Instance.Setup.Options.InstanceIsolation.Enabled}" />
+                            <local:MyComboBoxItem Content="{DynamicResource Common.Action.Close}" />
+                        </local:MyComboBox>
+                    </Grid>
                 </StackPanel>
             </local:MyCard>
             <local:MyCard x:Name="CardServer" Margin="0,0,0,15" Title="{DynamicResource Instance.Setup.Server.Title}">
@@ -421,7 +441,7 @@
             <local:MyExtraTextButton HorizontalAlignment="Center" Margin="0,-5,0,0"
                                      x:Name="BtnSwitch" Text="{DynamicResource Instance.Setup.OpenGlobalSettings}"
                                      LogoScale="0.9"
-                                     SvgIcon="lucide/arrow-right" SolidTheme="True" TextFontFamily="幼圆" />
+                                     SvgIcon="lucide/arrow-right" SolidTheme="True" />
         </StackPanel>
     </local:MyScrollViewer>
 </local:MyPageRight>

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -89,6 +89,7 @@ public partial class PageSetupLaunch
             CheckAdvanceDisableLwjglUnsafeAgent.Checked = Config.Launch.DisableLwjglUnsafeAgent;
             CheckAdvanceDisableCrashAnalysis.Checked = Config.Launch.DisableCrashAnalysis;
             CheckAdvanceLockMemory.Checked = Config.Launch.LockMemory;
+            CheckMemoryOptimizeBeforeLaunch.Checked = Config.Launch.OptimizeMemoryBeforeLaunch;
             if (SystemInfo.IsArm64System)
             {
                 CheckAdvanceDisableJLW.Checked = true;

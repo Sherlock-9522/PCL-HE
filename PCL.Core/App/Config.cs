@@ -503,6 +503,16 @@ public static partial class Config
         [ConfigItem<bool>("LaunchAdvanceLockMemory", false, ConfigSource.Local)] public partial bool LockMemory { get; set; }
 
         /// <summary>
+        /// 是否在启动游戏前进行内存优化。默认关闭，由玩家手动开启；实例设置可覆盖此全局值。
+        /// </summary>
+        [ConfigItem<bool>("LaunchMemoryOptimizeBeforeLaunch", false, ConfigSource.Local)] public partial bool OptimizeMemoryBeforeLaunch { get; set; }
+
+        /// <summary>
+        /// 是否已经回绝过正版购买提示：玩家点过「下次一定」后置为 true，此后不再重复打扰。
+        /// </summary>
+        [ConfigItem<bool>("LaunchPurchaseHintDismissed", false, ConfigSource.Local)] public partial bool PurchaseHintDismissed { get; set; }
+
+        /// <summary>
         /// 优先 IP 协议栈。
         /// </summary>
         [ConfigItem<JvmPreferredIpStack>("LaunchPreferredIpStack", JvmPreferredIpStack.Default)] public partial JvmPreferredIpStack PreferredIpStack { get; set; }
@@ -637,6 +647,7 @@ public static partial class Config
         [ConfigItem<int>("VersionRamType", 2)] public partial ArgConfig<int> MemorySolution { get; }
         [ConfigItem<int>("VersionRamCustom", 15)] public partial ArgConfig<int> CustomMemorySize { get; }
         [ConfigItem<int>("VersionRamCustomInitial", 0)] public partial ArgConfig<int> CustomInitialMemorySize { get; }
+        [ConfigItem<int>("VersionMemoryOptimize", 0)] public partial ArgConfig<int> MemoryOptimizeSolution { get; }
         [ConfigItem<string>("VersionArgumentTitle", "")] public partial ArgConfig<string> Title { get; }
         [ConfigItem<bool>("VersionArgumentTitleEmpty", false)] public partial ArgConfig<bool> UseGlobalTitle { get; }
         [ConfigItem<string>("VersionArgumentInfo", "")] public partial ArgConfig<string> TypeInfo { get; }

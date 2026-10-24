@@ -138,7 +138,7 @@ public static class ModLaunch
         #endif
 
         // 正版购买提示
-        if (!ProfileService.HasMicrosoftProfile)
+        if (!ProfileService.HasMicrosoftProfile && !Config.Launch.PurchaseHintDismissed)
         {
             if (Lang.IsFeaturesUnrestricted)
             {
@@ -148,6 +148,8 @@ public static class ModLaunch
                     1)
                     ModBase.OpenWebsite(
                         "https://www.xbox.com/zh-cn/games/store/minecraft-java-bedrock-edition-for-pc/9nxp44l49shj");
+                else
+                    Config.Launch.PurchaseHintDismissed = true; // 点「下次一定」后不再重复打扰
             }
             else
             {                
@@ -168,6 +170,7 @@ public static class ModLaunch
                     }
                     case 3:
                     {
+                        Config.Launch.PurchaseHintDismissed = true; // 点「返回」＝已明确知晓未登录正版，不再重复打扰
                         throw new Exception("$$");
                     }
                 }
@@ -288,6 +291,13 @@ public static class ModLaunch
     public static ModLoader.LoaderCombo<object> mcLaunchLoaderReal;
     public static Process mcLaunchProcess;
     public static ModWatcher.Watcher mcLaunchWatcher;
+    // 启动游戏前的内存优化任务：它从启动流程一开始就与各准备阶段并行执行，
+    // 但在真正创建游戏进程之前必须收尾。原因是清空全系统工作集的内核命令没有任何排除参数，
+    // 一旦游戏已经在运行，这一刀必然砍到游戏身上，导致它刚从磁盘读回全部页面而卡顿。
+    private static Task<PCL.MemoryOptimizer.OptimizationReport> memoryOptimizeTask;
+
+    /// <summary>本次启动前优化是否走了深度清理（提权通道就绪时），供结果提示决定是否追加轻量说明。</summary>
+    private static bool memoryOptimizeUsedDeep;
 
     private static void McLaunchState(ModLoader.LoaderTask<McLaunchOptions, object> loader)
     {
@@ -347,9 +357,11 @@ public static class ModLaunch
                     { ProgressWeight = 15d, show = false },
                 new ModLoader.LoaderTask<string, List<ModLibrary.McLibToken>>(Lang.Text("Minecraft.Launch.Stage.GetArguments"), McLaunchArgumentMain)
                     { ProgressWeight = 2d },
-                new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.MemoryCheck"), McLaunchMemoryCheck) { ProgressWeight = 1d },
                 new ModLoader.LoaderTask<List<ModLibrary.McLibToken>, int>(Lang.Text("Minecraft.Launch.Stage.ExtractNatives"), McLaunchNatives)
                     { ProgressWeight = 2d },
+                // 内存诊断必须紧跟同类型（int）的阶段。它原先被放在「获取启动参数」与「解压文件」之间，
+                // 会切断 List<McLibToken> 的输入链，使解压阶段收到 null 而抛 NullReferenceException。
+                new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.MemoryCheck"), McLaunchMemoryCheck) { ProgressWeight = 1d },
                 new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.PreLaunch"), _ => McLaunchPrerun()) { ProgressWeight = 1d },
                 new ModLoader.LoaderTask<int, int>(Lang.Text("Minecraft.Launch.Stage.CustomCommand"), McLaunchCustom) { ProgressWeight = 1d },
                 new ModLoader.LoaderTask<int, Process>(Lang.Text("Minecraft.Launch.Stage.StartProcess"), McLaunchRun) { ProgressWeight = 2d },
@@ -360,6 +372,8 @@ public static class ModLaunch
             var launchLoader = new ModLoader.LoaderCombo<object>(Lang.Text("Minecraft.Launch.Stage.Root"), loaders) { show = false };
             if (mcLoginLoader.State == ModBase.LoadState.Finished)
                 mcLoginLoader.State = ModBase.LoadState.Waiting; // 要求重启登录主加载器，它会自行决定是否启动副加载器
+            // 与启动流程并行地开始「启动前内存优化」，它会在创建游戏进程之前被等待收尾
+            StartMemoryOptimizeIfNeeded();
             // 等待加载器执行并更新 UI
             mcLaunchLoaderReal = launchLoader;
             abortHint = null;
@@ -2603,6 +2617,89 @@ public static class ModLaunch
         }
     }
 
+    /// <summary>
+    /// 在启动流程开始时并行启动「启动前内存优化」。
+    /// 是否执行由实例级三态配置优先决定，其次看全局开关。
+    /// </summary>
+    private static void StartMemoryOptimizeIfNeeded()
+    {
+        memoryOptimizeTask = null;
+        try
+        {
+            if (!ShouldOptimizeMemoryBeforeLaunch()) return;
+            // 游戏已在运行时绝不执行：命令无法排除进程，会直接砍到游戏工作集
+            if (mcLaunchProcess is { HasExited: false })
+            {
+                McLaunchLog("检测到游戏进程已在运行，已跳过启动前内存优化");
+                HintService.Hint(Lang.Text("Launch.Memory.SkippedGameRunning"));
+                return;
+            }
+            // 用户已在本次启动器运行期间授权过深度清理（提权子进程常驻）时复用该通道跑全系统清理；
+            // 否则只做不提权的轻量护航：绝不在启动流程里弹 UAC 打断玩家。
+            memoryOptimizeUsedDeep = PCL.Core.App.Essentials.PromoteService.IsPromoteProcessRunning;
+            McLaunchLog(memoryOptimizeUsedDeep
+                ? "已开始启动前内存优化（与启动流程并行，复用已授权的提权通道执行深度清理）"
+                : "已开始启动前内存优化（与启动流程并行，轻量护航；尚未授权深度清理）");
+            memoryOptimizeTask = Task.Run(() =>
+            {
+                if (memoryOptimizeUsedDeep)
+                {
+                    var deep = PCL.Core.Utils.OS.MemoryOptimizationPromote.RunDeepViaPromote(TimeSpan.FromSeconds(60));
+                    if (deep is not null) return deep;
+                    McLaunchLog("深度清理未返回结果，本次退化为轻量护航");
+                }
+                return PCL.MemoryOptimizer.MemoryOptimizer.RunGuarded(CancellationToken.None);
+            });
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "启动前内存优化启动失败", ModBase.LogLevel.Debug);
+        }
+    }
+
+    /// <summary>实例级三态优先，其次全局开关。</summary>
+    private static bool ShouldOptimizeMemoryBeforeLaunch()
+    {
+        var instance = ModInstanceList.McMcInstanceSelected;
+        if (instance is not null)
+        {
+            var solution = Config.Instance.MemoryOptimizeSolution[instance.PathInstance];
+            if (solution == 1) return true;
+            if (solution == 2) return false;
+        }
+        return Config.Launch.OptimizeMemoryBeforeLaunch;
+    }
+
+    /// <summary>
+    /// 在创建游戏进程之前等待内存优化收尾并报告结果。
+    /// 等待上限 30 秒，超时则放弃等待：游戏启动优先于优化报告。
+    /// </summary>
+    private static void WaitMemoryOptimizeBeforeGameProcess()
+    {
+        var task = memoryOptimizeTask;
+        var usedDeep = memoryOptimizeUsedDeep;
+        memoryOptimizeTask = null;
+        if (task is null) return;
+        try
+        {
+            if (!task.Wait(TimeSpan.FromSeconds(30)))
+            {
+                McLaunchLog("启动前内存优化超时，已跳过等待（不影响游戏启动）");
+                return;
+            }
+            var report = task.Result;
+            var message = string.Format(Lang.Text("Launch.Memory.Result"), (int)report.FreedAvailableMb, report.ElapsedMilliseconds);
+            McLaunchLog("启动前内存优化完成：" + message);
+            HintService.Hint(message);
+            // 未走深度时补一句，告诉玩家怎样才能获得龙猫那种全系统效果
+            if (!usedDeep) HintService.Hint(Lang.Text("Launch.Memory.LightOnlyHint"));
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "启动前内存优化失败", ModBase.LogLevel.Debug);
+        }
+    }
+
     private static void McLaunchRun(ModLoader.LoaderTask<int, Process> loader)
     {
         var noJavaw = Config.Launch.NoJavaw &&
@@ -2630,6 +2727,10 @@ public static class ModLaunch
         startInfo.CreateNoWindow = noJavaw;
         startInfo.Arguments = mcLaunchArgument;
         gameProcess.StartInfo = startInfo;
+
+        // 内存优化必须在游戏进程创建之前收尾：内核命令清空的是全系统工作集且无法排除进程，
+        // 若游戏已经创建，它会被迫把全部页面重新从磁盘读回，表现为严重卡顿。
+        WaitMemoryOptimizeBeforeGameProcess();
 
         // 开始进程
         gameProcess.Start();

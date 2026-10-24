@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -38,21 +38,29 @@ public partial class PageLaunchRight : IRefreshable
         if (States.Hint.CEMessage)
         {
             LabHint1.Text = Lang.Text("Launch.Right.CommunityHint.Message");
+            LabHint1.Visibility = Visibility.Visible;
             LabHint2.Visibility = Visibility.Collapsed;
-            PanHint.Visibility = Visibility.Visible;
         }
         else
         {
-            PanHint.Visibility = Visibility.Collapsed;
+            LabHint1.Visibility = Visibility.Collapsed;
+            LabHint2.Visibility = Visibility.Collapsed;
         }
+        // 内存优化专项提示与第三方身份提示共用同一张卡片，任一需要显示时卡片都要显示。
+        PanMemoryOpt.Visibility = States.Hint.MemoryOptimizeHint ? Visibility.Visible : Visibility.Collapsed;
+        PanHint.Visibility = States.Hint.CEMessage || States.Hint.MemoryOptimizeHint
+            ? Visibility.Visible
+            : Visibility.Collapsed;
         _EnsureHomepageLiveWatcher();
     }
 
-    // 关闭第三方身份提示；关闭后写回配置，之后不再显示
+    // 关闭第三方身份提示与内存优化提示；关闭后写回配置，之后不再显示
     private void BtnHintClose_Click(object sender, EventArgs e)
     {
         ModAnimation.AniDispose(PanHint, true);
         States.Hint.CEMessage = false;
+        // 两个提示共用这一个关闭按钮：一并关闭，否则下次进入页面时卡片会因为内存优化提示再次出现。
+        States.Hint.MemoryOptimizeHint = false;
     }
 
     #region 主页

@@ -114,6 +114,11 @@ public static partial class States
         [ConfigItem<bool>("UiLauncherCEHint", true)] public partial bool CEMessage { get; set; }
 
         /// <summary>
+        /// 首页的内存优化专项提示。默认显示，玩家可关闭。
+        /// </summary>
+        [ConfigItem<bool>("UiLauncherMemoryOptHint", true)] public partial bool MemoryOptimizeHint { get; set; }
+
+        /// <summary>
         /// 投影管理首次使用提示。
         /// </summary>
         [ConfigItem<bool>("UiSchematicFirstTimeHintShown", false)] public partial bool SchematicFirstTime { get; set; }
