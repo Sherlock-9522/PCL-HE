@@ -31,14 +31,23 @@ jobs:
         include:
           - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: x64
+            variant: selfcontained
           - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: ARM64
+            variant: selfcontained
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
+            architecture: x64
+            variant: slim
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
+            architecture: ARM64
+            variant: slim
       fail-fast: false
 
     uses: ./.github/workflows/reusable-build.yml
     with:
       configuration: ${{ matrix.configuration }}
       architecture: ${{ matrix.architecture }}
+      variant: ${{ matrix.variant }}
     secrets: inherit
 
   changelog:
@@ -83,27 +92,52 @@ jobs:
         include:
           - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: x64
+            variant: selfcontained
           - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
             architecture: ARM64
+            variant: selfcontained
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
+            architecture: x64
+            variant: slim
+          - configuration: ${{ github.event.inputs.configuration || 'Beta' }}
+            architecture: ARM64
+            variant: slim
     steps:
       - name: Download Build Artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}
+          name: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}_${{ matrix.variant }}
           path: ./artifact
+
+      - name: Resolve package name
+        id: pkg
+        # 产物名要让人一眼看懂：PCL-HE_v0.1.2-Alpha_win-x64_self-contained.zip
+        run: |
+          version="${{ github.event.inputs.version || github.ref_name }}"
+          case "${{ matrix.architecture }}" in
+            ARM64) arch="arm64" ;;
+            *) arch="x64" ;;
+          esac
+          case "${{ matrix.variant }}" in
+            selfcontained) variant="self-contained" ;;
+            slim) variant="framework-dependent" ;;
+            *) variant="${{ matrix.variant }}" ;;
+          esac
+          echo "name=PCL-HE_${version}_win-${arch}_${variant}" >> "$GITHUB_OUTPUT"
 
       - name: Package the whole publish output
         run: |
-          # 产物是 --no-self-contained 的目录，exe 旁边还有 PCL.Core.dll 与 runtimes/ 下的原生库。
-          # 只挑 exe 上传会让下载者拿到一份缺依赖、双击即报错的文件，所以整目录打包；
+          # 两种形态都整目录打包，下载者解压后不会缺依赖：
+          #   selfcontained —— 目录里只有 PCL-HE.exe 一个文件（开箱即用）；
+          #   slim         —— 目录里有 exe 与全部第三方 DLL（需预装 .NET 10 桌面运行时）。
           # 进到目录里再打包，解压出来就直接是程序文件，不会多套一层 artifact/。
           cd ./artifact
-          zip -r "../PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip" .
+          zip -r "../${{ steps.pkg.outputs.name }}.zip" .
 
       - name: Sign the archive
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9 # v3.5.0
         with:
-          inputs: PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
+          inputs: ${{ steps.pkg.outputs.name }}.zip
           verify: true
           # 证书里的 SAN 是触发这次运行的那个 ref：tag 触发时是 refs/tags/vX.Y.Z，
           # 手工触发时是 refs/heads/main。写成固定值会让 tag 触发的运行验签失败。
@@ -116,8 +150,8 @@ jobs:
           draft: true
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: |
-            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip
-            PCL_HE_${{ matrix.configuration }}_${{ matrix.architecture }}.zip.sigstore.json
+            ${{ steps.pkg.outputs.name }}.zip
+            ${{ steps.pkg.outputs.name }}.zip.sigstore.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -12,6 +12,11 @@ on:
       architecture:
         required: true
         type: string
+      variant:
+        description: 'selfcontained = 自包含单文件；slim = 精简版（需预装 .NET 10 桌面运行时）'
+        required: false
+        type: string
+        default: selfcontained
 
 jobs:
   build:
@@ -47,13 +52,37 @@ jobs:
           PCL_MS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
           PCL_GITHUB_SHA: ${{ github.sha }}
         run: |
+          # 两种发行形态都打成单文件，解压后目录里只剩启动器本体、CONFIG 与运行时生成的文件夹：
+          #   selfcontained —— 自包含单文件，开箱即用（约 80-90 MB 压缩后）；
+          #   slim         —— 精简版单文件（约 7-8 MB），需使用者预装 .NET 10 桌面运行时。
+          # v0.1.1 那次「下载后双击没反应」的事故根因不是单文件，而是「缺运行时 + 没有任何提示」：
+          # 单文件与 --self-contained false 是合法组合。现在 slim 在发布说明里给出运行时下载地址，
+          # 启动器内也有运行时缺失的引导分支（Application.xaml.cs 会打开 get.dot.net/10）。
+          if [ "${{ inputs.variant }}" = "slim" ]; then
+            extra="--self-contained false -p:PublishSingleFile=true"
+          else
+            extra="--self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true"
+          fi
           dotnet publish "PCL-Harness Edition/Plain Craft Launcher 2.csproj" \
           -p:Configuration=${{ inputs.configuration }} -p:Platform=${{ inputs.architecture }} \
-          -p:DeleteExistingFiles=true -o ./artifact --self-contained true \
-          -p:EnableCompressionInSingleFile=true
+          -p:DeleteExistingFiles=true -o ./artifact $extra \
+          -p:DebugType=none -p:DebugSymbols=false -p:GenerateDocumentationFile=false
+
+      - name: Prepare Portable Layout
+        run: |
+          # 便携模式标记：发布包内预置一个 CONFIG 文件夹，启动器检测到它就把「共享配置」与
+          # 「可再生的本地缓存」写进这里，玩家目录下只剩「启动器 + CONFIG + PCL + .minecraft」，
+          # 不必往 AppData 写东西；文件夹被删掉或所在目录不可写时会安静退回 AppData（见 Paths.cs）。
+          mkdir -p artifact/CONFIG
+          printf '%s\n' \
+            'PCL-HE 便携模式目录。' \
+            '启动器会把配置与本地缓存写在同级的 PCL 文件夹，本文件夹用于存放便携数据。' \
+            '删除本文件夹后，配置会退回 %APPDATA%\\PCLHE。' \
+            > artifact/CONFIG/README.txt
+          ls -la artifact | head -20
 
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: PCL_HE_${{ inputs.configuration }}_${{ inputs.architecture }}
+          name: PCL_HE_${{ inputs.configuration }}_${{ inputs.architecture }}_${{ inputs.variant }}
           path: artifact/**
