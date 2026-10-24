@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -153,6 +153,9 @@ public partial class PageLoginProfile
         else
             sender.Buttons = new[] { btnCopyUuid, btnDelete };
     }
+
+    // 点击「新建档案」卡片任意位置都算点击（卡片留白处原本不响应）。
+    private void PanButtons_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => BtnNew_Click(BtnNew, e);
 
     // 创建档案
     private void BtnNew_Click(object sender, EventArgs e)

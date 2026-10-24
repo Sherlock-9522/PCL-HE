@@ -36,9 +36,11 @@
             <Grid.RenderTransform>
                 <ScaleTransform />
             </Grid.RenderTransform>
+            <!-- 图标固定用纯白：ColorBrush8 是主题计算色，深色模式下会被压到 L8=0.22 的深灰，
+                 与深色底几乎同色而看不清；浅色模式蓝底、深色模式黑底都需要白符。 -->
             <Path x:Name="Path"
                   Stretch="Uniform"
-                  Fill="{DynamicResource ColorBrush8}" />
+                  Fill="{DynamicResource ColorBrushSolidFore}" />
             <svgIcon:SvgIcon x:Name="ShapeSvgIcon"
                          Stretch="Uniform"
                          Visibility="Collapsed"

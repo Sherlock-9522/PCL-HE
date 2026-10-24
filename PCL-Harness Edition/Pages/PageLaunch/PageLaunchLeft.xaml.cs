@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +8,7 @@ using PCL.Core.App;
 using PCL.Core.App.Localization;
 using PCL.Core.Minecraft.Profile;
 using PCL.Core.Minecraft.Profile.Models;
+using PCL.Core.UI.Theme;
 using PCL.Core.Utils;
 using PCL.Network;
 
@@ -59,6 +60,33 @@ public partial class PageLaunchLeft
         BtnMore.Click += BtnMore_Click;
         PanLaunchingInfo.SizeChanged += PanLaunchingInfo_SizeChangedW;
         PanLaunchingInfo.SizeChanged += PanLaunchingInfo_SizeChangedH;
+        RefreshLaunchingBarColor();
+        ThemeService.ColorModeChanged += (_, _) => ModBase.RunInUi(RefreshLaunchingBarColor);
+    }
+
+    // 启动进度条配色：深色模式下档案区本身是深色，蓝色渐变显得突兀，改用浅色条纹；浅色模式保持原有品牌蓝。
+    private void RefreshLaunchingBarColor()
+    {
+        if (ThemeService.IsDarkMode)
+        {
+            RectLaunchingFinished.Fill = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+            RectLaunchingUnfinished.Fill = new SolidColorBrush(Color.FromRgb(0x8C, 0x8C, 0x8C));
+            RectLaunchingUnfinished.Opacity = 0.45;
+            // 深色档案区上「已启动游戏」与版本号原本跟随品牌蓝，读起来发闷，一并提亮成白与浅灰。
+            LabLaunchingTitle.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+            LabLaunchingName.Foreground = new SolidColorBrush(Color.FromRgb(0xD8, 0xD8, 0xD8));
+            return;
+        }
+
+        var gradient = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 0) };
+        gradient.GradientStops.Add(new GradientStop(Color.FromRgb(0x48, 0x90, 0xF5), 0));
+        gradient.GradientStops.Add(new GradientStop(Color.FromRgb(0x13, 0x70, 0xF3), 0.6));
+        RectLaunchingFinished.Fill = gradient;
+        RectLaunchingUnfinished.Fill = new SolidColorBrush(Color.FromRgb(0xE6, 0xE6, 0xE6));
+        RectLaunchingUnfinished.Opacity = 0.6;
+        // 切回浅色模式必须把两个文本还原成主题色，否则会残留深色模式的白字。
+        LabLaunchingTitle.SetResourceReference(TextBlock.ForegroundProperty, "ColorBrush3");
+        LabLaunchingName.SetResourceReference(TextBlock.ForegroundProperty, "ColorBrush3");
     }
     private static void OnLanguageChanged(PageLaunchLeft page) => ModBase.RunInUi(page.RefreshButtonsUI);
 

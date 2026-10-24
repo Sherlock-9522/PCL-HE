@@ -683,7 +683,7 @@ public partial class FormMain
             if (!isLogShown)
             {
                 ModBase.FeedbackInfo();
-                ModBase.Log("请在 https://github.com/Sherlock-9522/PCL-HE/issues 提交错误报告，以便于定位此问题！（这也有可能是上游 PCL-CE 或原版 PCL 的问题）");
+                ModBase.Log("请在 https://github.com/Sherlock-9522/PCL-HE/issues 提交错误报告，以便于定位此问题！（这也有可能是上游项目的既有问题）");
                 isLogShown = true;
                 ModBase.ShellOnly(LogWrapper.CurrentLogger.CurrentLogFiles.Last());
             }

@@ -400,7 +400,7 @@
                                      Click="BtnSelectStart_Click"
                                      HorizontalAlignment="Center" VerticalAlignment="Bottom" IsEnabled="False"
                                      LogoScale="0.95"
-                                     SvgIcon="lucide/download" SolidTheme="True" TextFontFamily="幼圆" />
+                                     SvgIcon="lucide/download" SolidTheme="True" />
         </Grid>
         <local:MyCard HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,0" SnapsToDevicePixels="True"
                       x:Name="PanLoad" UseAnimation="False">

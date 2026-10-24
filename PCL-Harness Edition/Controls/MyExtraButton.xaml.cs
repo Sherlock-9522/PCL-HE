@@ -32,6 +32,8 @@ public partial class MyExtraButton
         IsEnabledChanged += (_, _) => RefreshColor();
         InitializeComponent();
         PanClick.MouseLeave += (_, _) => Button_MouseLeave();
+        // 深浅主题切换后底色要立刻跟着变，否则得重启启动器才生效。
+        PCL.Core.UI.Theme.ThemeService.ColorModeChanged += (_, _) => Dispatcher.Invoke(RefreshColor);
     }
 
     public double Progress
@@ -258,6 +260,10 @@ public partial class MyExtraButton
     {
         try
         {
+            // 深色模式下悬浮按钮改用窗口标题栏色系（黑底白符），浅色模式保持品牌蓝；
+            // 颜色键集中在这里选，避免六个按钮各写一遍导致深浅模式混搭。
+            var normalKey = ThemeManager.IsDarkMode ? "ColorBrushSolidBackDark" : "ColorBrush3";
+            var hoverKey = ThemeManager.IsDarkMode ? "ColorBrushSolidBackDarkHover" : "ColorBrush4";
             if (ControlVisualHelpers.ShouldAnimate(this)) // 防止默认属性变更触发动画
             {
                 if (!IsEnabled)
@@ -268,19 +274,19 @@ public partial class MyExtraButton
                 else if (IsMouseOver)
                     // 指向
                     ModAnimation.AniStart(
-                        ModAnimation.AaColor(PanColor, BackgroundProperty, "ColorBrush4", animationColorIn),
+                        ModAnimation.AaColor(PanColor, BackgroundProperty, hoverKey, animationColorIn),
                         "MyExtraButton Color " + Uuid);
                 else
                     // 普通
                     ModAnimation.AniStart(
-                        ModAnimation.AaColor(PanColor, BackgroundProperty, "ColorBrush3", animationColorOut),
+                        ModAnimation.AaColor(PanColor, BackgroundProperty, normalKey, animationColorOut),
                         "MyExtraButton Color " + Uuid);
             }
 
             else
             {
                 ControlVisualHelpers.AnimateColorOrSetResource(PanColor, BackgroundProperty,
-                    !IsEnabled ? "ColorBrushGray4" : IsMouseOver ? "ColorBrush4" : "ColorBrush3",
+                    !IsEnabled ? "ColorBrushGray4" : IsMouseOver ? hoverKey : normalKey,
                     !IsEnabled || IsMouseOver ? animationColorIn : animationColorOut,
                     "MyExtraButton Color " + Uuid, false);
             }

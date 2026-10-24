@@ -90,7 +90,7 @@
                     <ColumnDefinition Name="ProgressLaunchingFinished" Width="69.28*" />
                     <ColumnDefinition Name="ProgressLaunchingUnfinished" Width="30.72*" />
                 </Grid.ColumnDefinitions>
-                <Rectangle Grid.Column="0">
+                <Rectangle Grid.Column="0" x:Name="RectLaunchingFinished">
                     <Rectangle.Fill>
                         <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
                             <GradientStop Color="{DynamicResource ColorObject4}" Offset="0" />
@@ -98,7 +98,7 @@
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <Rectangle Grid.Column="1" Fill="{DynamicResource ColorBrush6}" Opacity="0.6" />
+                <Rectangle Grid.Column="1" x:Name="RectLaunchingUnfinished" Fill="{DynamicResource ColorBrush6}" Opacity="0.6" />
             </Grid>
             <Grid HorizontalAlignment="Center" Name="PanLaunchingInfo" SizeChanged="PanLaunchingInfo_SizeChangedW">
                 <Grid.ColumnDefinitions>

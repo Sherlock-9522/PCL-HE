@@ -43,10 +43,15 @@
                              Visibility="Collapsed"
                              IconBrush="{Binding Fill, ElementName=Path}" />
             </Grid>
+            <!-- 字体保持系统默认（与 PCL2 一致）：不叠加字族与字重，避免合成加粗把小字号笔画糊在一起。
+                 前景固定纯白而不是 ColorBrush8：后者在深色模式下会被压到 L8=0.22 的深灰。
+                 边距取整数像素并用 Display 模式排版，保证小字号字形落在像素网格上。 -->
             <TextBlock x:Name="LabText" VerticalAlignment="Center" Foreground="#FFFFFFFF"
-                       FontFamily="Microsoft YaHei" FontWeight="Bold"
                        FontSize="16"
-                       Margin="12,0,0,0.8" />
+                       TextOptions.TextFormattingMode="Display"
+                       TextOptions.TextRenderingMode="ClearType"
+                       SnapsToDevicePixels="True"
+                       Margin="12,0,0,1" />
         </StackPanel>
     </Grid>
 </Grid>

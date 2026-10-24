@@ -347,7 +347,7 @@
             </local:MyScrollViewer>
             <local:MyExtraTextButton x:Name="BtnStart" Text="{DynamicResource Download.Install.StartDownload}"
                                      HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                                     LogoScale="0.95" SolidTheme="True" TextFontFamily="幼圆"
+                                     LogoScale="0.95" SolidTheme="True"
                                      SvgIcon="lucide/download" />
         </Grid>
         <local:MyCard HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,0" SnapsToDevicePixels="True"

@@ -41,14 +41,21 @@
 
     <local:MyCard Grid.Row="5" HorizontalAlignment="Center" x:Name="PanButtons" Opacity="10"
                   CornerRadius="5" Margin="0,0,4,0">
-        <StackPanel Orientation="Horizontal" Margin="10,3,0,3">
-            <local:MyIconButton Height="24" Margin="0,0.5,9,0" x:Name="BtnNew"
-                                 Click="BtnNew_Click"
-                                 ToolTip="{DynamicResource Launch.Account.Profile.Create}" ToolTipService.Placement="Center" ToolTipService.VerticalOffset="35"
-                                ToolTipService.HorizontalOffset="1" ToolTipService.InitialShowDelay="50"
+        <!--
+            整块卡片都作为热区。
+            这里必须用 Padding 而不是 Margin：Margin 是元素外的布局留白，既不绘制背景也不参与命中测试，
+            所以之前用 Margin 的那版，可点区域仍然只有中间那个 24 × 24 的圆钮，卡片四周（也就是看起来像按钮的那一圈）点了没反应。
+            改用带 Background 的 Border + Padding 后，Border 自身被撑成 44 × 30（24 + 左右各 10、上下各 3），与卡片视觉尺寸完全一致。
+        -->
+        <Border Background="Transparent" Padding="10,3" Cursor="Hand"
+                ToolTip="{DynamicResource Launch.Account.Profile.Create}"
+                ToolTipService.Placement="Center" ToolTipService.VerticalOffset="35"
+                ToolTipService.HorizontalOffset="1" ToolTipService.InitialShowDelay="50"
+                MouseLeftButtonUp="PanButtons_MouseLeftButtonUp">
+            <local:MyIconButton Height="24" x:Name="BtnNew" IsHitTestVisible="False"
                                 LogoScale="1.08"
                                 SvgIcon="lucide/user-plus" />
-        </StackPanel>
+        </Border>
     </local:MyCard>
 
 </Grid>
