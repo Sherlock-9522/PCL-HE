@@ -122,8 +122,9 @@ public class MyCard : AnimatedBackgroundGrid
         {
             MainTextBlock = new TextBlock
             {
-                HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(15d, 12d, 0d, 0d), FontWeight = FontWeights.Bold, FontSize = 14d,
+                HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(15d, 12d, 40d, 0d), FontWeight = FontWeights.Bold, FontSize = 15d,
+                TextTrimming = TextTrimming.CharacterEllipsis, TextWrapping = TextWrapping.NoWrap,
                 FontFamily = new FontFamily("Microsoft YaHei, Microsoft YaHei UI, Segoe UI"),
                 IsHitTestVisible = false
             };

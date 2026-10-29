@@ -19,7 +19,7 @@ public partial class FormSplash
     ///     若此时立刻关闭开屏，入场动画会被整体跳过、用户只看到一闪。这里保证动画至少
     ///     播完一轮关键节点（logo 弹入 → 标题浮现 → 光带扫掠起势），又不至于明显拖慢启动。
     /// </summary>
-    private const double MinVisibleMs = 900d;
+    private const double MinVisibleMs = 700d;
 
     private enum EaseKind
     {
@@ -30,6 +30,7 @@ public partial class FormSplash
     private volatile bool _isFading;
     private bool _isIntroPlayed;
     private DateTime _shownUtc = DateTime.UtcNow;
+    private readonly DateTime _createdUtc = DateTime.UtcNow;
 
     public FormSplash()
     {
@@ -54,29 +55,36 @@ public partial class FormSplash
         {
             var speed = GetAnimationSpeed();
 
+            // 启动链和主窗体首次布局会独占 UI 线程数百毫秒，这段时间里任何补间都不会出帧，
+            // 入场动画只会在阻塞结束后一次性快进到终值，看起来就是「一闪而过」。
+            // 这种情况直接保留静态预览，只让底部光带扫起来——比播一段被压扁的动画更稳。
+            var lagMs = (DateTime.UtcNow - _createdUtc).TotalMilliseconds;
+            if (lagMs > 400d)
+            {
+                ShowStaticPreview();
+                StartProgressSweep(speed);
+                ModBase.Log($"[Start] 开屏入场动画被启动耗时推迟 {lagMs:F0} ms，已改为静态呈现");
+                return;
+            }
+
             // 整体淡入 + 轻微放大（柔和，不使用回弹，避免「砸」出来的突兀感）
-            Anim(RootGrid, UIElement.OpacityProperty, 0d, 1d, 260d, 0d, speed, EaseKind.OutCubic);
-            Anim(RootScale, ScaleTransform.ScaleXProperty, 0.96d, 1d, 420d, 0d, speed, EaseKind.OutCubic);
-            Anim(RootScale, ScaleTransform.ScaleYProperty, 0.96d, 1d, 420d, 0d, speed, EaseKind.OutCubic);
+            // 节奏表必须整体塞进 MinVisibleMs 之内：原先进度条 620+300=920ms 才浮现完，
+            // 而淡出在 900ms 就开始，等于「刚出现就被抹掉」。现在全部入场在 680ms 收尾。
+            Anim(RootGrid, UIElement.OpacityProperty, 0d, 1d, 220d, 0d, speed, EaseKind.OutCubic);
+            Anim(RootScale, ScaleTransform.ScaleXProperty, 0.96d, 1d, 360d, 0d, speed, EaseKind.OutCubic);
+            Anim(RootScale, ScaleTransform.ScaleYProperty, 0.96d, 1d, 360d, 0d, speed, EaseKind.OutCubic);
 
             // Logo 上浮 + 淡入
-            Anim(LogoBox, UIElement.OpacityProperty, 0d, 1d, 400d, 140d, speed, EaseKind.OutCubic);
-            Anim(LogoShift, TranslateTransform.YProperty, 10d, 0d, 520d, 140d, speed, EaseKind.OutCubic);
+            Anim(LogoBox, UIElement.OpacityProperty, 0d, 1d, 340d, 80d, speed, EaseKind.OutCubic);
+            Anim(LogoShift, TranslateTransform.YProperty, 10d, 0d, 440d, 80d, speed, EaseKind.OutCubic);
 
             // 主标题、副标题依次浮现
-            Anim(LabTitle, UIElement.OpacityProperty, 0d, 1d, 320d, 380d, speed, EaseKind.OutCubic);
-            Anim(LabSub, UIElement.OpacityProperty, 0d, 1d, 320d, 520d, speed, EaseKind.OutCubic);
+            Anim(LabTitle, UIElement.OpacityProperty, 0d, 1d, 280d, 240d, speed, EaseKind.OutCubic);
+            Anim(LabSub, UIElement.OpacityProperty, 0d, 1d, 280d, 340d, speed, EaseKind.OutCubic);
 
-            // 进度条浮现，光带无限循环扫掠
-            Anim(ProgressTrack, UIElement.OpacityProperty, 0d, 1d, 300d, 620d, speed, EaseKind.OutCubic);
-            ProgressShift.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation
-            {
-                From = -100d,
-                To = 200d,
-                Duration = new Duration(TimeSpan.FromMilliseconds(1400d / speed)),
-                BeginTime = TimeSpan.FromMilliseconds(700d / speed),
-                RepeatBehavior = RepeatBehavior.Forever
-            });
+            // 进度条浮现，光带循环扫掠（淡出时会被主动停掉，避免与淡出抢帧）
+            Anim(ProgressTrack, UIElement.OpacityProperty, 0d, 1d, 260d, 420d, speed, EaseKind.OutCubic);
+            StartProgressSweep(speed, 480d);
         }
         catch (Exception ex)
         {
@@ -88,6 +96,52 @@ public partial class FormSplash
             LabTitle.Opacity = 1d;
             LabSub.Opacity = 1d;
             ProgressTrack.Opacity = 1d;
+        }
+    }
+
+    /// <summary>
+    ///     立即呈现完整的静态画面（不做任何入场动画）。
+    ///     供启动链在「主窗体首次布局会独占 UI 线程」的场景下提前显示品牌画面，
+    ///     避免用户看到一张空白窗口。
+    /// </summary>
+    public void ShowStaticPreview()
+    {
+        try
+        {
+            RootGrid.Opacity = 1d;
+            LogoBox.Opacity = 1d;
+            LabTitle.Opacity = 1d;
+            LabSub.Opacity = 1d;
+            ProgressTrack.Opacity = 1d;
+            RootScale.ScaleX = 1d;
+            RootScale.ScaleY = 1d;
+            LogoShift.Y = 0d;
+        }
+        catch
+        {
+            // 视觉兜底失败不影响启动
+        }
+    }
+
+    /// <summary>
+    ///     启动底部光带的循环扫掠。
+    /// </summary>
+    private void StartProgressSweep(double speed, double delayMs = 0d)
+    {
+        try
+        {
+            ProgressShift.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation
+            {
+                From = -100d,
+                To = 200d,
+                Duration = new Duration(TimeSpan.FromMilliseconds(420d / speed)),
+                BeginTime = TimeSpan.FromMilliseconds(Math.Max(0d, delayMs) / speed),
+                RepeatBehavior = RepeatBehavior.Forever
+            });
+        }
+        catch
+        {
+            // 光带失败不影响其余动画
         }
     }
 
@@ -259,15 +313,21 @@ public partial class FormSplash
 
         try
         {
+            // 立刻停掉无限循环的光带：它在淡出期间仍会让整窗每帧重绘（本窗口是软件渲染路径），
+            // 与正在看的淡出抢帧。
+            ProgressShift.BeginAnimation(TranslateTransform.XProperty, null);
+
             var fade = new DoubleAnimation
             {
-                From = Opacity,
+                From = RootGrid.Opacity,
                 To = 0d,
                 Duration = new Duration(TimeSpan.FromMilliseconds(ms)),
                 EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
             };
             fade.Completed += (_, _) => CloseSafely();
-            BeginAnimation(OpacityProperty, fade);
+            // 淡出作用在 RootGrid 而不是窗口 Opacity：窗口级不透明度不参与离屏渲染，
+            // 诊断截图（RenderTargetBitmap.Render(this)）拍不到，视觉等价但这里可被观测。
+            RootGrid.BeginAnimation(UIElement.OpacityProperty, fade);
         }
         catch
         {

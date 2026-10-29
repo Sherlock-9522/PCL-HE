@@ -46,21 +46,33 @@ public partial class PageLaunchRight : IRefreshable
             LabHint1.Visibility = Visibility.Collapsed;
             LabHint2.Visibility = Visibility.Collapsed;
         }
-        // 内存优化专项提示与第三方身份提示共用同一张卡片，任一需要显示时卡片都要显示。
+        // 内存优化提示自从拆成独立卡片，与第三方身份提示互不影响
         PanMemoryOpt.Visibility = States.Hint.MemoryOptimizeHint ? Visibility.Visible : Visibility.Collapsed;
-        PanHint.Visibility = States.Hint.CEMessage || States.Hint.MemoryOptimizeHint
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        PanHint.Visibility = States.Hint.CEMessage ? Visibility.Visible : Visibility.Collapsed;
+        // 自助安装 Java 的提示用独立卡片，关闭后同样不再出现。
+        PanJavaHint.Visibility = States.Hint.JavaInstallHint ? Visibility.Visible : Visibility.Collapsed;
         _EnsureHomepageLiveWatcher();
     }
 
-    // 关闭第三方身份提示与内存优化提示；关闭后写回配置，之后不再显示
+    // 关闭第三方身份提示；关闭后写回配置，之后不再显示
     private void BtnHintClose_Click(object sender, EventArgs e)
     {
         ModAnimation.AniDispose(PanHint, true);
         States.Hint.CEMessage = false;
-        // 两个提示共用这一个关闭按钮：一并关闭，否则下次进入页面时卡片会因为内存优化提示再次出现。
+    }
+
+    // 关闭内存优化提示
+    private void BtnMemoryOptClose_Click(object sender, EventArgs e)
+    {
+        ModAnimation.AniDispose(PanMemoryOpt, true);
         States.Hint.MemoryOptimizeHint = false;
+    }
+
+    // 关闭自助安装 Java 的提示
+    private void BtnJavaHintClose_Click(object sender, EventArgs e)
+    {
+        ModAnimation.AniDispose(PanJavaHint, true);
+        States.Hint.JavaInstallHint = false;
     }
 
     #region 主页
@@ -122,7 +134,7 @@ public partial class PageLaunchRight : IRefreshable
                     var hintText = GetRandomHint();
                     content = $@"
     <local:MyCard Title=""{{DynamicResource Launch.Status.Trivia}}"" Margin=""0,0,0,15"">
-        <TextBlock Margin=""25,38,23,15"" FontSize=""13.5"" IsHitTestVisible=""False"" Text=""{hintText}"" TextWrapping=""Wrap"" Foreground=""{{DynamicResource ColorBrush1}}"" />
+        <TextBlock Margin=""25,38,23,15"" FontSize=""15"" IsHitTestVisible=""False"" Text=""{hintText}"" TextWrapping=""Wrap"" Foreground=""{{DynamicResource ColorBrush1}}"" />
         <local:MyIconButton Height=""22"" Width=""22"" Margin=""9"" VerticalAlignment=""Top"" HorizontalAlignment=""Right"" 
             EventType=""刷新主页"" EventData=""/""
             SvgIcon=""lucide/refresh-cw"" />

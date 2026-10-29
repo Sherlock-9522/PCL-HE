@@ -20,6 +20,16 @@ public partial class MyButton
         Red = 2,
 
         /// <summary>
+        /// 绿色描边按钮：用于低风险、建议先执行的操作。
+        /// </summary>
+        Green = 4,
+
+        /// <summary>
+        /// 蓝色描边按钮：用于常规推荐操作。
+        /// </summary>
+        Blue = 5,
+
+        /// <summary>
         /// 实心强调按钮：浅色模式蓝底白字，深色模式黑底白字，随启动器深浅模式自动切换。
         /// </summary>
         Solid = 3
@@ -148,6 +158,8 @@ public partial class MyButton
             ColorState.Normal => IsMouseOver ? "ColorBrush3" : "ColorBrush1",
             ColorState.Highlight => IsMouseOver ? "ColorBrush3" : "ColorBrush2",
             ColorState.Red => IsMouseOver ? "ColorBrushRedLight" : "ColorBrushRedDark",
+            ColorState.Green => IsMouseOver ? "ColorBrushGreenLight" : "ColorBrushGreenDark",
+            ColorState.Blue => IsMouseOver ? "ColorBrushBlueLight" : "ColorBrushBlueDark",
             // 实心按钮：文字色跟随边框色，因此这里取纯白；1px 边框本身由 BorderThickness=0 隐去
             ColorState.Solid => "ColorBrushSolidFore",
             _ => "ColorBrush1"
@@ -248,15 +260,22 @@ public partial class MyButton
             }, "MyButton Scale " + Uuid);
     }
 
+    private string GetHoverBackgroundResourceKey()
+    {
+        return _ColorType switch
+        {
+            ColorState.Solid => GetSolidBackgroundResourceKey(true),
+            ColorState.Red => "ColorBrushRedBack",
+            ColorState.Green => "ColorBrushGreenBack",
+            ColorState.Blue => "ColorBrushBlueBack",
+            _ => "ColorBrush7"
+        };
+    }
+
     private void Button_MouseEnter()
     {
         ModAnimation.AniStart(
-            ModAnimation.AaColor(PanFore, BackgroundProperty,
-                _ColorType == ColorState.Solid
-                    ? GetSolidBackgroundResourceKey(true)
-                    : _ColorType == ColorState.Red
-                        ? "ColorBrushRedBack"
-                        : "ColorBrush7",
+            ModAnimation.AaColor(PanFore, BackgroundProperty, GetHoverBackgroundResourceKey(),
                 animationColorIn),
             "MyButton Background " + Uuid);
     }

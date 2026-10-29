@@ -82,6 +82,11 @@ public partial class Application
                 {
                     ModMain.frmStart = new FormSplash();
                     ModMain.frmStart.Show();
+                    // 先把开屏的静态画面画出来再继续启动链：紧随其后的主窗体首次布局会独占
+                    // UI 线程数百毫秒，这段时间里任何补间都不会出帧，用户会看到一张空白窗口。
+                    ModMain.frmStart.ShowStaticPreview();
+                    System.Windows.Threading.Dispatcher.CurrentDispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Render, new Action(() => { }));
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +96,9 @@ public partial class Application
 
             // 设置初始化
             _ = Config.Debug.Enabled;
-            _ = Config.Debug.AnimationSpeed;
+            // 真正应用动画速度：原先只是读取预热，导致 ModAnimation.aniSpeed 要等
+            // ModSetup.ApplyAll 才被赋值，开屏窗口永远读到默认值 1，与用户设置脱节。
+            ModSetup.SystemDebugAnim(Config.Debug.AnimationSpeed);
             _ = Config.Network.HttpProxy.CustomAddress;
             _ = Config.Network.HttpProxy.CustomUsername;
             _ = Config.Network.HttpProxy.Type;

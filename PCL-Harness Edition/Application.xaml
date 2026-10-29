@@ -68,8 +68,14 @@
             <Color x:Key="ColorObjectGray7">#f0f0f0</Color>
             <Color x:Key="ColorObjectGray8">#f5f5f5</Color>
             <SolidColorBrush x:Key="ColorBrushRedBack">#80fbdddd</SolidColorBrush>
-            <SolidColorBrush x:Key="ColorBrushRedLight">#ff4c4c</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushRedLight">#D93025</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushRedDark">#ce2111</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushGreenBack">#80dcf5e4</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushGreenLight">#2E9E4F</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushGreenDark">#1F8A41</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushBlueBack">#80dce8fb</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushBlueLight">#1F6FD0</SolidColorBrush>
+            <SolidColorBrush x:Key="ColorBrushBlueDark">#155CB0</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushHalfWhite" Color="#55ffffff" />
             <SolidColorBrush x:Key="ColorBrushSemiWhite" Color="#bbffffff" />
             <SolidColorBrush x:Key="ColorBrushWhite" Color="#ffffff" />
@@ -170,6 +176,12 @@
                 <Setter Property="FontFamily" Value="{DynamicResource LaunchFontFamily}" />
             </Style>
 
+            <!-- 卡片内小节标题：比正文明显更大更粗，用于分隔卡片内的功能区块 -->
+            <Style TargetType="TextBlock" x:Key="CardSectionTitle" BasedOn="{StaticResource BasedOnTextBlock}">
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Opacity" Value="0.92" />
+            </Style>
             <!-- ScrollViewer -->
             <Style x:Key="MyThumb" TargetType="Thumb">
                 <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />

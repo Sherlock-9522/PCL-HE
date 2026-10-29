@@ -21,6 +21,7 @@ using PCL.Network;
 using PCL.Network.Loaders;
 using PCL.Core.App.Localization;
 using System.Globalization;
+using System.Threading;
 
 namespace PCL;
 
@@ -39,6 +40,7 @@ public partial class PageToolsTest
         CmbHeadSize.SelectionChanged += CmbHeadSize_SelectionChanged;
         Loaded += (_, _) => MeLoaded();
         Loaded += (_, _) => RefreshMemoryStatus();
+        Loaded += (_, _) => InitializeJavaCard();
         #if DEBUG
         BtnCrash.Visibility = Visibility.Visible;
         #endif
@@ -309,6 +311,605 @@ public partial class PageToolsTest
                 userSummary: Lang.Text("Tools.Memory.Deep.Timeout"));
         }
         return report;
+    }
+
+    #endregion
+
+    #region 自助安装 Java
+
+    private ModJavaInstall.JreRelease? javaRelease;
+    private bool javaRunning;
+
+    private int SelectedJavaFeature =>
+        ModJavaInstall.SupportedFeatures[
+            Math.Clamp(ComboJavaFeature.SelectedIndex, 0, ModJavaInstall.SupportedFeatures.Length - 1)];
+
+    private void InitializeJavaCard()
+    {
+        try
+        {
+            ComboJavaFeature.Items.Clear();
+            foreach (var feature in ModJavaInstall.SupportedFeatures)
+                ComboJavaFeature.Items.Add($"Java {feature}");
+            ComboJavaFeature.SelectedIndex = 0;
+            ComboJavaSource.Items.Clear();
+            ComboJavaSource.Items.Add(Lang.Text("Tools.Java.Source.Mirror"));
+            ComboJavaSource.Items.Add(Lang.Text("Tools.Java.Source.Official"));
+            ComboJavaSource.SelectedIndex = States.Hint.JavaInstallerSource == 1 ? 1 : 0;
+            TextJavaRelease.Text = Lang.Text("Tools.Java.ReleaseUnknown");
+            RefreshJavaInstalled();
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "初始化 Java 安装卡片失败", ModBase.LogLevel.Debug);
+        }
+    }
+
+    private void SetJavaBusy(bool busy)
+    {
+        javaRunning = busy;
+        ModBase.RunInUi(() =>
+        {
+            BtnJavaQuery.IsEnabled = !busy;
+            BtnJavaInstall.IsEnabled = !busy;
+            BtnJavaSilent.IsEnabled = !busy;
+            BtnJavaRescan.IsEnabled = !busy;
+        });
+    }
+
+    /// <summary>刷新「这台机器上装没装这个主版本」的状态提示。</summary>
+    private void RefreshJavaInstalled()
+    {
+        // 这个方法会在后台线程被调用（查询、扫描之后），读控件前先回到 UI 线程。
+        if (!Dispatcher.CheckAccess())
+        {
+            ModBase.RunInUi(RefreshJavaInstalled);
+            return;
+        }
+
+        try
+        {
+            if (TextJavaStatus is null) return;
+            var feature = SelectedJavaFeature;
+            var registered = ModJavaInstall.FindInstalled(feature);
+            // 卸载登记表里的路径可能已经过期（用户手动挪过文件夹），所以优先相信实际扫描到的 java.exe
+            var scanned = ModJava.Javas.GetSortedJavaList().FirstOrDefault(
+                x => x.Installation.MajorVersion == feature && x.Installation.IsStillAvailable);
+            if (scanned is not null)
+                TextJavaStatus.Text = Lang.Text("Tools.Java.StatusInstalled", feature,
+                    scanned.Installation.Version.ToString(), scanned.Installation.JavaFolder);
+            else if (registered is null)
+                TextJavaStatus.Text = Lang.Text("Tools.Java.StatusNotInstalled", feature);
+            else if (!registered.LocationExists)
+                TextJavaStatus.Text = Lang.Text("Tools.Java.StatusStale", feature, registered.Version,
+                    string.IsNullOrWhiteSpace(registered.Location) ? "—" : registered.Location);
+            else
+                TextJavaStatus.Text = Lang.Text("Tools.Java.StatusInstalled", feature, registered.Version,
+                    registered.Location);
+            TextJavaStatus.Visibility = Visibility.Visible;
+            RefreshJavaUninstallList();
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "读取已安装的 Java 状态失败", ModBase.LogLevel.Debug);
+        }
+    }
+
+    /// <summary>切换下载源。不同源能拿到的文件不同，所以已经查到的版本信息要作废。</summary>
+    private void ComboJavaSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ComboJavaSource.SelectedIndex < 0) return;
+        States.Hint.JavaInstallerSource = ComboJavaSource.SelectedIndex == 1 ? 1 : 0;
+        javaRelease = null;
+        if (TextJavaRelease is not null)
+            TextJavaRelease.Text = Lang.Text("Tools.Java.ReleaseUnknown");
+    }
+
+    private void ComboJavaFeature_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        javaRelease = null;
+        if (TextJavaRelease is not null) TextJavaRelease.Text = Lang.Text("Tools.Java.ReleaseUnknown");
+        RefreshJavaInstalled();
+    }
+
+    /// <summary>取缓存里的版本信息，没有就现场查一次。必须在工作线程调用。</summary>
+    private ModJavaInstall.JreRelease EnsureRelease(int feature)
+    {
+        var cached = javaRelease;
+        if (cached is not null && cached.Feature == feature) return cached;
+        var release = ModJavaInstall.FetchLatest(feature, States.Hint.JavaInstallerSource == 1);
+        javaRelease = release;
+        ModBase.RunInUi(() => TextJavaRelease.Text =
+            Lang.Text("Tools.Java.ReleaseInfo", release.Version, ModJavaInstall.SizeText(release.Size)));
+        return release;
+    }
+
+    private void BtnJavaQuery_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (javaRunning) return;
+        var feature = SelectedJavaFeature;
+        SetJavaBusy(true);
+        TextJavaRelease.Text = Lang.Text("Tools.Java.Querying");
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                EnsureRelease(feature);
+                RefreshJavaInstalled();
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, $"查询 Java {feature} 的发布信息失败", ModBase.LogLevel.Hint,
+                    userSummary: Lang.Text("Tools.Java.QueryFailed"));
+            }
+            finally
+            {
+                SetJavaBusy(false);
+            }
+        }, "查询 Java 安装包");
+    }
+
+    /// <summary>下载并校验安装包，返回本地路径；失败或用户中断时返回 <c>null</c>。</summary>
+    private string? DownloadInstaller(ModJavaInstall.JreRelease release)
+    {
+        var target = Path.Combine(ModJavaInstall.GetDownloadFolder(), release.FileName);
+        if (File.Exists(target))
+        {
+            var length = new FileInfo(target).Length;
+            if (release.Size <= 0 || length == release.Size)
+            {
+                ModBase.Log($"[Java] 复用已下载的安装包：{target}");
+                return target;
+            }
+
+            try
+            {
+                File.Delete(target);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "[Java] 清理不完整的旧安装包失败", ModBase.LogLevel.Debug);
+            }
+        }
+
+        var download = ModJavaInstall.CreateLoader(release,
+            Lang.Text("Tools.Java.Download.Name", release.Version));
+        var combo = new ModLoader.LoaderCombo<int>(Lang.Text("Tools.Java.Download.Title"), [download]);
+        using var done = new ManualResetEventSlim(false);
+        var success = false;
+        combo.OnStateChangedThread += (_, state, _) =>
+        {
+            switch (state)
+            {
+                case ModBase.LoadState.Finished:
+                    success = true;
+                    done.Set();
+                    break;
+                case ModBase.LoadState.Failed:
+                case ModBase.LoadState.Aborted:
+                    done.Set();
+                    break;
+            }
+        };
+        combo.hasOnStateChangedThread = true;
+        combo.Start();
+        ModLoader.LoaderTaskbarAdd(combo);
+
+        // 下载期间把百分比写到卡片上，否则用户只能盯着一个不动的界面
+        using var progressStop = new CancellationTokenSource();
+        var progressThread = new Thread(() =>
+        {
+            var lastText = "";
+            while (!progressStop.IsCancellationRequested)
+            {
+                try
+                {
+                    if (download.files.FirstOrDefault() is { } file)
+                    {
+                        var percent = (int)Math.Round(download.Progress * 100);
+                        var text = file.TotalSize > 0
+                            ? Lang.Text("Tools.Java.Download.Progress", release.Version,
+                                ModJavaInstall.SizeText(file.DownloadedBytes),
+                                ModJavaInstall.SizeText(file.TotalSize), percent)
+                            : Lang.Text("Tools.Java.Download.ProgressUnknown", release.Version, percent);
+                        if (text != lastText)
+                        {
+                            lastText = text;
+                            var shown = text;
+                            ModBase.RunInUi(() =>
+                            {
+                                if (TextJavaStatus is null) return;
+                                TextJavaStatus.Text = shown;
+                                TextJavaStatus.Visibility = Visibility.Visible;
+                            });
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // 进度读失败不影响下载本身
+                }
+
+                progressStop.Token.WaitHandle.WaitOne(400);
+            }
+        })
+        {
+            IsBackground = true,
+            Name = "Java 下载进度"
+        };
+        progressThread.Start();
+
+        done.Wait(TimeSpan.FromMinutes(30));
+        progressStop.Cancel();
+        progressThread.Join(2000);
+
+        if (!success || !File.Exists(target))
+        {
+            ModBase.Log($"[Java] 下载 JRE {release.Version} 的安装包失败或已中断", ModBase.LogLevel.Hint,
+                userSummary: Lang.Text("Tools.Java.Download.Failed"));
+            return null;
+        }
+
+        return target;
+    }
+
+    /// <summary>
+    ///     已经装过同一个主版本时，装新版本会先卸掉旧版、连带删除旧目录，必须先说清楚再往下走。
+    /// </summary>
+    private static bool ConfirmSameFeatureInstall(int feature)
+    {
+        var installed = ModJavaInstall.FindInstalled(feature);
+        if (installed is null) return true;
+        var result = ModMain.MyMsgBox(
+            Lang.Text("Tools.Java.Upgrade.Body", feature, installed.Version,
+                string.IsNullOrEmpty(installed.Location) ? "—" : installed.Location),
+            Lang.Text("Tools.Java.Upgrade.Title", feature),
+            Lang.Text("Tools.Java.Upgrade.Confirm"),
+            Lang.Text("Common.Action.Cancel"),
+            isWarn: true);
+        return result == 1;
+    }
+
+    /// <summary>弹「选择安装位置」，返回用户选定的目录；取消返回 <c>null</c>。</summary>
+    private static string? AskInstallDirectory(ModJavaInstall.JreRelease release)
+    {
+        var context = ModJavaInstall.CreatePathContext(release);
+        var result = ModMain.MyMsgBox(
+            Lang.Text("Tools.Java.Path.Body", release.Version),
+            Lang.Text("Tools.Java.Path.Title"),
+            Lang.Text("Common.Action.Confirm"),
+            Lang.Text("Common.Action.Cancel"),
+            type: ModMain.MyMsgBoxType.JavaPath,
+            content: context);
+        return result != 1 ? null : context.SelectedDirectory;
+    }
+
+    private void BtnJavaInstall_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (javaRunning) return;
+        var feature = SelectedJavaFeature;
+        SetJavaBusy(true);
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                var release = EnsureRelease(feature);
+                var guide = ModMain.MyMsgBox(
+                    Lang.Text("Tools.Java.Guide.Body", release.Version),
+                    Lang.Text("Tools.Java.Guide.Title"),
+                    Lang.Text("Tools.Java.Guide.Confirm"),
+                    Lang.Text("Common.Action.Cancel"),
+                    type: ModMain.MyMsgBoxType.JavaGuide);
+                if (guide != 1) return;
+                if (!ConfirmSameFeatureInstall(feature)) return;
+
+                var installDir = AskInstallDirectory(release);
+                if (string.IsNullOrEmpty(installDir)) return;
+
+                var msiPath = DownloadInstaller(release);
+                if (msiPath is null) return;
+
+                var startInfo = new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "msiexec.exe"))
+                {
+                    UseShellExecute = true,
+                    Arguments = $"/i \"{msiPath}\" INSTALLDIR=\"{installDir}\""
+                };
+                var process = Process.Start(startInfo);
+                ModBase.Log($"[Java] 已启动 {release.Version} 的安装向导，目标目录：{installDir}");
+                HintService.Hint(Lang.Text("Tools.Java.Manual.Opened"), HintType.Success);
+                WatchManualInstall(feature, release.Version, installDir, process);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "启动 Java 安装向导失败", ModBase.LogLevel.Hint,
+                    userSummary: Lang.Text("Tools.Java.Install.Failed"));
+            }
+            finally
+            {
+                SetJavaBusy(false);
+            }
+        }, "安装 Java（手动）");
+    }
+
+    private void BtnJavaSilent_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (javaRunning) return;
+        var feature = SelectedJavaFeature;
+        SetJavaBusy(true);
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                var release = EnsureRelease(feature);
+                var auth = ModMain.MyMsgBox(
+                    Lang.Text("Tools.Java.Silent.Body", release.Version),
+                    Lang.Text("Tools.Java.Silent.Title"),
+                    Lang.Text("Tools.Java.Silent.Confirm"),
+                    Lang.Text("Common.Action.Cancel"),
+                    isWarn: true);
+                if (auth != 1) return;
+                if (!ConfirmSameFeatureInstall(feature)) return;
+
+                var installDir = AskInstallDirectory(release);
+                if (string.IsNullOrEmpty(installDir)) return;
+
+                var msiPath = DownloadInstaller(release);
+                if (msiPath is null) return;
+
+                HintService.Hint(Lang.Text("Tools.Java.Silent.Running"));
+                var result = JavaInstallPromote.RunInstallViaPromote(msiPath, installDir, TimeSpan.FromMinutes(10));
+                if (result is null)
+                {
+                    HintService.Hint(Lang.Text("Tools.Java.Silent.Cancelled"));
+                    return;
+                }
+
+                if (!result.Ok)
+                {
+                    ModBase.Log($"[Java] 静默安装失败，msiexec 返回 {result.Code}：{result.Message}", ModBase.LogLevel.Hint,
+                        userSummary: Lang.Text("Tools.Java.Silent.Failed", result.Code));
+                    return;
+                }
+
+                if (result.RebootRequired)
+                    HintService.Hint(Lang.Text("Tools.Java.Silent.Reboot"));
+
+                ModJavaInstall.RegisterInstalledDirectory(installDir);
+                ModJava.Javas.ScanJavaAsync(force: true).GetAwaiter().GetResult();
+                ModBase.RunInUi(RefreshJavaInstalled);
+                ModBase.Log($"[Java] {release.Version} 静默安装完成，目录：{installDir}", ModBase.LogLevel.Feedback);
+                HintService.Hint(Lang.Text("Tools.Java.Silent.Ok"), HintType.Success);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "静默安装 Java 失败", ModBase.LogLevel.Hint,
+                    userSummary: Lang.Text("Tools.Java.Install.Failed"));
+            }
+            finally
+            {
+                SetJavaBusy(false);
+            }
+        }, "安装 Java（静默）");
+    }
+
+    private void BtnJavaRescan_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (javaRunning) return;
+        SetJavaBusy(true);
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                ModJava.Javas.ScanJavaAsync(force: true).GetAwaiter().GetResult();
+                ModBase.RunInUi(RefreshJavaInstalled);
+                HintService.Hint(Lang.Text("Tools.Java.Rescan.Done"), HintType.Success);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "重新扫描 Java 失败", ModBase.LogLevel.Hint,
+                    userSummary: Lang.Text("Tools.Java.Install.Failed"));
+            }
+            finally
+            {
+                SetJavaBusy(false);
+            }
+        }, "重新扫描 Java");
+    }
+
+    /// <summary>刷新「已安装的 Adoptium JRE」列表，每条都带一个卸载入口。</summary>
+    private void RefreshJavaUninstallList()
+    {
+        if (!Dispatcher.CheckAccess())
+        {
+            ModBase.RunInUi(RefreshJavaUninstallList);
+            return;
+        }
+
+        try
+        {
+            if (PanJavaInstalledList is null || PanJavaInstalled is null) return;
+            PanJavaInstalledList.Children.Clear();
+            var list = ModJavaInstall.GetInstalledJres();
+            PanJavaInstalled.Visibility = list.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            foreach (var jre in list)
+            {
+                var row = new Grid { Margin = new Thickness(0, 0, 0, 10) };
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                // 左侧两行：主行是版本，次行是路径。原来一行塞三样东西，右边又贴一排按钮，看着很挤。
+                var info = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    Margin = new Thickness(0, 0, 14, 0),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    // 登记目录已经不在、也没被重新扫到时调淡，提示它不一定还在原处
+                    Opacity = jre.LocationExists ? 1d : 0.6d
+                };
+                info.Children.Add(new TextBlock
+                {
+                    Text = Lang.Text("Tools.Java.Installed.ItemNoPath", jre.Feature, jre.Version),
+                    FontSize = 13.5,
+                    TextTrimming = TextTrimming.CharacterEllipsis
+                });
+                info.Children.Add(new TextBlock
+                {
+                    Text = string.IsNullOrWhiteSpace(jre.Location) ? "—" : jre.Location,
+                    FontSize = 11.5,
+                    Opacity = 0.6,
+                    Margin = new Thickness(0, 3, 0, 0),
+                    TextTrimming = TextTrimming.CharacterEllipsis
+                });
+                row.Children.Add(info);
+
+                if (jre.CanUninstall)
+                {
+                    var button = new MyButton
+                    {
+                        Text = Lang.Text("Tools.Java.Uninstall"),
+                        MinWidth = 84,
+                        Height = 28,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        Tag = jre
+                    };
+                    button.Click += BtnJavaUninstall_Click;
+                    Grid.SetColumn(button, 1);
+                    row.Children.Add(button);
+                }
+
+                PanJavaInstalledList.Children.Add(row);
+            }
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "读取已安装的 Java 列表失败", ModBase.LogLevel.Debug);
+        }
+    }
+
+    /// <summary>卸载一条已安装的 Adoptium JRE，走提权通道执行 <c>msiexec /x</c>。</summary>
+    private void BtnJavaUninstall_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (javaRunning) return;
+        if (sender is not MyButton { Tag: ModJavaInstall.InstalledJre jre }) return;
+        if (!jre.CanUninstall) return;
+
+        var confirm = ModMain.MyMsgBox(
+            Lang.Text("Tools.Java.Uninstall.Body", jre.Feature, jre.Version,
+                string.IsNullOrWhiteSpace(jre.Location) ? "—" : jre.Location),
+            Lang.Text("Tools.Java.Uninstall.Title", jre.Feature),
+            Lang.Text("Tools.Java.Uninstall.Confirm"),
+            Lang.Text("Common.Action.Cancel"),
+            isWarn: true);
+        if (confirm != 1) return;
+
+        SetJavaBusy(true);
+        ModBase.RunInNewThread(() =>
+        {
+            try
+            {
+                var result = JavaInstallPromote.RunUninstallViaPromote(jre.ProductCode!);
+                if (result is null)
+                {
+                    HintService.Hint(Lang.Text("Tools.Java.Uninstall.Cancelled"));
+                    return;
+                }
+
+                if (!result.Ok)
+                {
+                    ModBase.Log($"[Java] 卸载 Java {jre.Feature} 失败，msiexec 返回 {result.Code}：{result.Message}",
+                        ModBase.LogLevel.Hint, userSummary: Lang.Text("Tools.Java.Uninstall.Failed", result.Code));
+                    return;
+                }
+
+                ModJava.Javas.ScanJavaAsync(force: true).GetAwaiter().GetResult();
+                ModBase.RunInUi(RefreshJavaInstalled);
+                ModBase.Log($"[Java] 已卸载 Java {jre.Feature}（{jre.Version}）", ModBase.LogLevel.Feedback);
+                HintService.Hint(Lang.Text("Tools.Java.Uninstall.Done", jre.Feature), HintType.Success);
+            }
+            catch (Exception ex)
+            {
+                ModBase.Log(ex, "卸载 Java 失败", ModBase.LogLevel.Hint,
+                    userSummary: Lang.Text("Tools.Java.Install.Failed"));
+            }
+            finally
+            {
+                SetJavaBusy(false);
+            }
+        }, "卸载 Java");
+    }
+
+    /// <summary>
+    ///     手动安装走的是带界面的 <c>msiexec</c>，启动器拿不到「装完了」的回调，
+    ///     所以在后台盯着目标目录，一旦 <c>bin\java.exe</c> 出现就登记并刷新界面。
+    /// </summary>
+    private void WatchManualInstall(int feature, string version, string installDir, Process? process)
+    {
+        ModBase.RunInNewThread(() =>
+        {
+            var javaExe = Path.Combine(installDir, "bin", "java.exe");
+            var deadline = DateTime.UtcNow.AddMinutes(30);
+            while (DateTime.UtcNow < deadline)
+            {
+                if (File.Exists(javaExe))
+                {
+                    OnManualInstallDone(feature, version, installDir);
+                    return;
+                }
+
+                var exited = false;
+                try
+                {
+                    exited = process is null || process.HasExited;
+                }
+                catch (Exception)
+                {
+                    exited = true;
+                }
+
+                if (exited)
+                {
+                    // 安装器已经退出，给卸载登记表一点落盘时间再确认一次
+                    Thread.Sleep(1500);
+                    if (File.Exists(javaExe))
+                    {
+                        OnManualInstallDone(feature, version, installDir);
+                        return;
+                    }
+
+                    // 用户可能在向导里改了安装位置，这时按登记表找
+                    if (ModJavaInstall.FindInstalled(feature) is { LocationExists: true } installed)
+                    {
+                        OnManualInstallDone(feature, version, installed.Location);
+                        return;
+                    }
+
+                    ModBase.Log($"[Java] 手动安装 Java {feature} 已结束，但没有检测到安装结果", ModBase.LogLevel.Feedback);
+                    HintService.Hint(Lang.Text("Tools.Java.Manual.Cancelled"));
+                    return;
+                }
+
+                Thread.Sleep(1500);
+            }
+
+            ModBase.Log($"[Java] 等待手动安装 Java {feature} 超时", ModBase.LogLevel.Debug);
+        }, "等待 Java 手动安装完成");
+    }
+
+    private void OnManualInstallDone(int feature, string version, string installDir)
+    {
+        try
+        {
+            ModJavaInstall.RegisterInstalledDirectory(installDir);
+            ModJava.Javas.ScanJavaAsync(force: true).GetAwaiter().GetResult();
+            ModBase.RunInUi(RefreshJavaInstalled);
+            ModBase.Log($"[Java] 手动安装 Java {feature}（{version}）完成，目录：{installDir}", ModBase.LogLevel.Feedback);
+            HintService.Hint(Lang.Text("Tools.Java.Manual.Done", feature), HintType.Success);
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Java] 手动安装后登记 JRE 失败", ModBase.LogLevel.Debug);
+        }
     }
 
     #endregion

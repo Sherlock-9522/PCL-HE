@@ -9,55 +9,145 @@
         <StackPanel x:Name="PanMain" Margin="25,10" Grid.IsSharedSizeScope="True">
             <local:MyCard Margin="0,15" Title="{DynamicResource Tools.Memory.Title}">
                 <StackPanel Orientation="Vertical" Margin="25,40,25,20">
-                    <TextBlock Text="{DynamicResource Tools.Memory.Description}" TextWrapping="Wrap"
-                               Opacity="0.75" />
-                    <TextBlock x:Name="TextMemoryStatus" Margin="0,14,0,0" TextWrapping="Wrap" />
-                    <WrapPanel Margin="0,16,0,0" ItemHeight="50">
-                        <local:MyButton x:Name="BtnMemoryRefresh" MinWidth="100"
-                                        Text="{DynamicResource Common.Action.Refresh}" Margin="0,0,15,15"
+                    <TextBlock Text="{DynamicResource Tools.Memory.Description}" TextWrapping="Wrap" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                               Opacity="0.75" FontSize="13.5" />
+                    <!-- 统计信息与刷新按钮同一行，省掉一整行高度 -->
+                    <Grid Margin="0,16,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="TextMemoryStatus" Grid.Column="0" TextWrapping="Wrap" FontSize="13.5"
+                                   VerticalAlignment="Center" Margin="0,0,18,0" />
+                        <local:MyButton x:Name="BtnMemoryRefresh" Grid.Column="1" Height="36" MinWidth="100"
+                                        Text="{DynamicResource Common.Action.Refresh}" VerticalAlignment="Center"
                                         Click="BtnMemoryRefresh_Click" />
-                    </WrapPanel>
+                    </Grid>
 
-                    <!-- 轻量护航：只整理启动器自身工作集，不触碰任何其他进程 -->
-                    <TextBlock Text="{DynamicResource Tools.Memory.Light.Title}" FontWeight="Bold"
-                               Margin="0,8,0,0" />
-                    <TextBlock Text="{DynamicResource Tools.Memory.Light.Description}" TextWrapping="Wrap"
-                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
-                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
-                        <local:MyButton x:Name="BtnMemoryLight" MinWidth="150"
-                                        Text="{DynamicResource Tools.Memory.Light.Run}" Margin="0,0,15,15"
+                    <!-- 轻量护航（绿）：只整理启动器自身工作集，不触碰任何其他进程 -->
+                    <Grid Margin="0,26,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Tools.Memory.Light.Title}" Style="{StaticResource CardSectionTitle}" />
+                            <TextBlock Text="{DynamicResource Tools.Memory.Light.Description}" TextWrapping="Wrap" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                                       Opacity="0.75" FontSize="13.5" Margin="0,8,0,0" />
+                        </StackPanel>
+                        <local:MyButton x:Name="BtnMemoryLight" Grid.Column="1" Height="36" MinWidth="150" VerticalAlignment="Center"
+                                        ColorType="Green" Text="{DynamicResource Tools.Memory.Light.Run}"
                                         Click="BtnMemoryLight_Click" />
-                    </WrapPanel>
+                    </Grid>
 
-                    <!-- 深度清理：清空全系统工作集，需要管理员授权 -->
-                    <TextBlock Text="{DynamicResource Tools.Memory.Deep.Title}" FontWeight="Bold"
-                               Margin="0,8,0,0" />
-                    <TextBlock Text="{DynamicResource Tools.Memory.Deep.Description}" TextWrapping="Wrap"
-                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
-                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
-                        <local:MyButton x:Name="BtnMemoryDeep" MinWidth="150"
-                                        Text="{DynamicResource Tools.Memory.Deep.Run}" Margin="0,0,15,15"
-                                        Click="BtnMemoryDeep_Click" />
-                    </WrapPanel>
-                    <TextBlock x:Name="TextMemoryDeepState" TextWrapping="Wrap" Opacity="0.75" FontSize="12.5"
-                               Margin="0,8,0,0" Visibility="Collapsed" />
-                    <!-- 游戏内护航：把游戏完整排除在外，游戏跑着也能随时用 -->
-                    <TextBlock Text="{DynamicResource Tools.Memory.Game.Title}" FontWeight="Bold"
-                               Margin="0,14,0,0" />
-                    <TextBlock Text="{DynamicResource Tools.Memory.Game.Description}" TextWrapping="Wrap"
-                               Opacity="0.75" FontSize="12.5" Margin="0,6,0,0" />
-                    <WrapPanel Margin="0,12,0,0" ItemHeight="50">
-                        <local:MyButton x:Name="BtnMemoryGame" MinWidth="150"
-                                        Text="{DynamicResource Tools.Memory.Game.Run}" Margin="0,0,15,15"
+                    <!-- 游戏内护航（蓝）：只动别的程序，游戏本身一点不碰，游戏跑着也能随时用 -->
+                    <Grid Margin="0,26,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Tools.Memory.Game.Title}" Style="{StaticResource CardSectionTitle}" />
+                            <TextBlock Text="{DynamicResource Tools.Memory.Game.Description}" TextWrapping="Wrap" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                                       Opacity="0.75" FontSize="13.5" Margin="0,8,0,0" />
+                        </StackPanel>
+                        <local:MyButton x:Name="BtnMemoryGame" Grid.Column="1" Height="36" MinWidth="150" VerticalAlignment="Center"
+                                        ColorType="Blue" Text="{DynamicResource Tools.Memory.Game.Run}"
                                         Click="BtnMemoryGame_Click" />
+                    </Grid>
+                    <TextBlock x:Name="TextMemoryGameState" TextWrapping="Wrap" Opacity="0.75" FontSize="13.5"
+                               Margin="0,10,0,0" Visibility="Collapsed" />
+
+                    <!-- 深度清理（红）：清空全系统工作集，需要管理员授权 -->
+                    <Grid Margin="0,26,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Tools.Memory.Deep.Title}" Style="{StaticResource CardSectionTitle}" />
+                            <TextBlock Text="{DynamicResource Tools.Memory.Deep.Description}" TextWrapping="Wrap" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                                       Opacity="0.75" FontSize="13.5" Margin="0,8,0,0" />
+                        </StackPanel>
+                        <local:MyButton x:Name="BtnMemoryDeep" Grid.Column="1" Height="36" MinWidth="150" VerticalAlignment="Center"
+                                        ColorType="Red" Text="{DynamicResource Tools.Memory.Deep.Run}"
+                                        Click="BtnMemoryDeep_Click" />
+                    </Grid>
+                    <TextBlock x:Name="TextMemoryDeepState" TextWrapping="Wrap" Opacity="0.75" FontSize="13.5"
+                               Margin="0,10,0,0" Visibility="Collapsed" />
+
+                    <TextBlock Text="{DynamicResource Tools.Memory.Danger.Note}" TextWrapping="Wrap" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                               Foreground="{DynamicResource ColorBrushRedLight}" FontSize="13.5"
+                               Margin="0,22,0,0" />
+                    <TextBlock Text="{DynamicResource Tools.Memory.Note}" TextWrapping="Wrap" Opacity="0.6" LineHeight="21" LineStackingStrategy="BlockLineHeight"
+                               FontSize="13" Margin="0,10,0,0" />
+                </StackPanel>
+            </local:MyCard>
+
+            <!-- 自助安装 Java：取 Adoptium 官方 JRE 安装包，装完交给 Windows 自己维护 -->
+            <local:MyCard Margin="0,15" Title="{DynamicResource Tools.Java.Title}">
+                <StackPanel Orientation="Vertical" Margin="25,40,25,20">
+                    <TextBlock Text="{DynamicResource Tools.Java.Description}" TextWrapping="Wrap" FontSize="13.5" Opacity="0.75" />
+                    <Grid Margin="0,16,0,0">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BasedOnTextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="0,0,25,0" />
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="JavaRowLabel" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="JavaRowValue" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{DynamicResource Tools.Java.Source}" />
+                        <local:MyComboBox x:Name="ComboJavaSource" Grid.Column="1" Width="160" Height="26"
+                                          SelectedIndex="0" SelectionChanged="ComboJavaSource_SelectionChanged" />
+                        <TextBlock Grid.Column="2" Opacity="0.6" FontSize="13.5" TextWrapping="Wrap"
+                                   Margin="16,0,16,0" Text="{DynamicResource Tools.Java.Source.Note}" />
+                    </Grid>
+                    <Grid Margin="0,14,0,0">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BasedOnTextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="0,0,25,0" />
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="JavaRowLabel" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="JavaRowValue" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{DynamicResource Tools.Java.Version}" />
+                        <local:MyComboBox x:Name="ComboJavaFeature" Grid.Column="1" Width="160" Height="26"
+                                          SelectedIndex="0" SelectionChanged="ComboJavaFeature_SelectionChanged" />
+                        <TextBlock x:Name="TextJavaRelease" Grid.Column="2" Opacity="0.6" FontSize="13.5"
+                                   TextWrapping="Wrap" Margin="16,0,16,0" />
+                    </Grid>
+                    <WrapPanel Margin="0,16,0,0" ItemHeight="50">
+                        <local:MyButton x:Name="BtnJavaInstall" MinWidth="160"
+                                        Text="{DynamicResource Tools.Java.Install}" Margin="0,0,15,15"
+                                        Click="BtnJavaInstall_Click" />
+                        <local:MyButton x:Name="BtnJavaSilent" MinWidth="160" ColorType="Red"
+                                        Text="{DynamicResource Tools.Java.Silent}" Margin="0,0,15,15"
+                                        Click="BtnJavaSilent_Click" />
+                        <local:MyButton x:Name="BtnJavaRescan" MinWidth="130"
+                                        Text="{DynamicResource Tools.Java.Rescan}" Margin="0,0,15,15"
+                                        Click="BtnJavaRescan_Click" />
+                        <local:MyButton x:Name="BtnJavaQuery" MinWidth="130"
+                                        Text="{DynamicResource Tools.Java.Query}" Margin="0,0,15,15"
+                                        Click="BtnJavaQuery_Click" />
                     </WrapPanel>
-                    <TextBlock x:Name="TextMemoryGameState" TextWrapping="Wrap" Opacity="0.75" FontSize="12.5"
-                               Margin="0,8,0,0" Visibility="Collapsed" />
-                    <TextBlock Text="{DynamicResource Tools.Memory.Danger.Note}" TextWrapping="Wrap"
-                               Foreground="{DynamicResource ColorBrushRedLight}" FontSize="12.5"
-                               Margin="0,2,0,0" />
-                    <TextBlock Text="{DynamicResource Tools.Memory.Note}" TextWrapping="Wrap" Opacity="0.6"
-                               FontSize="12" Margin="0,8,0,0" />
+                    <TextBlock x:Name="TextJavaStatus" TextWrapping="Wrap" Opacity="0.75" FontSize="13.5"
+                               Margin="0,2,0,0" Visibility="Collapsed" />
+                    <!-- 本机已装好的 Adoptium JRE：每条后面跟一个卸载入口，没有就整块收起来 -->
+                    <StackPanel x:Name="PanJavaInstalled" Orientation="Vertical" Margin="0,14,0,0"
+                                Visibility="Collapsed">
+                        <TextBlock Text="{DynamicResource Tools.Java.Installed.Title}" FontSize="13.5" Opacity="0.75" />
+                        <StackPanel x:Name="PanJavaInstalledList" Orientation="Vertical" Margin="0,8,0,0" />
+                    </StackPanel>
+                    <TextBlock Text="{DynamicResource Tools.Java.Note}" TextWrapping="Wrap" Opacity="0.6"
+                               FontSize="13" Margin="0,10,0,0" />
                 </StackPanel>
             </local:MyCard>
 

@@ -12,20 +12,41 @@
                                     x:Name="BtnHintClose"
                                     Click="BtnHintClose_Click" />
                 <StackPanel Margin="25,38,23,15">
-                    <TextBlock x:Name="LabHint1" TextWrapping="Wrap" Margin="0,0,0,2" FontSize="13.5" />
-                    <TextBlock x:Name="LabHint2" TextWrapping="Wrap" Margin="0,0,0,2" FontSize="13.5" />
-                    <!-- 内存优化专项提示：与第三方身份提示共用这张卡片，各自独立控制可见性 -->
-                    <StackPanel x:Name="PanMemoryOpt" Visibility="Collapsed">
-                        <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Title}" TextWrapping="Wrap"
-                                   Margin="0,10,0,6" FontSize="16.5" FontWeight="Bold" />
-                        <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Body}" TextWrapping="Wrap"
-                                   FontSize="14.5" LineHeight="23" Margin="0,0,0,8" />
-                        <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Warning}" TextWrapping="Wrap"
-                                   FontSize="14.5" LineHeight="23" Margin="0,0,0,8"
-                                   Foreground="{DynamicResource ColorBrushRedLight}" />
-                        <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Disclaimer}" TextWrapping="Wrap"
-                                   FontSize="12.5" Margin="0,2,0,0" Opacity="0.65" />
-                    </StackPanel>
+                    <TextBlock x:Name="LabHint1" TextWrapping="Wrap" Margin="0,0,0,2" FontSize="15" />
+                    <TextBlock x:Name="LabHint2" TextWrapping="Wrap" Margin="0,0,0,2" FontSize="15" />
+                </StackPanel>
+            </local:MyCard>
+            <!-- 内存优化提示：独立卡片，可单独关闭 -->
+            <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Launch.Right.MemoryOpt.Title}" x:Name="PanMemoryOpt">
+                <local:MyIconButton LogoScale="1.1"
+                                    SvgIcon="lucide/x"
+                                    Height="20" Width="20" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    x:Name="BtnMemoryOptClose"
+                                    Click="BtnMemoryOptClose_Click" />
+                <StackPanel Margin="25,38,23,15">
+                    <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Body}" TextWrapping="Wrap"
+                               FontSize="15" LineHeight="24" Margin="0,0,0,9" />
+                    <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Warning}" TextWrapping="Wrap"
+                               FontSize="15" LineHeight="24" Margin="0,0,0,9"
+                               Foreground="{DynamicResource ColorBrushRedLight}" />
+                    <TextBlock Text="{DynamicResource Launch.Right.MemoryOpt.Disclaimer}" TextWrapping="Wrap"
+                               FontSize="13.5" Margin="0,2,0,0" Opacity="0.65" />
+                </StackPanel>
+            </local:MyCard>
+            <!-- 自助安装 Java 提示：独立卡片，可单独关闭 -->
+            <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Launch.Right.JavaHint.Title}" x:Name="PanJavaHint">
+                <local:MyIconButton LogoScale="1.1"
+                                    SvgIcon="lucide/x"
+                                    Height="20" Width="20" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    x:Name="BtnJavaHintClose"
+                                    Click="BtnJavaHintClose_Click" />
+                <StackPanel Margin="25,38,23,15">
+                    <TextBlock Text="{DynamicResource Launch.Right.JavaHint.Body}" TextWrapping="Wrap"
+                               FontSize="15" LineHeight="24" Margin="0,0,0,9" />
+                    <TextBlock Text="{DynamicResource Launch.Right.JavaHint.Where}" TextWrapping="Wrap"
+                               FontSize="15" LineHeight="24" Margin="0,0,0,9" />
+                    <TextBlock Text="{DynamicResource Launch.Right.JavaHint.Disclaimer}" TextWrapping="Wrap"
+                               FontSize="13.5" Margin="0,2,0,0" Opacity="0.65" />
                 </StackPanel>
             </local:MyCard>
             <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Launch.Right.Log.Title}" x:Name="PanLog">

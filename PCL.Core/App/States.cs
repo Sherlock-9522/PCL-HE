@@ -119,6 +119,17 @@ public static partial class States
         [ConfigItem<bool>("UiLauncherMemoryOptHint", true)] public partial bool MemoryOptimizeHint { get; set; }
 
         /// <summary>
+        /// 首页的自助安装 Java 提示。默认显示，玩家可关闭。
+        /// </summary>
+        [ConfigItem<bool>("UiLauncherJavaInstallHint", true)] public partial bool JavaInstallHint { get; set; }
+
+        /// <summary>
+        /// 自助安装 Java 的下载源：0 = 镜像源（国内镜像优先），1 = 官方源（ Adoptium 直链）。
+        /// 与「设置 → 下载」里 Minecraft 资源的官方源/镜像源互不影响。
+        /// </summary>
+        [ConfigItem<int>("JavaInstallerSource", 0)] public partial int JavaInstallerSource { get; set; }
+
+        /// <summary>
         /// 投影管理首次使用提示。
         /// </summary>
         [ConfigItem<bool>("UiSchematicFirstTimeHintShown", false)] public partial bool SchematicFirstTime { get; set; }
@@ -193,12 +204,12 @@ public static partial class States
         /// <summary>
         /// 窗口高度。
         /// </summary>
-        [ConfigItem<double>("WindowHeight", 500, ConfigSource.Local)] public partial double WindowHeight { get; set; }
+        [ConfigItem<double>("WindowHeight", 720, ConfigSource.Local)] public partial double WindowHeight { get; set; }
 
         /// <summary>
         /// 窗口宽度。
         /// </summary>
-        [ConfigItem<double>("WindowWidth", 850, ConfigSource.Local)] public partial double WindowWidth { get; set; }
+        [ConfigItem<double>("WindowWidth", 1280, ConfigSource.Local)] public partial double WindowWidth { get; set; }
 
     }
 

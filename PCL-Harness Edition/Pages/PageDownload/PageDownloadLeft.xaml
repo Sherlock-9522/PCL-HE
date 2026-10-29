@@ -8,7 +8,7 @@
 
             <local:MyListItem x:Name="ItemInstall" Checked="True" IsScaleAnimationEnabled="False" Type="RadioBox"
                               Check="PageCheck"
-                              Tag="1" MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              Tag="1" MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Minecraft}"
                               SvgIcon="lucide/boxes">
                 <local:MyListItem.Buttons>
@@ -23,10 +23,10 @@
             </local:MyListItem>
 
             <TextBlock Text="{DynamicResource Download.Left.CommunityResources}" Margin="13,10,5,4" Opacity="0.6"
-                       FontSize="12" />
+                       FontSize="13" />
             <local:MyListItem x:Name="ItemMod" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="2"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Mod}"
                               LogoScale="0.97"
                               SvgIcon="lucide/puzzle">
@@ -43,7 +43,7 @@
 
             <local:MyListItem x:Name="ItemPack" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="3"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Modpack}"
                               LogoScale="0.98"
                               SvgIcon="lucide/package">
@@ -59,7 +59,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemDataPack" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="4"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.DataPack}"
                               LogoScale="0.96"
                               SvgIcon="lucide/file-archive">
@@ -75,7 +75,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemResourcePack" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="5"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.ResourcePack}"
                               LogoScale="0.81"
                               SvgIcon="lucide/layers">
@@ -91,7 +91,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemShader" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="6"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Shader}"
                               LogoScale="1.04"
                               SvgIcon="lucide/sparkles">
@@ -107,7 +107,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemWorld" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="7"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.World}"
                               LogoScale="0.85"
                               SvgIcon="lucide/globe">
@@ -123,7 +123,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemFavorites" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="8"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Favorites}"
                               SvgIcon="lucide/heart">
                 <local:MyListItem.Buttons>
@@ -137,10 +137,10 @@
                 </local:MyListItem.Buttons>
             </local:MyListItem>
 
-            <TextBlock Text="{DynamicResource Download.Left.Installation}" Margin="13,10,5,4" Opacity="0.6" FontSize="12" />
+            <TextBlock Text="{DynamicResource Download.Left.Installation}" Margin="13,10,5,4" Opacity="0.6" FontSize="13" />
             <local:MyListItem x:Name="ItemClient" IsScaleAnimationEnabled="False" Type="RadioBox" Tag="9"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Minecraft}"
                               LogoScale="0.98"
                               SvgIcon="lucide/package">
@@ -156,7 +156,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemOptiFine" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="10"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Optifine}"
                               LogoScale="1.00"
                               SvgIcon="lucide/gauge">
@@ -172,7 +172,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemForge" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="11"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Forge}"
                               LogoScale="1.00"
                               SvgIcon="lucide/anvil">
@@ -188,7 +188,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemNeoForge" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="12"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.NeoForge}"
                               LogoScale="0.95"
                               SvgIcon="lucide/cat">
@@ -204,7 +204,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemCleanroom" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="13"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Cleanroom}"
                               LogoScale="0.95"
                               SvgIcon="lucide/flask-conical">
@@ -220,7 +220,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemFabric" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="14"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.Fabric}"
                               LogoScale="1.02"
                               SvgIcon="lucide/scroll">
@@ -236,7 +236,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemLegacyFabric" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="18"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.LegacyFabric}"
                               LogoScale="1.02"
                               SvgIcon="lucide/scroll">
@@ -252,7 +252,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemLabyMod" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="17"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.LabyMod}"
                               LogoScale="1.02"
                               SvgIcon="lucide/box">
@@ -268,7 +268,7 @@
             </local:MyListItem>
             <local:MyListItem x:Name="ItemLiteLoader" Type="RadioBox" IsScaleAnimationEnabled="False" Tag="16"
                               Check="PageCheck"
-                              MinPaddingRight="35" Height="36" VerticalAlignment="Top"
+                              MinPaddingRight="35" Height="40" VerticalAlignment="Top"
                               Title="{DynamicResource Download.Left.LiteLoader}"
                               LogoScale="1.06"
                               SvgIcon="lucide/egg">

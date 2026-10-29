@@ -102,16 +102,23 @@ public partial class FormMain
         Opacity = 0d;
         try
         {
-            // 保存值可能来自更早的版本（默认曾是 1024×640）或一块更大的显示器：
-            // 原样套用会让窗口在启动时明显大于设计尺寸，甚至伸出当前屏幕，看起来就是「莫名放大」。
-            // 超出工作区或非法的值一律退回 XAML 的设计尺寸，再由 MinWidth/MinHeight 兜底。
-            var targetWidth = States.UI.WindowWidth;
-            var targetHeight = States.UI.WindowHeight;
+            // 每次启动都回到固定的默认尺寸（16:9），不再沿用上一次调整过的长宽：
+            // 窗口在会话之间忽大忽小，比每次一致更让人困惑。Width/Height 的单位是 DIP，
+            // 系统缩放 125% 时物理尺寸会同比放大，所以这里只给设计值即可。
+            // 小屏或高缩放下按工作区的 92% 等比收缩，保证不会顶到屏幕边缘。
             var workArea = SystemParameters.WorkArea;
-            if (double.IsNaN(targetWidth) || targetWidth <= 0d || targetWidth > workArea.Width)
-                targetWidth = Width;
-            if (double.IsNaN(targetHeight) || targetHeight <= 0d || targetHeight > workArea.Height)
-                targetHeight = Height;
+            var targetWidth = Width;
+            var targetHeight = Height;
+            if (targetWidth > workArea.Width * 0.92d)
+            {
+                targetWidth = workArea.Width * 0.92d;
+                targetHeight = targetWidth * 9d / 16d;
+            }
+            if (targetHeight > workArea.Height * 0.92d)
+            {
+                targetHeight = workArea.Height * 0.92d;
+                targetWidth = targetHeight * 16d / 9d;
+            }
             Width = Math.Max(MinWidth, targetWidth);
             Height = Math.Max(MinHeight, targetHeight);
         }
@@ -166,9 +173,7 @@ public partial class FormMain
         FormMain_SizeChanged();
         ModBase.applicationStartTick = TimeUtils.GetTimeTick();
         ModBase.frmHandle = new WindowInteropHelper(this).Handle;
-        // 读取设置
-        PageSetupUI.BackgroundRefresh(false, true);
-        ModMusic.MusicRefreshPlay(false, true);
+        // 读取设置：壁纸解码与音乐加载都很重，改到开屏淡出之后再跑（见下方 Dispatcher.BeginInvoke）
         // 扩展按钮
         BtnExtraUpdateRestart.showCheck = BtnExtraUpdateRestart_ShowCheck;
         BtnExtraDownload.showCheck = BtnExtraDownload_ShowCheck;
@@ -196,15 +201,6 @@ public partial class FormMain
                 "M26,29 v-25 h6 a7,7 180 0 1 0,14 h-6 M83,6.5 a10,11.5 180 1 0 0,18 M48,2.5 v24.5 h13.5");
         // 加载窗口
 
-        ThemeManager.ThemeRefresh();
-        ModSetup.ApplyAll();
-        Lifecycle.CurrentApplication.Resources["BlurSamplingRate"] = Config.Preference.Blur.SamplingRate * 0.01d;
-        Lifecycle.CurrentApplication.Resources["BlurType"] = Config.Preference.Blur.KernelType;
-        if (Config.Preference.Blur.IsEnabled)
-            Lifecycle.CurrentApplication.Resources["BlurRadius"] = Config.Preference.Blur.Radius * 1.0d;
-        else
-            Lifecycle.CurrentApplication.Resources["BlurRadius"] = 0.0d;
-
         // #If DEBUG Then
         // MinHeight = 50
         // MinWidth = 50
@@ -213,7 +209,7 @@ public partial class FormMain
         if (ModMain.frmStart is not null)
         {
             ModMain.frmStart.FadeOutAndClose(new TimeSpan(0, 0, 0, 0,
-                (int)Math.Round(400d / Math.Max(0.05d, ModAnimation.aniSpeed))));
+                (int)Math.Round(280d / Math.Max(0.05d, ModAnimation.aniSpeed))));
             ModMain.frmStart = null;
         }
         // 更改窗口
@@ -221,12 +217,39 @@ public partial class FormMain
         // Left = (GetWPFSize(My.Computer.Screen.WorkingArea.Width) - Width) / 2
         isSizeSaveable = true;
         ShowWindowToTop();
+        // 主窗体此时 Opacity = 0：先把布局与首帧渲染跑完，再开始淡入。
+        // 否则淡入动画的前几帧要现算布局，掉帧的表现就是「开屏刚淡出、窗口卡一下才出来」。
+        try
+        {
+            UpdateLayout();
+            Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new Action(() => { }));
+        }
+        catch
+        {
+            // 预热渲染失败不影响后续动画
+        }
+        // 重活排队到 ApplicationIdle：主题刷新、Blur 资源、壁纸与音乐加载原先全部挤在
+        // 开屏淡出之前同步执行，淡出动画要等它们跑完才轮得到出帧，观感就是「开屏卡住后
+        // 被主窗体一下子盖住」。放到空闲优先级后，淡出与入场先播，重活随后补齐。
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(() =>
+        {
+            PageSetupUI.BackgroundRefresh(false, true);
+            ModMusic.MusicRefreshPlay(false, true);
+            ThemeManager.ThemeRefresh();
+            ModSetup.ApplyAll();
+            Lifecycle.CurrentApplication.Resources["BlurSamplingRate"] = Config.Preference.Blur.SamplingRate * 0.01d;
+            Lifecycle.CurrentApplication.Resources["BlurType"] = Config.Preference.Blur.KernelType;
+            if (Config.Preference.Blur.IsEnabled)
+                Lifecycle.CurrentApplication.Resources["BlurRadius"] = Config.Preference.Blur.Radius * 1.0d;
+            else
+                Lifecycle.CurrentApplication.Resources["BlurRadius"] = 0.0d;
+        }));
         var hwndSource = (HwndSource)PresentationSource.FromVisual(this);
         hwndSource.AddHook(WndProc);
         ModAnimation.AniStart(new[]
         {
             ModAnimation.AaCode(() => ModAnimation.AniControlEnabled -= 1, 50),
-            ModAnimation.AaOpacity(this, Config.Preference.Theme.WindowOpacity / 1000d + 0.4d, 250, 100),
+            ModAnimation.AaOpacity(this, Config.Preference.Theme.WindowOpacity / 1000d + 0.4d, 300, 40),
             ModAnimation.AaDouble(i => TransformPos.Y += (double)i, -TransformPos.Y, 600,
                 100, new ModAnimation.AniEaseOutBack(ModAnimation.AniEasePower.Weak)),
             ModAnimation.AaDouble(i => TransformRotate.Angle += (double)i,

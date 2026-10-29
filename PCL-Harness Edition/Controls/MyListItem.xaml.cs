@@ -447,7 +447,7 @@ public partial class MyListItem : IMyRadio
     }
 
     public static readonly DependencyProperty FontSizeProperty =
-        DependencyProperty.Register("FontSize", typeof(double), typeof(MyListItem), new PropertyMetadata(14d));
+        DependencyProperty.Register("FontSize", typeof(double), typeof(MyListItem), new PropertyMetadata(15d));
 
     // 信息
     public string Info
@@ -647,7 +647,7 @@ public partial class MyListItem : IMyRadio
 
         // 改变行距
         var hasLogo = IsUsingSvgIcon || !string.IsNullOrEmpty(logo);
-        ColumnLogo.Width = new GridLength((hasLogo ? 34 : 0) + (Height < 40d ? 0 : 4));
+        ColumnLogo.Width = new GridLength((hasLogo ? 36 : 0) + (Height < 40d ? 0 : 4));
     }
 
     public double LogoScale
@@ -737,7 +737,7 @@ public partial class MyListItem : IMyRadio
                 ? 4
                 : 2
             : 6);
-        ColumnLogo.Width = new GridLength((hasLogo ? 34 : 0) + (Height < 40d ? 0 : 4));
+        ColumnLogo.Width = new GridLength((hasLogo ? 36 : 0) + (Height < 40d ? 0 : 4));
 
         if (pathLogo is not null)
         {

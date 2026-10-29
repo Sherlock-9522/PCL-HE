@@ -19,9 +19,9 @@
         因此无论浅色还是深色主题，开屏与主界面都同源同调。
         字标为黑底白字「HE」的尖顶正六边形，在深浅两种桌面上都清晰可辨。
     -->
-    <Grid x:Name="RootGrid" Opacity="0">
+    <Grid x:Name="RootGrid" Opacity="0" RenderTransformOrigin="0.5,0.5">
         <Grid.RenderTransform>
-            <ScaleTransform x:Name="RootScale" ScaleX="0.96" ScaleY="0.96" CenterX="210" CenterY="140" />
+            <ScaleTransform x:Name="RootScale" ScaleX="0.96" ScaleY="0.96" />
         </Grid.RenderTransform>
 
         <!-- 轻量背景板：使用主题背景色而非硬编码深色。
@@ -37,11 +37,24 @@
                 <Viewbox.RenderTransform>
                     <TranslateTransform x:Name="LogoShift" Y="10" />
                 </Viewbox.RenderTransform>
-                <Viewbox.Effect>
-                    <DropShadowEffect Color="#1370F3" BlurRadius="26" ShadowDepth="0" Opacity="0.42" />
-                </Viewbox.Effect>
-                <Image Source="/Images/logo_he.png" Stretch="Uniform"
-                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <Grid Width="84" Height="84">
+                    <!-- 静态辉光层：用渐变椭圆代替 DropShadowEffect。
+                         开屏窗口是 AllowsTransparency 的 layered window，只能走软件光栅化，
+                         而 Effect 不会跨帧缓存，每次位移或透明度变化都要重做整块 CPU 卷积。 -->
+                    <Ellipse Width="84" Height="84">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#6B1370F3" Offset="0.45" />
+                                <GradientStop Color="#001370F3" Offset="1" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <Image Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="168" UriSource="/Images/logo_he.png" />
+                        </Image.Source>
+                    </Image>
+                </Grid>
             </Viewbox>
 
             <TextBlock x:Name="LabTitle" Text="Plain Craft Launcher"

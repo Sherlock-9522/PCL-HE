@@ -323,7 +323,11 @@ public static class ModMain
         Input,
         AuthServer,
         Login,
-        Markdown
+        Markdown,
+        JavaPath,
+
+        /// <summary>Java 安装说明弹窗：确定按钮会倒计时一段才解锁。</summary>
+        JavaGuide
     }
 
     private static string GetDefaultDialogTitle() => Lang.Text("Common.Dialog.Title");
@@ -344,25 +348,38 @@ public static class ModMain
     /// <param name="button2Action">点击第二个按钮将执行该方法，不关闭弹窗。</param>
     /// <param name="button3Action">点击第三个按钮将执行该方法，不关闭弹窗。</param>
     /// <param name="isWarn">是否为警告弹窗，若为 True，弹窗配色和背景会变为红色。</param>
+    /// <param name="type">弹窗样式；除 Java 安装说明一类自定义弹窗外一般无需指定。</param>
+    /// <param name="content">自定义弹窗的入参，由对应弹窗自行解释。</param>
     public static int MyMsgBox(string caption, string? title = null, string? button1 = null, string? button2 = "",
         string? button3 = "", bool isWarn = false, bool highLight = true, bool forceWait = false,
-        Action button1Action = null, Action button2Action = null, Action button3Action = null)
+        Action button1Action = null, Action button2Action = null, Action button3Action = null,
+        MyMsgBoxType type = MyMsgBoxType.Text, object content = null)
     {
         title ??= GetDefaultDialogTitle();
         button1 ??= GetDefaultConfirmText();
         button2 ??= "";
         button3 ??= "";
+        // 后台线程上先把弹窗加进队列、再转投 UI 线程，队列里会残留一个永不显示的项：
+        // 用户关掉真正显示的那个之后它才被挂出，表现出来就是「关一次弹两次」。
+        // 所以整段流程先搬到 UI 线程，队列只在 UI 线程上增删。
+        if (!ModBase.RunInUi())
+        {
+            var remoteResult = 0;
+            ModBase.RunInUiWait(() => remoteResult = MyMsgBox(caption, title, button1, button2, button3,
+                isWarn, highLight, forceWait, button1Action, button2Action, button3Action, type, content));
+            return remoteResult;
+        }
+
         // 将弹窗列入队列
         var converter = new MyMsgBoxConverter
         {
-            Type = MyMsgBoxType.Text, Button1 = button1, Button2 = button2, Button3 = button3, Text = caption,
+            Type = type, Button1 = button1, Button2 = button2, Button3 = button3, Text = caption,
             IsWarn = isWarn, Title = title, HighLight = highLight, ForceWait = true, Button1Action = button1Action,
-            Button2Action = button2Action, Button3Action = button3Action
+            Button2Action = button2Action, Button3Action = button3Action, Content = content
         };
         WaitingMyMsgBox.Add(converter);
-        if (ModBase.RunInUi())
-            // 若为 UI 线程，立即执行弹窗刻， 避免快速（连点器）点击时多次弹窗
-            MyMsgBoxTick();
+        // 走到这里必定在 UI 线程，立即挂出弹窗，避免快速（连点器）点击时多次弹窗
+        MyMsgBoxTick();
         if (button2.Length > 0 || forceWait)
         {
             // 若有多个按钮则开始等待
@@ -404,15 +421,6 @@ public static class ModMain
 
                 ModBase.Log("[Control] 主窗体加载完成前出现意料外的等待弹窗：" + button1 + "," + button2 + "," + button3,
                     ModBase.LogLevel.Debug);
-            }
-            else if (!ModBase.RunInUi())
-            {
-                // 后台 loader 线程上 PushFrame 会建出一个绑定错的嵌套消息循环，
-                // 连 loader.Abort() 都打断不了这次等待。改把整段弹窗投递到 UI 线程去跑。
-                var remoteResult = 0;
-                ModBase.RunInUiWait(() => remoteResult = MyMsgBox(caption, title, button1, button2, button3,
-                    isWarn, highLight, forceWait, button1Action, button2Action, button3Action));
-                return remoteResult;
             }
             else
             {
@@ -456,6 +464,17 @@ public static class ModMain
         button1 ??= GetDefaultConfirmText();
         button2 ??= "";
         button3 ??= "";
+        // 后台线程上先把弹窗加进队列、再转投 UI 线程，队列里会残留一个永不显示的项：
+        // 用户关掉真正显示的那个之后它才被挂出，表现出来就是「关一次弹两次」。
+        // 所以整段流程先搬到 UI 线程，队列只在 UI 线程上增删。
+        if (!ModBase.RunInUi())
+        {
+            var remoteResult = 0;
+            ModBase.RunInUiWait(() => remoteResult = MyMsgBoxMarkdown(caption, title, button1, button2, button3,
+                isWarn, highLight, forceWait, button1Action, button2Action, button3Action));
+            return remoteResult;
+        }
+
         // 将弹窗列入队列
         var converter = new MyMsgBoxConverter
         {
@@ -464,9 +483,8 @@ public static class ModMain
             Button2Action = button2Action, Button3Action = button3Action
         };
         WaitingMyMsgBox.Add(converter);
-        if (ModBase.RunInUi())
-            // 若为 UI 线程，立即执行弹窗刻， 避免快速（连点器）点击时多次弹窗
-            MyMsgBoxTick();
+        // 走到这里必定在 UI 线程，立即挂出弹窗，避免快速（连点器）点击时多次弹窗
+        MyMsgBoxTick();
         if (button2.Length > 0 || forceWait)
         {
             // 若有多个按钮则开始等待
@@ -509,15 +527,6 @@ public static class ModMain
                 ModBase.Log("[Control] 主窗体加载完成前出现意料外的等待弹窗：" + button1 + "," + button2 + "," + button3,
                     ModBase.LogLevel.Debug);
             }
-            else if (!ModBase.RunInUi())
-            {
-                // 后台 loader 线程上 PushFrame 会建出一个绑定错的嵌套消息循环，
-                // 连 loader.Abort() 都打断不了这次等待。改把整段弹窗投递到 UI 线程去跑。
-                var remoteResult = 0;
-                ModBase.RunInUiWait(() => remoteResult = MyMsgBox(caption, title, button1, button2, button3,
-                    isWarn, highLight, forceWait, button1Action, button2Action, button3Action));
-                return remoteResult;
-            }
             else
             {
                 try
@@ -539,7 +548,6 @@ public static class ModMain
         // 不进行等待，直接返回
         return 1;
     }
-
     /// <summary>
     ///     显示输入框并返回输入的文本。若点击第二个按钮，则返回 Nothing。
     /// </summary>
@@ -690,6 +698,9 @@ public static class ModMain
         {
             if (frmMain is null || frmMain.PanMsg is null || frmMain.WindowState == WindowState.Minimized)
                 return;
+            // 已经点了按钮、正在播关闭动画的弹窗不该被重新挂出来，否则用户会看到关掉又弹一次
+            while (WaitingMyMsgBox.Count > 0 && WaitingMyMsgBox[0].IsExited)
+                WaitingMyMsgBox.RemoveAt(0);
             if (frmMain.PanMsg.Children.Count > 0)
             {
                 // 弹窗中
@@ -729,6 +740,16 @@ public static class ModMain
                     case MyMsgBoxType.Markdown:
                     {
                         frmMain.PanMsg.Children.Add(new MyMsgMarkdown(WaitingMyMsgBox[0]));
+                        break;
+                    }
+                    case MyMsgBoxType.JavaGuide:
+                    {
+                        frmMain.PanMsg.Children.Add(new MyMsgJavaGuide(WaitingMyMsgBox[0]));
+                        break;
+                    }
+                    case MyMsgBoxType.JavaPath:
+                    {
+                        frmMain.PanMsg.Children.Add(new MyMsgJavaPath(WaitingMyMsgBox[0]));
                         break;
                     }
                 }
