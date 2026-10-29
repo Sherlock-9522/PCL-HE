@@ -8,34 +8,36 @@
 
 文档按主题分章，**每章自包含**。如果你只需要处理某个方向的工作，读对应那一章即可，不必通读。
 
-| 你要做的事 | 读哪一章 |
-| --- | --- |
-| 了解项目为什么叫这个名字、为什么去掉某些词 | 第 0 章 |
-| 改品牌、图标、窗口标题、关于页 | 第 1 章 |
-| 改界面布局、窗口尺寸、缩放行为、主题配色 | 第 2 章 |
-| 改下载逻辑、加镜像源、修网络超时 | 第 3 章 |
-| 改登录（微软 / 第三方 / 离线） | 第 4 章 |
-| 改联机（陶瓦 / EasyTier / 大厅） | 第 5 章 |
-| 改内存相关功能 | 第 6 章 |
-| 改构建、CI、发布流程、部署 | 第 7 章 |
-| 查「这个问题以前修过吗」「当时为什么这么写」 | 第 8 章（审计修复汇总） |
-| 改 README、许可证声明、合规相关内容 | 第 9 章 |
-| 想知道某个 commit 属于哪个主题 | 附录 A |
+|你要做的事|读哪一章|
+|-|-|
+|了解项目为什么叫这个名字、为什么去掉某些词|第 0 章|
+|改品牌、图标、窗口标题、关于页|第 1 章|
+|改界面布局、窗口尺寸、缩放行为、主题配色|第 2 章|
+|改下载逻辑、加镜像源、修网络超时|第 3 章|
+|改登录（微软 / 第三方 / 离线）|第 4 章|
+|改联机（陶瓦 / EasyTier / 大厅）|第 5 章|
+|改内存相关功能|第 6 章|
+|改构建、CI、发布流程、部署|第 7 章|
+|查「这个问题以前修过吗」「当时为什么这么写」|第 8 章（审计修复汇总）|
+|改 README、许可证声明、合规相关内容|第 9 章|
+|改「自助安装 Java」（Adoptium、MSI、提权、卸载）|第 10 章|
+|调界面字号、卡片标题层级、警示红字|第 11 章|
+|想知道某个 commit 属于哪个主题|附录 A|
 
 **给分段执行者的提示**：本文件的章节之间没有前置依赖。若任务要求你「按历史顺序理解项目」，
 读第 0 章 → 附录 A（提交时间线）即可，其余章节按需查阅。
 
----
+\---
 
 ## 第 0 章　项目由来与命名
 
 ### 命名演变
 
-| 阶段 | 名称 | 说明 |
-| --- | --- | --- |
-| 基线 | PCL-CE | 上游为 PCL Community Edition，直接继承自 PCL2 |
-| 中期 | PCL-DSH | 初版衍生名，含企业商标缩写 |
-| 当前 | **PCL-HE** | Plain Craft Launcher - Harness Edition |
+|阶段|名称|说明|
+|-|-|-|
+|基线|<br />PCL-CE <br /><br />(Plain Craft Launcher - Community Edition)|上游为 PCL Community Edition，直接继承自 PCL2|
+|中期|<br />PCL-DSH <br /><br />(Plain Craft Launcher - DeepSeek Harness \[Edition] )|初版衍生名，含企业商标缩写|
+|当前|<br />**PCL-HE <br /><br />(Plain Craft Launcher - Harness Edition)**|即 Plain Craft Launcher - Harness Edition 本身，无实际含义|
 
 改名到 `PCL-HE` 的原因是**规避数字商标风险**：原名里的缩写对应某 AI 企业的品牌标识。
 新名保留 `Harness`（马具 / 驾驭）这一通用词汇，用来纪念「人与 AI 协作开发」这件事本身。
@@ -45,11 +47,11 @@
 
 ### 展示名与元数据
 
-- 完整展示名：`Plain Craft Launcher (PCL) - Harness Edition`
-- 短名 / 可执行文件名：`PCL-HE`，产物为 `PCL-HE.exe`
-- 公司字段：`PCL-HE Project`
-- 版权字段保留 `Copyright © 龙腾猫跃 2016.` 前缀，后缀追加 `Modified by the PCL-HE Project`
-- 版本号从 `0.1.0.0` 起步，`v0.1.1` 为当前 Tag
+* 完整展示名：`Plain Craft Launcher (PCL) - Harness Edition`
+* 短名 / 可执行文件名：`PCL-HE`，产物为 `PCL-HE.exe`
+* 公司字段：`PCL-HE Project`
+* 版权字段保留 `Copyright © 龙腾猫跃 2016.` 前缀，后缀追加 `Modified by the PCL-HE Project`
+* 版本号从 `0.1.0.0` 起步，`v0.1.1` 为当前 Tag
 
 ### 开发模式（写进 README 的那段）
 
@@ -57,13 +59,13 @@
 测试反馈与核心思路；核心代码重构、功能实现与排错主要由 AI 辅助完成。
 这一段同时出现在三份 README 里，措辞略有差异但语义一致。
 
----
+\---
 
 ## 第 1 章　品牌替换
 
 ### 一次性批量替换
 
-`logo_design/rebrand.py` 做了一次 57 文件 / 719 处的字符串替换，策略是**长字符串优先**，
+`logo\\\_design/rebrand.py` 做了一次 57 文件 / 719 处的字符串替换，策略是**长字符串优先**，
 并保留原文件的 BOM 与换行符。替换范围包括产品名、公司名、仓库地址、文档链接。
 
 **教训**：批量替换脚本必须按「长串在前」排序，否则 `PCL Community Edition` 会被
@@ -74,20 +76,20 @@
 这三个地方替换错了不会编译报错，只会在运行时炸掉：
 
 1. **WPF pack URI 内嵌程序集名**。`<AssemblyName>` 改成 `PCL-HE` 后，所有
-   `/Plain Craft Launcher 2;component/...` 必须同步成 `/PCL-HE;component/...`（20 处 / 8 文件）。
+`/Plain Craft Launcher 2;component/...` 必须同步成 `/PCL-HE;component/...`（20 处 / 8 文件）。
 2. **C# 字符串里的 `clr-namespace:PCL;assembly=...`**。这些写在 `.xaml.cs` 的字符串常量里，
-   XAML 编译器看不见。漏改会在页面首次打开时抛
-   `XamlParseException: 无法创建未知类型 "{clr-namespace:PCL;assembly=Plain Craft Launcher 2}MyCard"`。
-   实际漏了 7 处：`PageSpeedLeft.xaml.cs:202/216/233/275`、`PageLaunchRight.xaml.cs:482/846`、
-   `PageHelpDetail.xaml.cs:56`。用 `logo_design/fix_assembly_refs.py` 统一修掉。
+XAML 编译器看不见。漏改会在页面首次打开时抛
+`XamlParseException: 无法创建未知类型 "{clr-namespace:PCL;assembly=Plain Craft Launcher 2}MyCard"`。
+实际漏了 7 处：`PageSpeedLeft.xaml.cs:202/216/233/275`、`PageLaunchRight.xaml.cs:482/846`、
+`PageHelpDetail.xaml.cs:56`。用 `logo\\\_design/fix\\\_assembly\\\_refs.py` 统一修掉。
 3. **IPC 管道名**。`PCL.Core/App/Essentials/RpcService.cs:78` 的 `PipePrefix` 与
-   `PromoteService.cs:48` 的 `PCLHE_PM@{processId}`，改漏会导致新旧版本互相抢单例锁。
+`PromoteService.cs:48` 的 `PCLHE\\\_PM@{processId}`，改漏会导致新旧版本互相抢单例锁。
 
 ### 图标与字标
 
-- `Images/icon.png` / `icon.ico`：六边形 + Arial Bold 的 `HE`
-- `Images/logo_he.png`：开屏动画用的大图
-- `Images/mascot.png`：页面水印
+* `Images/icon.png` / `icon.ico`：六边形 + Arial Bold 的 `HE`
+* `Images/logo\\\_he.png`：开屏动画用的大图
+* `Images/mascot.png`：页面水印
 
 **字标居中的坑**：早期用字体 advance 宽度做居中，成品里 `H` 比 `E` 占位宽，整体看起来偏左。
 根因是 **Microsoft YaHei 是 CJK 优先字体，拉丁字形本身偏窄**（H/E 墨迹比 1.44），换成
@@ -95,11 +97,11 @@ Arial Bold 后降到 1.05。最终改用 `PIL` 的 `getbbox()` 按**墨迹包围
 
 ### 鲸鱼图标的处理
 
-上游 PCL 的鲸鱼吉祥物可能涉及数字资产授权，全部移除：`whale.png` / `whale_blue.png` /
-`whale_dark.png` 删除，相关引用改指向新 logo。
+上游 PCL 的鲸鱼吉祥物可能涉及数字资产授权，全部移除：`whale.png` / `whale\\\_blue.png` /
+`whale\\\_dark.png` 删除，相关引用改指向新 logo。
 
 后来发现 `Images/Heads/Logo-HE.png` 只是**改了文件名、内容是旧鲸鱼图**，在「关于 → 软件信息」
-里露了出来。已用 `logo_he.png` 覆盖，并把裁剪形状从 `EllipseGeometry` 改成
+里露了出来。已用 `logo\\\_he.png` 覆盖，并把裁剪形状从 `EllipseGeometry` 改成
 `RectangleGeometry Rect="0,0,34,34" RadiusX="7" RadiusY="7"`——圆形裁剪会削掉六边形的上下尖角。
 
 **这个文件里有 9 处相同的 `EllipseGeometry` 片段**（9 个圆形头像），替换时必须带上
@@ -110,7 +112,7 @@ Arial Bold 后降到 1.05。最终改用 `PIL` 的 `getbbox()` 按**墨迹包围
 `1099a57` 清掉最后三处：`PageSetupAbout.xaml` 的引用、`CrashReportExporter.cs`、
 `CrashLogPreparer.cs`、`app.manifest` 的 `assemblyIdentity`。
 
----
+\---
 
 ## 第 2 章　界面、窗口与主题
 
@@ -118,18 +120,39 @@ Arial Bold 后降到 1.05。最终改用 `PIL` 的 `getbbox()` 按**墨迹包围
 
 **现象**：每次启动窗口都比上次大一圈，偶尔直接铺满屏幕。
 
-**根因**：`FormMain_SizeChanged` 无条件把当前 `Height`/`Width` 写进 `States.System`。
+**根因**：`FormMain\\\_SizeChanged` 无条件把当前 `Height`/`Width` 写进 `States.System`。
 窗口被最大化时，写入的是**屏幕尺寸**；下次启动按这个尺寸恢复，就变成了近似全屏。
 再叠加另一处不一致：`FormMain.xaml` 设计尺寸是 `850x500`，而 `PCL.Core/App/States.cs`
 的默认值是 `1024x640`。
 
 **修法**（`bdcdd0f`）：
-- `States.cs` 默认值改成与 XAML 一致（`500` / `850`）
-- `FormMain.xaml.cs:101-115` 恢复尺寸时校验：`double.IsNaN`、`<= 0`、超出工作区一律退回设计尺寸
-- `FormMain_SizeChanged` 只在非最大化时持久化
+
+* `States.cs` 默认值改成与 XAML 一致（`500` / `850`）
+* `FormMain.xaml.cs:101-115` 恢复尺寸时校验：`double.IsNaN`、`<= 0`、超出工作区一律退回设计尺寸
+* `FormMain\\\_SizeChanged` 只在非最大化时持久化
 
 **实机验证**：DPI 125% 下，首次运行 → `850.4x500` DIP；保存 `1520x856` → 原样恢复；
 故意写入 `4000x3000`（超出工作区）→ 回退到 `850.4x500`。
+
+### 2.1.1 改成每次启动固定回默认尺寸（2026-10-30）
+
+**背景**：2.1 的修法保留了「记住上次调整过的长宽」。实际使用时希望反过来——
+每次启动都回到默认大小，窗口忽大忽小比固定尺寸更让人困惑。
+
+**改动**：
+
+* `FormMain.xaml` 设计尺寸 `850x500` → `1280x720`（16:9，1920x1080 屏上占 2/3 宽）
+* `FormMain.xaml.cs` 的启动块不再读 `States.UI.WindowWidth/Height`，直接用设计值；
+  再按工作区的 92% 等比收缩，小屏与高缩放下不会顶到屏幕边缘
+* `PCL.Core/App/States.cs` 的 `ConfigItem` 默认值同步成 `720` / `1280`（仅兜底，启动时不再读）
+* `FormMain_SizeChanged` 仍写回配置，留给以后可能加的「记住窗口大小」开关
+
+**为什么这样就是「跟着系统缩放走」**：WPF 的 `Width`/`Height` 单位是 DIP，
+系统缩放 125% 时物理尺寸同比放大，不需要额外乘系数。1920x1080 @100% 下窗口即 1280x720 居中。
+
+**实机验证**：往 `PCL/config.pclhe.v1.yml` 强行写入 `WindowWidth: 900 / WindowHeight: 600`，
+重启后窗口仍是 `1280x720`——证明启动路径已完全不读这份配置。
+
 
 ### 2.2 边框与缩放热区对不上
 
@@ -138,22 +161,22 @@ Arial Bold 后降到 1.05。最终改用 `PIL` 的 `getbbox()` 按**墨迹包围
 这条追了三层：
 
 1. **热区判定的坐标系不对**。原来用 `GetWindowRect` 算边界，但 DWM 会向外扩一圈阴影，
-   热区落在了不可见区域。改用 `WindowInterop.GetVisibleWindowRectangle(hWnd)`，
-   内部走 `DwmGetWindowAttribute(DWMWA_EXTENDED_FRAME_BOUNDS)`。
-2. **`canResize` 恒为 false**。诊断日志显示每次 `WM_NCHITTEST` 都在
-   `FormMain.xaml.cs:431` 的 `if (!canResize) return HTCLIENT;` 被短路。
-   根因是 `Config.Preference.LockWindowSize` 默认 `true`（**且这一项没有显式指定
-   `ConfigSource`，落到了 `Shared` 全局配置**，写在 `%APPDATA%\PCLHE\config.v1.json`
-   而不是实例配置里），启动时走 `RemoveResizer()`。
-3. **光标被 WPF 覆盖**。即使返回了 `HTLEFT` 等命中码，`WM_NCHITTEST` 里调用的
-   `SetCursor` 也会被随后的 `WM_SETCURSOR` 重置回自定义光标。
+热区落在了不可见区域。改用 `WindowInterop.GetVisibleWindowRectangle(hWnd)`，
+内部走 `DwmGetWindowAttribute(DWMWA\\\_EXTENDED\\\_FRAME\\\_BOUNDS)`。
+2. **`canResize` 恒为 false**。诊断日志显示每次 `WM\\\_NCHITTEST` 都在
+`FormMain.xaml.cs:431` 的 `if (!canResize) return HTCLIENT;` 被短路。
+根因是 `Config.Preference.LockWindowSize` 默认 `true`（**且这一项没有显式指定
+`ConfigSource`，落到了 `Shared` 全局配置**，写在 `%APPDATA%\\\\PCLHE\\\\config.v1.json`
+而不是实例配置里），启动时走 `RemoveResizer()`。
+3. **光标被 WPF 覆盖**。即使返回了 `HTLEFT` 等命中码，`WM\\\_NCHITTEST` 里调用的
+`SetCursor` 也会被随后的 `WM\\\_SETCURSOR` 重置回自定义光标。
 
-**最终方案**（`39c35fc`）：在 `_SizeWndProc` 里同时接管 `WM_SETCURSOR`
-（`const int WM_SETCURSOR = 0x20;`），把 `lParam` 低 16 位的命中码映射回
+**最终方案**（`39c35fc`）：在 `\\\_SizeWndProc` 里同时接管 `WM\\\_SETCURSOR`
+（`const int WM\\\_SETCURSOR = 0x20;`），把 `lParam` 低 16 位的命中码映射回
 `ResizeEdge` 再 `WindowInterop.SetResizeCursor(edge)`。八处实测全部正确。
 
 `WindowInterop` 里为此新增了 `ResizeEdge` 枚举与 `LoadCursorW` / `SetCursor` 的
-`LibraryImport`。**注意 `LoadCursor` 第二参数是 `IntPtr`，`IDC_*` 常量是 `int`，
+`LibraryImport`。**注意 `LoadCursor` 第二参数是 `IntPtr`，`IDC\\\_\\\*` 常量是 `int`，
 C# 不会隐式转换，必须 `new IntPtr(cursorId)`。**
 
 ### 2.3 锁定窗口大小时外观不一致
@@ -168,7 +191,7 @@ C# 不会隐式转换，必须 `new IntPtr(cursorId)`。**
 
 **现象**：往下拖下边框时窗口反复跳动，逻辑尺寸震荡。
 
-**根因**：`FormMain_SizeChanged` 末尾有一段上游的 `#1938` 修复：
+**根因**：`FormMain\\\_SizeChanged` 末尾有一段上游的 `#1938` 修复：
 
 ```csharp
 if (WindowState == WindowState.Maximized)
@@ -178,8 +201,8 @@ if (WindowState == WindowState.Maximized)
 往下拖边框时 Windows 会短暂进入最大化状态，这行立刻改回普通 → 窗口缩小 → 继续拖又最大化，
 逐帧震荡。副作用是**运行时根本无法最大化窗口**。
 
-**修法**（`ac2a6e7`）：条件改成 `!isSizeSaveable && WindowState == WindowState.Maximized`。
-`isSizeSaveable` 在 `FormMain_Loaded` 期间为 `false`，正好覆盖上游原本想修的那个初始化场景，
+**修法**（`ac2a6e7`）：条件改成 `!isSizeSaveable \\\&\\\& WindowState == WindowState.Maximized`。
+`isSizeSaveable` 在 `FormMain\\\_Loaded` 期间为 `false`，正好覆盖上游原本想修的那个初始化场景，
 而用户主动拖动时不再触发。
 
 ### 2.5 字体列表里的方框
@@ -187,10 +210,11 @@ if (WindowState == WindowState.Maximized)
 **现象**：字体选择下拉里有两项显示成方块。
 
 **根因有两层**：
+
 1. 列表项的 DataTemplate 是 `<TextBlock Text="{Binding Name}" FontFamily="{Binding Font}" />`，
-   即**用字体自己渲染自己的名字**。图标字体（Wingdings 一类）没有字母字形，必然画成方框。
+即**用字体自己渲染自己的名字**。图标字体（Wingdings 一类）没有字母字形，必然画成方框。
 2. 判断「这个字体能不能渲染自己的名字」不能只看有没有字母 `A`。
-   `MT Extra`、`MS Outlook`、`Kingsoft UE` 都有 `A`，但缺名字里的其他字符。
+`MT Extra`、`MS Outlook`、`Kingsoft UE` 都有 `A`，但缺名字里的其他字符。
 
 **修法**（`83f6e8e`）：`FontSelector.xaml.cs` 新增 `BuildPreviewFontFamily`，逐个 typeface 取
 `TryGetGlyphTypeface`，用 `font.Name.All(ch => glyph.CharacterToGlyphMap.ContainsKey(ch))`
@@ -210,23 +234,25 @@ if (WindowState == WindowState.Maximized)
 「浅色主题保持原来的蓝白渐变，留一点原汁原味」。
 
 **标题栏**（`7697db2`）：
-- `Application.xaml` 新增四个固定色（不参与 `ThemeService` 计算）：`ColorBrushTitleBar` `#20242C`、
-  `ColorBrushTitleBarEdge` `#3A4049`、`ColorBrushTitleBadge` `#F5FFFFFF`、`ColorBrushTitleBadgeText` `#20242C`
-- `FormMain.xaml` 的 `PanTitle` 背景从 `ColorBrush3` 改为 `ColorBrushTitleBar`
-- 原来「顶部高光 + 底部暗线」两块换成四层：顶部受光细线（1px `#26FFFFFF`）、纵向压暗渐变、
-  底部亮线（1px `#3DFFFFFF`）、底部阴影（2px `#40000000`）
-- `CELogo` 反色：白底黑字
+
+* `Application.xaml` 新增四个固定色（不参与 `ThemeService` 计算）：`ColorBrushTitleBar` `#20242C`、
+`ColorBrushTitleBarEdge` `#3A4049`、`ColorBrushTitleBadge` `#F5FFFFFF`、`ColorBrushTitleBadgeText` `#20242C`
+* `FormMain.xaml` 的 `PanTitle` 背景从 `ColorBrush3` 改为 `ColorBrushTitleBar`
+* 原来「顶部高光 + 底部暗线」两块换成四层：顶部受光细线（1px `#26FFFFFF`）、纵向压暗渐变、
+底部亮线（1px `#3DFFFFFF`）、底部阴影（2px `#40000000`）
+* `CELogo` 反色：白底黑字
 
 **默认深色**：`PCL.Core/App/Config.cs:266` 的 `ColorMode` 默认值 `System` → `Dark`。
 **注意这一项存在共享配置里**，已有用户需要手动改 `"UiDarkMode"` 才能看到新的默认外观。
-路径分两种：便携模式（exe 同目录存在 `CONFIG` 文件夹）落在 `<exe目录>\CONFIG\config.v1.json`，
-否则落在 `%APPDATA%\PCLHE\config.v1.json`。**它不是 `PCL\config.pclhe.v1.yml`**（后者是
+路径分两种：便携模式（exe 同目录存在 `CONFIG` 文件夹）落在 `<exe目录>\\\\CONFIG\\\\config.v1.json`，
+否则落在 `%APPDATA%\\\\PCLHE\\\\config.v1.json`。**它不是 `PCL\\\\config.pclhe.v1.yml`**（后者是
 `ConfigSource.Local` 的本地配置源），改错文件不会生效，详见 2.10 末尾的踩坑。
 
 **黑白渐变**：改 `ToneProfileConfig.cs` 的 `DefaultDark`，关键在于把 `C5` / `C7` 归零
-（让 `L5`/`L7` 决定的背景渐变变中性灰），同时保持 `C2`~`C4` 的色相，按钮和高亮才不会一起变灰。
+（让 `L5`/`L7` 决定的背景渐变变中性灰），同时保持 `C2`\~`C4` 的色相，按钮和高亮才不会一起变灰。
 
 最终参数：
+
 ```csharp
 L1: 0.96, L2: 0.75, L3: 0.6, L4: 0.65,
 L5: 0.55, L6: 0.3, L7: 0.3, L8: 0.22,
@@ -243,11 +269,11 @@ C5: 0, C7: 0
 
 ### 2.7 其他样式调整
 
-- 窗口圆角改成与 PCL2 一致的 `6px`（`9027bf5`），同时放大默认窗口
-- 卡片标题换成微软雅黑 + 更大字号（`a0c049f`）
-- 主操作按钮加方向投影增加层次（`fcd4ef4`）：`MyExtraTextButton.xaml` 的 `PanColor`
-  Border 加 `DropShadowEffect ShadowDepth>0` + 白色 2px 描边 + 字体加粗
-- 按钮文字颜色试过改黑，用户反馈「还是白色好了」，已回退
+* 窗口圆角改成与 PCL2 一致的 `6px`（`9027bf5`），同时放大默认窗口
+* 卡片标题换成微软雅黑 + 更大字号（`a0c049f`）
+* 主操作按钮加方向投影增加层次（`fcd4ef4`）：`MyExtraTextButton.xaml` 的 `PanColor`
+Border 加 `DropShadowEffect ShadowDepth>0` + 白色 2px 描边 + 字体加粗
+* 按钮文字颜色试过改黑，用户反馈「还是白色好了」，已回退
 
 ### 2.8 各种「你知道吗」提示
 
@@ -262,14 +288,14 @@ C5: 0, C7: 0
 设置 → 个性化 → 背景图片的「自适应方式」原本只有 9 项（智能 / 居中 / 适应 / 拉伸 / 平铺 /
 四个角），与 PCL2 新版的双向九宫格不是一回事。本次按 PCL2 的设定补齐：
 
-- 索引 `0..8` 的含义保持原样（老配置 `UiBackgroundSuit` 的取值不变义）。
-- 新增 `9..17` 共 9 项「保持长宽比」：`9` 居中，`10..17` 依次为
-  左上 / 左中 / 左下 / 中上 / 中下 / 右上 / 右中 / 右下。
-  实现是 `Stretch.Uniform`（完整显示、不裁切）加 `ImageBrush.AlignmentX/AlignmentY` 定位，
-  窗口尺寸变化时由 WPF 按比例重算，未占满的一侧留背景色。
-- 与「适应」（`Stretch.UniformToFill`）的区别：适应会铺满并裁掉超出部分，保持长宽比不裁。
-- 进入函数时除了原有的 `TileMode/Viewport` 复位，还补了 `AlignmentX/AlignmentY = Center`，
-  否则从「左上」切到「适应」时位置会残留。
+* 索引 `0..8` 的含义保持原样（老配置 `UiBackgroundSuit` 的取值不变义）。
+* 新增 `9..17` 共 9 项「保持长宽比」：`9` 居中，`10..17` 依次为
+左上 / 左中 / 左下 / 中上 / 中下 / 右上 / 右中 / 右下。
+实现是 `Stretch.Uniform`（完整显示、不裁切）加 `ImageBrush.AlignmentX/AlignmentY` 定位，
+窗口尺寸变化时由 WPF 按比例重算，未占满的一侧留背景色。
+* 与「适应」（`Stretch.UniformToFill`）的区别：适应会铺满并裁掉超出部分，保持长宽比不裁。
+* 进入函数时除了原有的 `TileMode/Viewport` 复位，还补了 `AlignmentX/AlignmentY = Center`，
+否则从「左上」切到「适应」时位置会残留。
 
 顺带修掉一个从 VB.NET 移植到 C# 时就带进来的 bug，上游 `PCL-CE` 至今仍在。
 VB 版加载壁纸后跟的是 `Setup.Load("UiBackgroundSuit", True)`（重新加载并应用该设置），
@@ -277,7 +303,7 @@ VB 版加载壁纸后跟的是 `Setup.Load("UiBackgroundSuit", True)`（重新�
 
 ```csharp
 FrmMain.ImgBack.Background = new MyBitmap(Address);
-_ = Config.Preference.Background.WallpaperSuitMode; // 纯粹的空读，没有副作用
+\\\_ = Config.Preference.Background.WallpaperSuitMode; // 纯粹的空读，没有副作用
 ```
 
 `MyBitmap` 的隐式 `ImageBrush` 转换新建的 brush，`Stretch` 是 WPF 默认的 `Fill`；
@@ -315,35 +341,35 @@ public enum ColorTheme
 
 **参数化**：`ThemeService.GetCurrentThemeArgs()`（`PCL.Core/UI/Theme/ThemeService.cs:153`）返回
 五元组 `(Hue, LightAdjust, ChromaAdjust, AccentLightAdjust, AccentChromaAdjust)`，新增的
-`_AdjustAccent()`（`:178`）把 accent 两项只作用在 `Color2~4` 上。
-**为什么单独拆一套 accent 参数**：`LightAdjust` 是全局作用于 `L1~L8` 的，
+`\\\_AdjustAccent()`（`:178`）把 accent 两项只作用在 `Color2\\\~4` 上。
+**为什么单独拆一套 accent 参数**：`LightAdjust` 是全局作用于 `L1\\\~L8` 的，
 想把强调色压到 `#0E1C45` 需要系数 `-0.63`，而这会把浅色模式的浅底
-（`L6~L8` = 0.92 / 0.94 / 0.96）一起压成 0.34~0.36 的中灰，整个浅色 UI 直接烂掉。
+（`L6\\\~L8` = 0.92 / 0.94 / 0.96）一起压成 0.34\~0.36 的中灰，整个浅色 UI 直接烂掉。
 拆出 accent 之后，浅底不动、只有按钮 / 链接 / 高亮变深。
 
 **系数怎么算出来的**：用 python 复刻 OKLCH ↔ sRGB 换算，先拿上游 CatBlue 校准
 （Color4 的 tone 是 `L=0.65, C=0.168`，叠加 `(255, 0, -0.2)` 得 `#5291DF`，与运行时日志里的
 `brush=#FF5291DF` 完全一致，说明公式可信），再由目标色反解 accent 系数：
 
-| 配色 | 目标色 | OKLCH | Hue | AccentLight | AccentChroma |
-| --- | --- | --- | --- | --- | --- |
-| 青金石蓝 | `#0E1C45` | L 0.2422 / C 0.0796 / H 266.3 | 266 | -0.627 | -0.526 |
-| 黛蓝 | `#5668AA` | L 0.5330 / C 0.1060 / H 270.9 | 271 | -0.180 | -0.369 |
-| 砚石黑 | — | 彩度归零 | 255 | 0 | -1（全局） |
+|配色|目标色|OKLCH|Hue|AccentLight|AccentChroma|
+|-|-|-|-|-|-|
+|青金石蓝|`#0E1C45`|L 0.2422 / C 0.0796 / H 266.3|266|-0.627|-0.526|
+|黛蓝|`#5668AA`|L 0.5330 / C 0.1060 / H 270.9|271|-0.180|-0.369|
+|砚石黑|—|彩度归零|255|0|-1（全局）|
 
-**标题栏**：`ThemeService.ApplyTitleBarResources()`（`:267`，在 `_RefreshAll()` 里被调用）
+**标题栏**：`ThemeService.ApplyTitleBarResources()`（`:267`，在 `\\\_RefreshAll()` 里被调用）
 深色 `#20242C` / `#3A4049`，浅色 `#0E1C45` / `#1C3168`。
 `Application.xaml:88-92` 里的值只是启动瞬间的初始值，运行时总会被覆写。
 
-**下拉**：`PageSetupUI.xaml.cs` 新增 `LightColorOrder = [LapisBlue, LapisMist, SkyBlue, DeathBlue]`，
-下拉索引不再等于枚举值，`ThemeColor_Change` 按数组映射、`Reload()` 用 `Array.IndexOf` 反查；
+**下拉**：`PageSetupUI.xaml.cs` 新增 `LightColorOrder = \\\[LapisBlue, LapisMist, SkyBlue, DeathBlue]`，
+下拉索引不再等于枚举值，`ThemeColor\\\_Change` 按数组映射、`Reload()` 用 `Array.IndexOf` 反查；
 `ComboDarkColor` 加 `IsEnabled="False"` 锁定砚石黑。语言 key 新增
 `Setup.Ui.Theme.Color.LapisMist`（黛蓝 / 黛藍 / Indigo Blue），四份语言文件都已补齐。
 
 **踩坑（务必记住）**：主题组配置走的是**共享配置源**。便携模式下它是
-`<exe目录>\CONFIG\config.v1.json`，**不是** `PCL\config.pclhe.v1.yml`。
+`<exe目录>\\\\CONFIG\\\\config.v1.json`，**不是** `PCL\\\\config.pclhe.v1.yml`。
 我一度把 `UiDarkMode: Dark` 写进 yml，重启后界面依旧浅色，日志
-`[主题|theme] 当前状态: Light, LapisBlue` 才暴露问题——yml 里那一行根本没被读取。
+`\\\[主题|theme] 当前状态: Light, LapisBlue` 才暴露问题——yml 里那一行根本没被读取。
 以后再调主题相关配置，先看 `CONFIG/config.v1.json`。
 
 验证：浅色下拉展开为「青金石蓝 / 黛蓝 / 天空蓝 / 死机蓝」四项、深色下拉灰显锁定砚石黑；
@@ -360,24 +386,46 @@ public enum ColorTheme
 图标被画到 24×24 的按钮之外，看起来就成了「没加载」。
 
 修法（`PCL-Harness Edition/Controls/MyIconButton.xaml.cs:32`）：当
-`double.IsNaN(Width) && !double.IsNaN(Height) && Height > 0` 时，先把 `constraint`
+`double.IsNaN(Width) \\\&\\\& !double.IsNaN(Height) \\\&\\\& Height > 0` 时，先把 `constraint`
 压成 `new Size(Height, Height)` 再调 `base.MeasureOverride`。
 
 **教训：`MeasureOverride` 里要同时约束「传给子元素的输入」和「自己返回的输出」，只改返回值不够。**
 
 ### 2.12 描边粗细与控件对齐
 
-- 窗口最外圈描边：`FormMain.xaml` 的 `PanEdge` 由 `1.5` 改为 `1`。
-  用户的「边框可以再细一点」指的是**窗口描边**，不是某个按钮的框，第一次理解错了。
-- 游戏内存区「自动配置 / 自定义」两个单选框错位：`PageSetupLaunch.xaml:185` 的
-  `RadioRamType0` 写了 `Width="110"`，而 `MyRadioBox` 默认 `HorizontalAlignment=Stretch`；
-  WPF 里「固定宽度 + Stretch」会退化为居中，于是这 110 宽的框在约 200 宽的单元格里居中，
-  而没写宽度的 `RadioRamType1` 按内容自适应仍然贴左，两者肉眼差了近 40px。
-  修法是给两者都补 `HorizontalAlignment="Left"`。
-- 图标对比度：`MyIconButton.xaml:18` 的 `IconBrush="{Binding Fill, ElementName=Path}"`
-  改成 `{DynamicResource ColorBrush4}`。
+* 窗口最外圈描边：`FormMain.xaml` 的 `PanEdge` 由 `1.5` 改为 `1`。
+用户的「边框可以再细一点」指的是**窗口描边**，不是某个按钮的框，第一次理解错了。
+* 游戏内存区「自动配置 / 自定义」两个单选框错位：`PageSetupLaunch.xaml:185` 的
+`RadioRamType0` 写了 `Width="110"`，而 `MyRadioBox` 默认 `HorizontalAlignment=Stretch`；
+WPF 里「固定宽度 + Stretch」会退化为居中，于是这 110 宽的框在约 200 宽的单元格里居中，
+而没写宽度的 `RadioRamType1` 按内容自适应仍然贴左，两者肉眼差了近 40px。
+修法是给两者都补 `HorizontalAlignment="Left"`。
+* 图标对比度：`MyIconButton.xaml:18` 的 `IconBrush="{Binding Fill, ElementName=Path}"`
+改成 `{DynamicResource ColorBrush4}`。
 
----
+### 2.13 字号与图标尺寸规范（100% 缩放基线）
+
+2.10–2.12 那批样式是按 Windows 125% 缩放的观感定的。用户把显示器缩放改回 100% 之后，同一套取值里小字偏小、卡片标题偏大，整体层级失衡。2026-10-30 按 100% 缩放重新统一：
+
+|位置|旧值|新值|
+|-|-|-|
+|卡片标题 `Controls/MyCard.cs` 的 `FontSize`|16|15（微软雅黑粗体）|
+|列表项 `MyListItem` 默认 `FontSize`|14|15|
+|列表图标列宽 `ColumnLogo`|`(hasLogo ? 34 : 0)`|`(hasLogo ? 36 : 0)`|
+|左侧导航五项 `Height`|36|40|
+|左侧导航分类小字|12|13|
+|首页「你知道吗」正文、「PCL-HE 提示」小字|13.5 / 14|15|
+|首页免责小字|13|13.5|
+
+`LogoScale` 只作用于位图；SVG 图标的尺寸直接等于列宽，改列宽不会再被缩放一次。
+
+左侧栏宽度是 `Auto` + `1*`，字号放大后列宽跟着长，不会把文字裁掉。
+
+11.2 那张表是上一轮定下的取值，其中「卡片标题 16」已在本轮回调为 15，以代码与本节为准。
+
+**铁律：以后新增界面一律按 100% 缩放的取值设计，不要按 125% 的观感做补偿。**
+
+\---
 
 ## 第 3 章　下载链路
 
@@ -387,11 +435,12 @@ public enum ColorTheme
 期间窗口卡到无法操作。
 
 **日志时间线**：
+
 ```
 15:32:53.188  DlNeoForgeList Bmclapi 状态改变：Loading → Finished   ← 镜像源 0.2 秒成功
 15:32:55.249  Connected to files.minecraftforge.net via 172.67.161.211
-15:33:09.073  [WARN] All connection attempts failed for maven.neoforged.net
-15:33:09.118  [INFO] [UI] 弹出提示：All connection attempts failed for maven.neoforged.net
+15:33:09.073  \\\[WARN] All connection attempts failed for maven.neoforged.net
+15:33:09.118  \\\[INFO] \\\[UI] 弹出提示：All connection attempts failed for maven.neoforged.net
 ```
 
 **根因**：`Config.cs:84` 的 `VersionListSource` 默认值 `1`，对应
@@ -400,7 +449,7 @@ public enum ColorTheme
 
 **修法**（`ced2cc3`）：默认值改 `0`，即镜像优先（`{ 镜像源 30, 官方源 90 }`）。
 
-### 3.2 为什么 `[WARN]` 会弹对话框
+### 3.2 为什么 `\\\[WARN]` 会弹对话框
 
 排查这条时发现一个反直觉的机制：`PCL.Core/Logging/LogLevel.cs` 在 `TRACE` 宏下把
 `Warning` 映射成 `300 + ActionLevel.HintErr`，而 `ActionLevel.Hint` 在 `ModBase.cs:3355-3402`
@@ -421,44 +470,45 @@ Release 不会**（`49620b1` 只加了注释说明，没改行为）。
 
 细节见第 8 章，这里只列与下载直接相关的：
 
-- **镜像地址与原始地址相同时抛空消息异常**（`ModDownload.cs:1985-2016` 与 `:2033`）：
-  `urls` 只在 `if ((mcimUrl ?? "") != (url ?? ""))` 分支内填充，`DlSourceModGet` 回落到同一 URL 时
-  `urls` 为空，`foreach` 零次执行后 `throw new Exception("")`，一个请求都没发。
-  修法：`urls.Count == 0` 时回退为原始 URL。
-- **UVMC 缓存写完即锁死**（`ModDownload.cs:348-369` / `:434-449`）：
-  直接 `File.WriteAllText` 覆盖目标文件，刷新条件只有 `if (!File.Exists(...))`，写坏后永久不再刷新。
-  修法：新增 `WriteCacheAtomically(path, content)`，先写 `.tmp` 再 `File.Move(tempPath, path, true)`。
-- **等待原版下载的轮询没有失败出口**（`ModDownloadLib.cs:965-969`）：循环条件只排除 `Finished`，
-  `Failed` / `Aborted` 的 loader 永远留在列表里。
-- **安装器进程等待无超时**（`ModDownloadLib.cs:857-868`）：`while (!process.HasExited) Thread.Sleep(10);`
-  没有超时，取消只挂在输出回调里，安装器不说话时回调永不触发。已补 30 分钟上限。
-- **HTTP 缓存把 304 的空 body 写进缓存**（`HttpCacheHandler.cs:66-79`）：
-  304 分支未命中正文缓存时没有 `return`，直接落到 `:79` 写入空 body。
-  同一文件 `:117-123` 的 `_DeserializeResponse` 固定返回 `HttpStatusCode.OK`，meta 里的
-  `StatusCode` 从不读回——24 小时缓存内的 404/500 会以 200 返回，`EnsureSuccessStatusCode()` 检查形同虚设。
-- **连接取消时 socket 不释放**（`HostConnectionHandler.cs:196-210`）：
-  `catch (Exception ex) when (ex is not OperationCanceledException)` 在取消分支既不 dispose 也不包装抛出，
-  而 `:80` 的 `cancellationSource.Cancel()` 在每次连接成功时都会取消其余并发尝试，取消是常态。
-- **连接缓存排序比较器二次查字典**（`HostConnectionHandler.cs:118-132`）：
-  `cachedAddresses.Sort((a, b) => addressCache![b].CompareTo(addressCache[a]))` 与 `:169-175`
-  的 `TryRemove` 构成竞态，抛 `KeyNotFoundException` 被包装成
-  `InvalidOperationException (Failed to compare two elements)`，表现为随机「连接失败」。
+* **镜像地址与原始地址相同时抛空消息异常**（`ModDownload.cs:1985-2016` 与 `:2033`）：
+`urls` 只在 `if ((mcimUrl ?? "") != (url ?? ""))` 分支内填充，`DlSourceModGet` 回落到同一 URL 时
+`urls` 为空，`foreach` 零次执行后 `throw new Exception("")`，一个请求都没发。
+修法：`urls.Count == 0` 时回退为原始 URL。
+* **UVMC 缓存写完即锁死**（`ModDownload.cs:348-369` / `:434-449`）：
+直接 `File.WriteAllText` 覆盖目标文件，刷新条件只有 `if (!File.Exists(...))`，写坏后永久不再刷新。
+修法：新增 `WriteCacheAtomically(path, content)`，先写 `.tmp` 再 `File.Move(tempPath, path, true)`。
+* **等待原版下载的轮询没有失败出口**（`ModDownloadLib.cs:965-969`）：循环条件只排除 `Finished`，
+`Failed` / `Aborted` 的 loader 永远留在列表里。
+* **安装器进程等待无超时**（`ModDownloadLib.cs:857-868`）：`while (!process.HasExited) Thread.Sleep(10);`
+没有超时，取消只挂在输出回调里，安装器不说话时回调永不触发。已补 30 分钟上限。
+* **HTTP 缓存把 304 的空 body 写进缓存**（`HttpCacheHandler.cs:66-79`）：
+304 分支未命中正文缓存时没有 `return`，直接落到 `:79` 写入空 body。
+同一文件 `:117-123` 的 `\\\_DeserializeResponse` 固定返回 `HttpStatusCode.OK`，meta 里的
+`StatusCode` 从不读回——24 小时缓存内的 404/500 会以 200 返回，`EnsureSuccessStatusCode()` 检查形同虚设。
+* **连接取消时 socket 不释放**（`HostConnectionHandler.cs:196-210`）：
+`catch (Exception ex) when (ex is not OperationCanceledException)` 在取消分支既不 dispose 也不包装抛出，
+而 `:80` 的 `cancellationSource.Cancel()` 在每次连接成功时都会取消其余并发尝试，取消是常态。
+* **连接缓存排序比较器二次查字典**（`HostConnectionHandler.cs:118-132`）：
+`cachedAddresses.Sort((a, b) => addressCache!\\\[b].CompareTo(addressCache\\\[a]))` 与 `:169-175`
+的 `TryRemove` 构成竞态，抛 `KeyNotFoundException` 被包装成
+`InvalidOperationException (Failed to compare two elements)`，表现为随机「连接失败」。
 
 ### 3.5 下载链路的端到端验证
 
 **只用代码推断不算验证。** 实际跑过一次完整下载：日志 14986 行，
 `顺序下载成功` 4734 条、`开始下载` 4808 条，全程无模态错误框。
 
----
+\---
 
 ## 第 4 章　登录与账号
 
 ### 4.1 微软登录：设备代码流本来就已经实现
 
 排查「无法正版登录」时先读了实现，结论是**设备代码流早就写好了**：
-- `MicrosoftProvider.cs` 的 `DeviceEndpoint` 是 `login.microsoftonline.com/consumers/oauth2/v2.0/devicecode`
-- `GetDeviceCodeAsync` 提交 `client_id` + `scope=XboxLive.signin offline_access`
-- `PollDeviceCodeAsync` 用 `grant_type=urn:ietf:params:oauth:grant-type:device_code`
+
+* `MicrosoftProvider.cs` 的 `DeviceEndpoint` 是 `login.microsoftonline.com/consumers/oauth2/v2.0/devicecode`
+* `GetDeviceCodeAsync` 提交 `client\\\_id` + `scope=XboxLive.signin offline\\\_access`
+* `PollDeviceCodeAsync` 用 `grant\\\_type=urn:ietf:params:oauth:grant-type:device\\\_code`
 
 **真正的断点**是 `PCL.Core/App/Secrets.cs` 的 `MSOAuthClientId` 只从环境变量读，
 而 `EnvironmentInterop.GetSecret(..., readEnvDebugOnly: true)` 在 `#if !DEBUG` 下**根本不读环境变量**，
@@ -483,12 +533,12 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 ### 4.3 403 `Invalid app registration`
 
 拿到 token 后打通了前三步（设备码、Xbox Live 用户认证、XSTS），最后一步
-`POST https://api.minecraftservices.com/authentication/login_with_xbox` 返回 403。
+`POST https://api.minecraftservices.com/authentication/login\\\_with\\\_xbox` 返回 403。
 服务端原文：
 
 ```json
 {
-  "path": "/authentication/login_with_xbox",
+  "path": "/authentication/login\\\_with\\\_xbox",
   "errorMessage": "Invalid app registration, see https://aka.ms/AppRegInfo for more information"
 }
 ```
@@ -497,24 +547,24 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 `aka.ms/AppRegInfo` 指向 `help.minecraft.net` 的一篇 Zendesk 文章（正文由 SPA 渲染，抓不到）。
 
 **协议实现本身逐字段核对过与 HMCL 一致**：`RpsTicket` 的 `d=` 前缀、XSTS 的
-`RelyingParty = "rp://api.minecraftservices.com/"`、`uhs` 取自 `DisplayClaims.Xui[0].UserHash`、
+`RelyingParty = "rp://api.minecraftservices.com/"`、`uhs` 取自 `DisplayClaims.Xui\\\[0].UserHash`、
 `SandboxId = "RETAIL"`、`AuthMethod = "RPS"`、`SiteName = "user.auth.xboxlive.com"`。
 所以差异只能在应用注册属性上。
 
 **对照实验**：用假 token 直接打该端点返回 **401**（端点可达，token 无效给 401），
 而真实 token 得到 403——说明请求被拒在应用层。
 
-三份 README 现在都写了这一节的完整说明与自建应用的方法（环境变量 `PCL_MS_CLIENT_ID` 覆盖）。
+三份 README 现在都写了这一节的完整说明与自建应用的方法（环境变量 `PCL\\\_MS\\\_CLIENT\\\_ID` 覆盖）。
 
 ### 4.4 第三方登录：LittleSkin 的 OAuth 应用
 
-`YggdrasilConnectProvider.cs` 的 `_BuiltInClientIds` 里 `["littleskin.cn"] = "1637"`
+`YggdrasilConnectProvider.cs` 的 `\\\_BuiltInClientIds` 里 `\\\["littleskin.cn"] = "1637"`
 是本项目自己在 LittleSkin 注册的应用（应用名
 `Plain Craft Launcher (PCL) - Harness Edition`、回调 `https://open.littleskin.cn/oauth/callback`），
 不再是上游 PCL-CE 的 `1514`——授权页不会再显示「登录至 PCL CE」。
 
 **白名单已于 2026-10-26 获批**：`support@littleskin.in` 的 Steven Qiu 回复确认
-`client_id: 1637` 已加入设备代码流白名单。此前「登不上」的预期现象已解除。
+`client\\\_id: 1637` 已加入设备代码流白名单。此前「登不上」的预期现象已解除。
 
 但**初次申请一律先设为「测试模式」**（回复原文：「初次申请设备代码流白名单的应用
 将会被设为测试模式。测试模式下的应用仅供测试使用，只有应用的创建者可以授予应用权限」）。
@@ -522,28 +572,28 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 这是预期，不是缺陷。要投入正式使用，须回复那封邮件申请解除测试模式。
 
 在此之前如需让第三方临时可用，仍可设环境变量
-`PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游 PCL-CE 的应用。
+`PCL\\\_OAUTH\\\_CLIENT\\\_ID\\\_LITTLESKIN\\\_CN=1514` 指回上游 PCL-CE 的应用。
 
 **权限选择**：LittleSkin 文档明确 `Yggdrasil.PlayerProfiles.Read` 与 `.Select` **不可同时申请**，
-同时用会在设备代码流里报 `invalid_scope`。本项目选 **`Read`**：设备代码流不再强制用户在网页
-选角色，登录后在启动器内列出账号下全部角色自行挑选。当前 `_Scopes` 是
-`openid` / `offline_access` / `Yggdrasil.PlayerProfiles.Read` / `Yggdrasil.MinecraftToken.Create` /
-`Yggdrasil.Server.Join`，`YggdrasilOptions._scopesRequired` 同步为其中四项（不含 `offline_access`）。
+同时用会在设备代码流里报 `invalid\\\_scope`。本项目选 **`Read`**：设备代码流不再强制用户在网页
+选角色，登录后在启动器内列出账号下全部角色自行挑选。当前 `\\\_Scopes` 是
+`openid` / `offline\\\_access` / `Yggdrasil.PlayerProfiles.Read` / `Yggdrasil.MinecraftToken.Create` /
+`Yggdrasil.Server.Join`，`YggdrasilOptions.\\\_scopesRequired` 同步为其中四项（不含 `offline\\\_access`）。
 
 **令牌换发**：LittleSkin 的 OAuth 访问令牌只能访问账号服务，进游戏必须用
 `POST /authserver/oauth`（body `{"uuid": "<角色 UUID>"}`，需 `Yggdrasil.MinecraftToken.Create`）
-换成 Yggdrasil 的 Minecraft 令牌。`_CompleteAsync` 在角色确定后自动换发，
+换成 Yggdrasil 的 Minecraft 令牌。`\\\_CompleteAsync` 在角色确定后自动换发，
 `ValidateAsync` 改用该令牌请求 `/sessionserver/session/minecraft/profile` 判断有效性，
 老档案里的 OAuth 令牌会因此校验失败并触发一次静默刷新完成迁移。
 
-`6413ee7` 加了环境变量覆盖机制：`PCL_OAUTH_CLIENT_ID_<主机名大写、点与连字符换下划线>`，
-例如 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN`。三个调用点语义一致：
-`PageLoginAuth.xaml.cs:337`（`IsOAuthSupportedAsync` 短路判定）、`:370`（`_GetClientId` 取值）、
+`6413ee7` 加了环境变量覆盖机制：`PCL\\\_OAUTH\\\_CLIENT\\\_ID\\\_<主机名大写、点与连字符换下划线>`，
+例如 `PCL\\\_OAUTH\\\_CLIENT\\\_ID\\\_LITTLESKIN\\\_CN`。三个调用点语义一致：
+`PageLoginAuth.xaml.cs:337`（`IsOAuthSupportedAsync` 短路判定）、`:370`（`\\\_GetClientId` 取值）、
 `YggdrasilConnectProvider.cs:54`（构造函数）。
 
-### 4.5 `expired_token` 的友好提示
+### 4.5 `expired\\\_token` 的友好提示
 
-第三方登录长期未授权后刷新会报 `IdentityModelAuthenticationException: 认证失败：expired_token`，
+第三方登录长期未授权后刷新会报 `IdentityModelAuthenticationException: 认证失败：expired\\\_token`，
 原本整段堆栈糊进弹窗。`2cbf5c8` 新增 `catch (IdentityModelAuthenticationException ex)` 分支，
 按 `ex.Error` 映射到 `Launch.Account.Auth.Expired` / `.Denied` / `.InvalidScope` / `.Rejected`
 四个语言 key，走 `HintService.Hint(...)` 而不是模态框。
@@ -556,7 +606,7 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 用户要求离线与第三方能被单独选择（因为正版登录还在等 Minecraft 侧登记），
 已改为直接 `return true;`，并隐藏提示条 `HintMicrosoft`。
 
----
+\---
 
 ## 第 5 章　联机（陶瓦 / EasyTier）
 
@@ -564,17 +614,18 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 
 `4e489a9` 修了一批会导致「永远转圈」的问题：
 
-- **EasyTier 进程退出无人知晓**：`ETController` 的 `ETProcess.Start()` 后没有注册 `Exited` 事件，
-  进程崩了界面还显示「运行中」。已补事件：`LogWrapper.Warn("Link", "EasyTier 进程已退出，联机可能已中断")`
-  + `Status = ETState.Stopped` + `ETProcess = null`；并在 `EndProgramForce` 开头调
-  `PCL.Core.Link.EasyTier.ETController.Exit()`。
-- **等 `PlayerList` 无超时**（`LobbyController.cs:77`）：已补 15 秒上限 + `ct.ThrowIfCancellationRequested()`。
-- **`TcpForwardWorker.cs:141` 的 `ConnectAsync` 无超时**：已补 `CancelAfter(10s)` 的 linked token。
-- **`McForward` / `McBroadcast` 重建前没停旧的**：已在赋值前置 null 并 Stop，`CloseAsync` 同步置空。
-- **`PageToolsGameLink` 的 `BtnJoin_Click` 可以重入**：已加 `Interlocked.CompareExchange`
-  的单飞保护。
-- **`TerracottaProcess` 的 `ResetClient()` 不持锁、`ShutdownAsync` 取 client 与置 null 不原子**：
-  已用 `Gate.Wait()/Release()` 包裹，`ShutdownAsync` 改 `await Gate.WaitAsync(ct)`。
+* **EasyTier 进程退出无人知晓**：`ETController` 的 `ETProcess.Start()` 后没有注册 `Exited` 事件，
+进程崩了界面还显示「运行中」。已补事件：`LogWrapper.Warn("Link", "EasyTier 进程已退出，联机可能已中断")`
+
+  * `Status = ETState.Stopped` + `ETProcess = null`；并在 `EndProgramForce` 开头调
+`PCL.Core.Link.EasyTier.ETController.Exit()`。
+* **等 `PlayerList` 无超时**（`LobbyController.cs:77`）：已补 15 秒上限 + `ct.ThrowIfCancellationRequested()`。
+* **`TcpForwardWorker.cs:141` 的 `ConnectAsync` 无超时**：已补 `CancelAfter(10s)` 的 linked token。
+* **`McForward` / `McBroadcast` 重建前没停旧的**：已在赋值前置 null 并 Stop，`CloseAsync` 同步置空。
+* **`PageToolsGameLink` 的 `BtnJoin\\\_Click` 可以重入**：已加 `Interlocked.CompareExchange`
+的单飞保护。
+* **`TerracottaProcess` 的 `ResetClient()` 不持锁、`ShutdownAsync` 取 client 与置 null 不原子**：
+已用 `Gate.Wait()/Release()` 包裹，`ShutdownAsync` 改 `await Gate.WaitAsync(ct)`。
 
 ### 5.2 日志里的令牌泄漏
 
@@ -598,19 +649,19 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 ```csharp
 using var terracottaCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
 if (!TerracottaProcess.ShutdownAsync(terracottaCts.Token).Wait(TimeSpan.FromSeconds(4)))
-    ModBase.Log("[Link] 关闭陶瓦超时，已放弃等待", ModBase.LogLevel.Debug);
+    ModBase.Log("\\\[Link] 关闭陶瓦超时，已放弃等待", ModBase.LogLevel.Debug);
 ```
 
-只关闭「本次会话确认使用过」的实例（`_client` 非空），不主动去杀别人的：
-陶瓦用 `%TEMP%\terracotta\terracotta.lock` 做单实例互斥，如果用户同时用 HMCL 联机，
+只关闭「本次会话确认使用过」的实例（`\\\_client` 非空），不主动去杀别人的：
+陶瓦用 `%TEMP%\\\\terracotta\\\\terracotta.lock` 做单实例互斥，如果用户同时用 HMCL 联机，
 两个启动器共享的是同一个陶瓦进程，无条件 panic 会顺手断掉 HMCL 的联机。
 
-验证：手工用 `--hmcl` 拉起 `PCLHE/Terracotta/0.4.2/terracotta-*-windows-*.exe`，
+验证：手工用 `--hmcl` 拉起 `PCLHE/Terracotta/0.4.2/terracotta-\\\*-windows-\\\*.exe`，
 等端口文件写出 `{"port":N}` 后 `GET /meta` 正常应答；再 `GET /panic?peaceful=true`，
 4 秒内进程消失。注意 `/panic` 会先断开连接，PowerShell 侧会报「无法连接到远程服务器」，
 但进程确已退出——所以 `ShutdownAsync` 里把异常吞掉当「已退出」是对的。
 
----
+\---
 
 ## 第 6 章　内存优化
 
@@ -619,36 +670,37 @@ if (!TerracottaProcess.ShutdownAsync(terracottaCts.Token).Wait(TimeSpan.FromSeco
 按用户要求，这一块被做成**独立于启动主流程**的工具，放在「工具 → 百宝箱」里，可手动触发。
 它不是「减小内存占用」的魔法，而是把各进程暂时用不到的物理页换出到页面文件：
 
-- 不减少任何进程的内存需求
-- 被换出的页在下次访问时会重新读入，**收益是暂时的**
-- 不影响数据正确性
-- 系统进程与其他用户的进程无法处理，属预期
+* 不减少任何进程的内存需求
+* 被换出的页在下次访问时会重新读入，**收益是暂时的**
+* 不影响数据正确性
+* 系统进程与其他用户的进程无法处理，属预期
 
 ### 6.2 实现
 
 `PCL.Core/Utils/OS/KernelInterop.cs` 新增：
-- `public static (int Succeeded, int Failed) EmptyWorkingSets(IReadOnlySet<uint>? excludedProcessIds = null)`
-- P/Invoke：`_EmptyWorkingSet`（psapi）、`_OpenProcess`、`_CloseHandle`（kernel32）
-- 需要用到的访问权限：`PROCESS_QUERY_LIMITED_INFORMATION (0x1000) | PROCESS_SET_QUOTA (0x0100)`
+
+* `public static (int Succeeded, int Failed) EmptyWorkingSets(IReadOnlySet<uint>? excludedProcessIds = null)`
+* P/Invoke：`\\\_EmptyWorkingSet`（psapi）、`\\\_OpenProcess`、`\\\_CloseHandle`（kernel32）
+* 需要用到的访问权限：`PROCESS\\\_QUERY\\\_LIMITED\\\_INFORMATION (0x1000) | PROCESS\\\_SET\\\_QUOTA (0x0100)`
 
 UI 在 `Pages/PageTools/PageToolsTest.xaml` 与 `.xaml.cs`，包含「刷新」与「释放物理内存」两个按钮，
-以及 `Tools.Memory.*` 系列语言 key（8 个，写进 `zh-CN` / `zh-TW` / `en-US` / `en-GB`）。
+以及 `Tools.Memory.\\\*` 系列语言 key（8 个，写进 `zh-CN` / `zh-TW` / `en-US` / `en-GB`）。
 
 ### 6.3 三个坑（都很容易重犯）
 
 **坑一：`LibraryImport` 不写 `EntryPoint` 会用方法名当导出名。**
 
 ```csharp
-[LibraryImport("kernel32.dll")]                       // ← 错误
-private static partial nint _OpenProcess(uint, bool, uint);
+\\\[LibraryImport("kernel32.dll")]                       // ← 错误
+private static partial nint \\\_OpenProcess(uint, bool, uint);
 
-[LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]  // ← 正确
+\\\[LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]  // ← 正确
 ```
 
-源生成器在缺省时拿方法名本身去 DLL 里找，于是去找 `_OpenProcess`——kernel32 里没有这个名字，
+源生成器在缺省时拿方法名本身去 DLL 里找，于是去找 `\\\_OpenProcess`——kernel32 里没有这个名字，
 抛 `EntryPointNotFoundException`。这个异常又被逐进程的 `catch { failed += 1; }` 吞掉，
 于是**每个进程都记一笔「跳过」，功能一个进程都没处理过**，界面显示「成功 0 个」。
-同一处 `_CloseHandle` 也漏了，导致每打开一个进程就泄漏一个句柄。
+同一处 `\\\_CloseHandle` 也漏了，导致每打开一个进程就泄漏一个句柄。
 
 修复时同时把 `catch` 收窄：`Win32Exception`（权限不足）仍计入跳过，其余异常抛出来。
 否则下一次写错入口名还是只能看到「全部跳过」。
@@ -666,19 +718,19 @@ double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 
 
 `Controls/MyButton.xaml.cs:12` 声明 `public delegate void ClickEventHandler(object sender, MouseButtonEventArgs e);`
 ——不是 `RoutedEventHandler`。写成 `EventArgs` 会在运行时抛
-`XamlParseException: 无法从文本 "BtnMemoryRefresh_Click" 创建 "Click". Cannot bind to the target method...`，
+`XamlParseException: 无法从文本 "BtnMemoryRefresh\\\_Click" 创建 "Click". Cannot bind to the target method...`，
 而且只在页面首次打开时爆，编译期完全看不出来。
 
-**另外**：XAML 里写 `\n` 不会被解释成换行，多行文案要用 `&#10;`。
+**另外**：XAML 里写 `\\\\n` 不会被解释成换行，多行文案要用 `\\\&#10;`。
 
 ### 6.4 验证数据
 
 把 `PCL.Core.dll` 单独加载出来调用同一个方法，部署前后对照：
 
-| | 成功 | 失败 | 可用物理内存变化 |
-| --- | --- | --- | --- |
-| 修复前 | 0 | 311 | 1.6 MB |
-| 修复后 | 142 | 161 | **+772 MB** |
+||成功|失败|可用物理内存变化|
+|-|-|-|-|
+|修复前|0|311|1.6 MB|
+|修复后|142|161|**+772 MB**|
 
 那 161 个失败是系统进程（`csrss` / `lsass` / `services` 之类），普通用户权限打不开。
 **管理员身份运行能处理更多**（需要 `SeDebugPrivilege`）。
@@ -691,7 +743,7 @@ double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 
 
 **2026-10-24 已收尾**：该功能已重写为仓库内独立子项目 `PCL.MemoryOptimizer`（独立 csproj、独立版本号、README 与 DESIGN），随启动器一同发布，不再单独出可执行程序（深清必须复用启动器已授权的提权通道，独立 exe 会绕过「游戏是否在跑」的确认）。能力分三档：轻量护航（只整理启动器自身）、游戏内护航（排除游戏进程，整理后台程序并把游戏内存优先级提到最高）、深度清理（经 UAC 授权调用内核接口整理全系统工作集，实测可用内存 +2.4 GB、进程数不变）。免责说明写在 `PCL.MemoryOptimizer/README.md` 与 `docs/RELEASE-NOTES-v0.1.2-Alpha.md`。
 
----
+\---
 
 ## 第 7 章　构建、部署与发布
 
@@ -701,20 +753,21 @@ double freedMb = ((double)after.AvailablePhysical - before.AvailablePhysical) / 
 **csproj 文件名仍是 `Plain Craft Launcher 2.csproj`**，只有目录名变了。
 
 改名必须同步的地方：
-- `Plain Craft Launcher 2.slnx:16` 的项目路径
-- `.github/workflows/reusable-build.yml:44` 的 `dotnet publish "PCL-Harness Edition/Plain Craft Launcher 2.csproj"`
-- 三份 README 里的构建命令与 LICENCE 链接
-- `PCL-Harness Edition/metadata.json` 的 licence URL
+
+* `Plain Craft Launcher 2.slnx:16` 的项目路径
+* `.github/workflows/reusable-build.yml:44` 的 `dotnet publish "PCL-Harness Edition/Plain Craft Launcher 2.csproj"`
+* 三份 README 里的构建命令与 LICENCE 链接
+* `PCL-Harness Edition/metadata.json` 的 licence URL
 
 漏掉 `slnx` 会报 `MSB3202: 未找到项目文件`。
 
 ### 7.2 数据目录隔离
 
-`PCL.Core/App/Paths.cs` 的数据目录从上游的 `PCL` 改名为 `PCLHE`（Debug 版 `PCLHE_Debug`），
+`PCL.Core/App/Paths.cs` 的数据目录从上游的 `PCL` 改名为 `PCLHE`（Debug 版 `PCLHE\\\_Debug`），
 并保留 `oldName` 用于从 `PCLCE` 迁移。`ConfigService.cs:160-171` 的迁移逻辑同时识别
 `config.v1.json`（上游的实际文件名）。
 
-`EncryptHelper` 增加了 `_TryInheritKeyFromUpstream`，让新版本能复用旧版本的 DPAPI 密钥。
+`EncryptHelper` 增加了 `\\\_TryInheritKeyFromUpstream`，让新版本能复用旧版本的 DPAPI 密钥。
 **注意 DPAPI salt 字符串 `"PCL CE Encryption Key"u8` 不能改**，改了会作废所有已加密数据。
 
 ### 7.3 本机构建与部署
@@ -739,11 +792,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File deploy.ps1
 ### 7.4 运行目录必须放在 workspace 之外
 
 从 DSH workspace 内部启动的进程会被装进 AppContainer，只对 workspace 有写权限，
-于是写 `%APPDATA%\PCLHE\instance.lock` 恒为 `ACCESS_DENIED`，启动即崩。
+于是写 `%APPDATA%\\\\PCLHE\\\\instance.lock` 恒为 `ACCESS\\\_DENIED`，启动即崩。
 
-**结论**：运行目录固定为 `C:\Users\kingd\PCL-HE`，桌面快捷方式指向那里的 `PCL-HE.exe`。
-从 `win_bash` 启动 GUI 时还要先把 `$env:TEMP` / `$env:TMP` 改回
-`C:\Users\kingd\AppData\Local\Temp`，否则 `Paths` 静态构造会在沙箱临时目录上抛
+**结论**：运行目录固定为 `C:\\\\Users\\\\kingd\\\\PCL-HE`，桌面快捷方式指向那里的 `PCL-HE.exe`。
+从 `win\\\_bash` 启动 GUI 时还要先把 `$env:TEMP` / `$env:TMP` 改回
+`C:\\\\Users\\\\kingd\\\\AppData\\\\Local\\\\Temp`，否则 `Paths` 静态构造会在沙箱临时目录上抛
 `UnauthorizedAccessException`。
 
 ### 7.5 代码签名
@@ -756,11 +809,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File deploy.ps1
 
 ### 7.6 发布流程的四个坑
 
-目标：`release-publish.yml` 由 `v*` tag 或手动触发，构建 x64 + ARM64，签名（sigstore），
+目标：`release-publish.yml` 由 `v\\\*` tag 或手动触发，构建 x64 + ARM64，签名（sigstore），
 发 GitHub Release（Beta 配置自动标 prerelease）。
 
 **坑一：workflow 文件解析失败时，run 的 `jobs` 是空的。**
-`GET /actions/runs/{id}/jobs` 返回 `total_count: 0`，`/actions/workflows` 里的 name 退化成
+`GET /actions/runs/{id}/jobs` 返回 `total\\\_count: 0`，`/actions/workflows` 里的 name 退化成
 文件路径（`.github/workflows/release-publish.yml` 而不是 `Release publish`）——这是
 「GitHub 从未成功解析这个文件」的信号。
 
@@ -774,7 +827,7 @@ Invalid workflow file: .github/workflows/release-publish.yml#L1
 ```
 
 错误信息只在 run 的页面里，API 的 `jobs` 和 `logs` 都看不到。
-最终方案：**版本变量直接取完整的 tag 名**（`github.event.inputs.version || github.ref_name`），
+最终方案：**版本变量直接取完整的 tag 名**（`github.event.inputs.version || github.ref\\\_name`），
 不再做字符串处理。
 
 **坑三：sigstore 签名会把 workflow 自身的文件名写进证书 SAN。**
@@ -795,23 +848,26 @@ csproj 里 `<PublishSingleFile>true</PublishSingleFile>`，而 workflow 传了 `
 
 ### 7.7 发布记录
 
-- `v0.1.1`（2026-10-21）：首个 Release，prerelease，含 `PCL_HE_Beta_x64.zip`（78 MB）
-  与 `PCL_HE_Beta_ARM64.zip`（73 MB），各带 `.sigstore.json`
+* `v0.1.1`（2026-10-21）：首个 Release，prerelease，含 `PCL\\\_HE\\\_Beta\\\_x64.zip`（78 MB）
+与 `PCL\\\_HE\\\_Beta\\\_ARM64.zip`（73 MB），各带 `.sigstore.json`
 
 
-- `v0.1.2-Alpha`（2026-10-24）：四产物 `{x64,ARM64} × {self-contained,framework-dependent}`，均带 `.sigstore.json`；包内为 `PCL-HE.exe` + `LICENCE` + `CONFIG/`。
-  - **当天重发过一次**。首发版本的正版劝导被弱化（详见 9.5），合规修复后按维护者要求删掉旧 tag 与 Release、重建同名 tag 重新发布。
-  - 重发踩了两个坑，都写进了 workflow：① `rename_and_release` 任务原来**没有 checkout**，新增的「把 LICENCE 复制进包里」步骤找不到源文件，四个打包任务全挂（`cp: cannot stat`）；补上 checkout 后正常。② 复制命令最初写成 `cp "../PCL-Harness Edition/LICENCE"`，但该步骤的工作目录是仓库根，`../` 会指到检出目录之外，同样失败——正确写法是相对仓库根的 `PCL-Harness Edition/LICENCE`。
-  - 打包成功后才执行 sigstore 验签与上传，所以这类失败会表现为「build 全绿、rename_and_release 全红、publish_draft 被跳过」，Release 不会生成。
+
+* `v0.1.2-Alpha`（2026-10-24）：四产物 `{x64,ARM64} × {self-contained,framework-dependent}`，均带 `.sigstore.json`；包内为 `PCL-HE.exe` + `LICENCE` + `CONFIG/`。
+
+  * **当天重发过一次**。首发版本的正版劝导被弱化（详见 9.5），合规修复后按维护者要求删掉旧 tag 与 Release、重建同名 tag 重新发布。
+  * 重发踩了两个坑，都写进了 workflow：① `rename\\\_and\\\_release` 任务原来**没有 checkout**，新增的「把 LICENCE 复制进包里」步骤找不到源文件，四个打包任务全挂（`cp: cannot stat`）；补上 checkout 后正常。② 复制命令最初写成 `cp "../PCL-Harness Edition/LICENCE"`，但该步骤的工作目录是仓库根，`../` 会指到检出目录之外，同样失败——正确写法是相对仓库根的 `PCL-Harness Edition/LICENCE`。
+  * 打包成功后才执行 sigstore 验签与上传，所以这类失败会表现为「build 全绿、rename\_and\_release 全红、publish\_draft 被跳过」，Release 不会生成。
+
 ### 7.8 推送 GitHub 的不稳定
 
 本机到 `github.com:443` 常年不稳，`api.github.com` 反而正常。可用配方：
 
 ```bash
-git -c credential.helper= \
-    -c http.curloptResolve=github.com:443:<IP> \
-    -c http.version=HTTP/1.1 \
-    -c http.lowSpeedLimit=0 -c http.lowSpeedTime=30 \
+git -c credential.helper= \\\\
+    -c http.curloptResolve=github.com:443:<IP> \\\\
+    -c http.version=HTTP/1.1 \\\\
+    -c http.lowSpeedLimit=0 -c http.lowSpeedTime=30 \\\\
     push "https://<user>:<token>@github.com/<owner>/<repo>.git" main:main
 ```
 
@@ -827,13 +883,13 @@ git -c credential.helper= \
 
 ```python
 raw = open(path, "rb").read()
-bom = raw.startswith(b"\xef\xbb\xbf")
-crlf = raw.count(b"\r\n") > 0
-t = raw.decode("utf-8-sig" if bom else "utf-8").replace("\r\n", "\n")
+bom = raw.startswith(b"\\\\xef\\\\xbb\\\\xbf")
+crlf = raw.count(b"\\\\r\\\\n") > 0
+t = raw.decode("utf-8-sig" if bom else "utf-8").replace("\\\\r\\\\n", "\\\\n")
 # ... 处理 ...
-if crlf: t = t.replace("\n", "\r\n")
+if crlf: t = t.replace("\\\\n", "\\\\r\\\\n")
 data = t.encode("utf-8")
-if bom: data = b"\xef\xbb\xbf" + data
+if bom: data = b"\\\\xef\\\\xbb\\\\xbf" + data
 open(path, "wb").write(data)
 ```
 
@@ -843,7 +899,7 @@ open(path, "wb").write(data)
 **从工作树读字节上传到 GitHub API 会污染换行符**（工作树 CRLF、git 对象 LF）。
 正确做法是 `git cat-file blob <commit>:<path>` 取字节。
 
----
+\---
 
 ## 第 8 章　审计修复汇总
 
@@ -851,24 +907,24 @@ open(path, "wb").write(data)
 
 抽样读代码发现不了系统性问题，所以分三轮派出只读子代理做定向审查，每轮覆盖不同方向：
 
-| 轮次 | 范围 | 产出 |
-| --- | --- | --- |
-| 第一轮 | 下载/网络 + UI | 8 条 + 6 条 |
-| 第二轮 | 启动/实例链路 + 联机/登录链路 | 10 条 + 10 条 |
-| 第三轮 | 本地化完整性 + 静态资源引用 | 各若干 |
+|轮次|范围|产出|
+|-|-|-|
+|第一轮|下载/网络 + UI|8 条 + 6 条|
+|第二轮|启动/实例链路 + 联机/登录链路|10 条 + 10 条|
+|第三轮|本地化完整性 + 静态资源引用|各若干|
 
 另做了一次**穷举扫描**（不是抽样）：用脚本按大括号配对提取全部 `async void` 方法体，
 判断是否含 `try`。结果 22 个 `async void` 里有 8 个没有异常出口。
 
 **为什么 `async void` 缺 catch 值得修**：`Application.xaml.cs:159` 有全局
 `DispatcherUnhandledException` 且 `e.Handled = true`，所以不会崩进程，但会弹全局错误框；
-更要紧的是两处会造成**永久不一致状态**——`BtnCreate_Click` 抛异常后按钮永远禁用，
-`BtnAddServer_Click` 已经 `serverList.Add` + `PanServers.Children.Add` 但文件没写成。
+更要紧的是两处会造成**永久不一致状态**——`BtnCreate\\\_Click` 抛异常后按钮永远禁用，
+`BtnAddServer\\\_Click` 已经 `serverList.Add` + `PanServers.Children.Add` 但文件没写成。
 
 ### 8.2 值得单独记的几条
 
 **`Thread.Sleep` 在 UI 线程上自旋**（`PageSetupUpdate.xaml.cs:156-162`）：
-`BtnUpdate_Timer()` 用 `ModBase.RunInUi(...)` + `Thread.Sleep(200)` 循环，而调用点在
+`BtnUpdate\\\_Timer()` 用 `ModBase.RunInUi(...)` + `Thread.Sleep(200)` 循环，而调用点在
 `async void CheckUpdate()` 的 UI 续体里（`await IsLatestAsync()` 没加 `ConfigureAwait(false)`），
 直接把消息泵堵死，主窗口「未响应」。已改成 `async Task` + `await Task.Delay`。
 
@@ -898,74 +954,74 @@ open(path, "wb").write(data)
 用脚本按大括号配对提取全部 22 个 `async void` 方法体并判断是否含 `try`，其中 8 个没有。
 `Application.xaml.cs:159` 有全局 `DispatcherUnhandledException` 且 `e.Handled = true`，
 所以不会崩进程，但会弹全局错误框；更要紧的是两处会造成**永久不一致状态**——
-`BtnCreate_Click` 抛异常后按钮永远禁用，`BtnAddServer_Click` 已经 `serverList.Add` +
+`BtnCreate\\\_Click` 抛异常后按钮永远禁用，`BtnAddServer\\\_Click` 已经 `serverList.Add` +
 `PanServers.Children.Add` 但文件没写成。
 
 ### 8.3 明确「不是缺陷」的几处
 
 审计里这些被误报过，记下来避免重复排查：
 
-- `MyButton.xaml.cs:54/57` 是两个不同重载，不是重复定义
-- `PageSetupGameLink.xaml.cs:150`、`PageSetupJava.xaml.cs:39`、`ModDownloadLib.cs:1169` 的
-  `GetAwaiter().GetResult()` 都在 `ModLoader.cs:632` 的 `Task.Run` 线程池内，不构成死锁
-- `Lang.Number<T>(T value, string? format)` 的第二参数是 .NET 数字格式串（`"N0"` / `"P0"`），
-  不查语言 key
-- 其他语言缺 key 时**回退到 zh-CN**（`LocalizationService.cs:31` `DefaultLanguageCode = "zh-CN"`），
-  只有 zh-CN 也缺才露原始 key
-- `PageDownloadCompFavorites.xaml.cs:186-187` 无参取 `Title` 模板是故意的，
-  由 `:161` 的 `string.Format(newItem.Title, 0)` 消费
+* `MyButton.xaml.cs:54/57` 是两个不同重载，不是重复定义
+* `PageSetupGameLink.xaml.cs:150`、`PageSetupJava.xaml.cs:39`、`ModDownloadLib.cs:1169` 的
+`GetAwaiter().GetResult()` 都在 `ModLoader.cs:632` 的 `Task.Run` 线程池内，不构成死锁
+* `Lang.Number<T>(T value, string? format)` 的第二参数是 .NET 数字格式串（`"N0"` / `"P0"`），
+不查语言 key
+* 其他语言缺 key 时**回退到 zh-CN**（`LocalizationService.cs:31` `DefaultLanguageCode = "zh-CN"`），
+只有 zh-CN 也缺才露原始 key
+* `PageDownloadCompFavorites.xaml.cs:186-187` 无参取 `Title` 模板是故意的，
+由 `:161` 的 `string.Format(newItem.Title, 0)` 消费
 
 ### 8.4 本地化修复
 
-- zh-CN 缺 3 个 key：`Minecraft.Download.Error.InstallerTimeout`、`VanillaDownloadTimeout`、
-  `VanillaDownloadFailed`（`ModDownloadLib.cs:876/1002/1009` 引用）
-- `Download.Install.State.GetVersionListFailed` 的文案含 `{0}`，但有 5 处无参拼接：
-  `PageDownloadInstall.xaml.cs:1134/1855/1962/2205`、`PageInstanceInstall.xaml.cs:1379`
-- `Instance.Resource.Item.Schematic.FileType` 的文案不含占位符，但有 3 处传参
-  （`PageInstanceCompResource.xaml.cs:2942/2964/2997`），参数被静默丢弃
-- `ModLaunch.cs:2901/2906/2911` 的窗口标题替换硬编码了中文「离线」「正版」「Authlib-Injector」，
-  已改成 `Minecraft.Launch.Login.Type.*` 三个 key
-- `InstallerFailed` / `InstallerLogUnreadable` / `InstallerNoLogOutput` 三个 key 在代码里**零引用**，
-  属于孤儿条目（真正接线的是 `InstallerFailedLastLine`）
+* zh-CN 缺 3 个 key：`Minecraft.Download.Error.InstallerTimeout`、`VanillaDownloadTimeout`、
+`VanillaDownloadFailed`（`ModDownloadLib.cs:876/1002/1009` 引用）
+* `Download.Install.State.GetVersionListFailed` 的文案含 `{0}`，但有 5 处无参拼接：
+`PageDownloadInstall.xaml.cs:1134/1855/1962/2205`、`PageInstanceInstall.xaml.cs:1379`
+* `Instance.Resource.Item.Schematic.FileType` 的文案不含占位符，但有 3 处传参
+（`PageInstanceCompResource.xaml.cs:2942/2964/2997`），参数被静默丢弃
+* `ModLaunch.cs:2901/2906/2911` 的窗口标题替换硬编码了中文「离线」「正版」「Authlib-Injector」，
+已改成 `Minecraft.Launch.Login.Type.\\\*` 三个 key
+* `InstallerFailed` / `InstallerLogUnreadable` / `InstallerNoLogOutput` 三个 key 在代码里**零引用**，
+属于孤儿条目（真正接线的是 `InstallerFailedLastLine`）
 
 ### 8.5 静态资源
 
-- `PageSetupUpdate.xaml:141` 引用的 `Images/Icons/Tahoe.png` 不存在。
-  实测 `XamlReader.Parse` **不抛异常**（`Image.Source` 为 null），属静默缺图，从基线起就悬空。
-- 孤儿资源：`Heads/Logo-CE.png`（品牌残留）、`Heads/Logo.png`、
-  `Skins/{Ari,Efe,Kai,Makena,Noor,Sunny,Zuri}.png`
+* `PageSetupUpdate.xaml:141` 引用的 `Images/Icons/Tahoe.png` 不存在。
+实测 `XamlReader.Parse` **不抛异常**（`Image.Source` 为 null），属静默缺图，从基线起就悬空。
+* 孤儿资源：`Heads/Logo-CE.png`（品牌残留）、`Heads/Logo.png`、
+`Skins/{Ari,Efe,Kai,Makena,Noor,Sunny,Zuri}.png`
 
----
+\---
 
 ## 第 9 章　文档、合规与许可证
 
 ### 9.1 必须保留的内容（不要动）
 
-- 「关于」页对上游的署名与头像（龙腾猫跃 / PCL Community）
-- `metadata.json` 的 source / licence 字段
-- `.github/ISSUE_TEMPLATE/config.yml` 里的上游入口
-- `.github/FUNDING.yml`（龙腾猫跃 爱发电）
-- 数据目录名 `PCL`（`PCL.Core/App/Paths.cs`）
-- 语言文件里的 `PCL Community Edition` 致谢
-- 「关于」页与 README 里的爱发电赞助链接（《PCL 存储库合理使用指南》重度使用第 3 条硬性要求）
+* 「关于」页对上游的署名与头像（龙腾猫跃 / PCL Community）
+* `metadata.json` 的 source / licence 字段
+* `.github/ISSUE\\\_TEMPLATE/config.yml` 里的上游入口
+* `.github/FUNDING.yml`（龙腾猫跃 爱发电）
+* 数据目录名 `PCL`（`PCL.Core/App/Paths.cs`）
+* 语言文件里的 `PCL Community Edition` 致谢
+* 「关于」页与 README 里的爱发电赞助链接（《PCL 存储库合理使用指南》重度使用第 3 条硬性要求）
 
 ### 9.2 已清理的内容
 
-- 13+2 个文件里的 AI 模型署名注释（保留了两条合法的第三方署名：
-  `en-US.xaml:3189` / `en-GB.xaml:3133` 的 "Author: pynickle, partially AI-generated"）
-- `.disabled` 后缀的 issue template 也曾漏过品牌替换
+* 13+2 个文件里的 AI 模型署名注释（保留了两条合法的第三方署名：
+`en-US.xaml:3189` / `en-GB.xaml:3133` 的 "Author: pynickle, partially AI-generated"）
+* `.disabled` 后缀的 issue template 也曾漏过品牌替换
 
 ### 9.3 三份 README
 
-`README.md`（简中）、`README-EN.md`（英）、`README-ZH_TW.md`（繁中）内容需保持同步。
+`README.md`（简中）、`README-EN.md`（英）、`README-ZH\\\_TW.md`（繁中）内容需保持同步。
 已有的专门章节：
 
-- 「关于正版登录目前的状况」：设备码流程、内置应用信息、403 限制、自建应用的方法
-- 「Windows 提示『已保护你的电脑』怎么办」：自签名不解决分发、如何解除锁定
-- 「项目缘起与开发方式」：人类架构与合规审查 + AI 辅助编程的分工说明
+* 「关于正版登录目前的状况」：设备码流程、内置应用信息、403 限制、自建应用的方法
+* 「Windows 提示『已保护你的电脑』怎么办」：自签名不解决分发、如何解除锁定
+* 「项目缘起与开发方式」：人类架构与合规审查 + AI 辅助编程的分工说明
 
-**排版坑**：用 `(?<!\n\n)\n## ` 加空行的正则，在已经是「空行 + 标题」的情况下仍会匹配，
-产生 `\n\n\n##`。修法是随后 `t.replace("\n\n\n## ", "\n\n## ")`。
+**排版坑**：用 `(?<!\\\\n\\\\n)\\\\n## ` 加空行的正则，在已经是「空行 + 标题」的情况下仍会匹配，
+产生 `\\\\n\\\\n\\\\n##`。修法是随后 `t.replace("\\\\n\\\\n\\\\n## ", "\\\\n\\\\n## ")`。
 
 ### 9.4 LICENSE 与署名
 
@@ -978,13 +1034,13 @@ open(path, "wb").write(data)
 
 原文在 `PCL-Harness Edition/LICENCE`（5904 字节），包含《PCL 分发有限许可》《PCL 存储库合理使用指南》与【PCL-HE 补充说明】。要注意：《分发有限许可》只授予「原样副本」的复制分发权，改作衍生走的是《合理使用指南》的「重度使用」路径。
 
-| 要求 | 结论 | 证据 |
-| --- | --- | --- |
-| 第三方二次创作声明 | 有，但界面缺失（已补） | `README.md`、`LICENCE` 补充说明有；「关于」页原本没有 |
-| 名称以 PCL 开头 + 第三方后缀 | 合规 | 窗口标题 `Plain Craft Launcher - Harness Edition`，`metadata.json` 的 `name` 同 |
-| 关于页**首位**署名 + 赞助链接 + 公开源码 + 保留指南 | 合规 | 第一张卡片第一行即龙腾猫跃，紧邻「赞助原作者」按钮（爱发电）；仓库公开；指南原文完整保留 |
-| 正版劝导不低于上游 `McLaunchPrecheck` | **不合规** | 上游基线是 `if (!ProfileService.HasMicrosoftProfile)` 每次提示；此前为了「别老弹窗」改成 `&& !Config.Launch.PurchaseHintDismissed`，点一次「下次一定」就永久不再提示 |
-| 主色相蓝 + 无赞助解锁 | 合规 | 默认 `ColorTheme.CatBlue`；四个主题色相 235/255/268/275 全在蓝色区间；全仓无赞助解锁类功能 |
+|要求|结论|证据|
+|-|-|-|
+|第三方二次创作声明|有，但界面缺失（已补）|`README.md`、`LICENCE` 补充说明有；「关于」页原本没有|
+|名称以 PCL 开头 + 第三方后缀|合规|窗口标题 `Plain Craft Launcher - Harness Edition`，`metadata.json` 的 `name` 同|
+|关于页**首位**署名 + 赞助链接 + 公开源码 + 保留指南|合规|第一张卡片第一行即龙腾猫跃，紧邻「赞助原作者」按钮（爱发电）；仓库公开；指南原文完整保留|
+|正版劝导不低于上游 `McLaunchPrecheck`|**不合规**|上游基线是 `if (!ProfileService.HasMicrosoftProfile)` 每次提示；此前为了「别老弹窗」改成 `\\\&\\\& !Config.Launch.PurchaseHintDismissed`，点一次「下次一定」就永久不再提示|
+|主色相蓝 + 无赞助解锁|合规|默认 `ColorTheme.CatBlue`；四个主题色相 235/255/268/275 全在蓝色区间；全仓无赞助解锁类功能|
 
 修复三步：
 
@@ -995,6 +1051,174 @@ open(path, "wb").write(data)
 三份 README 各加了一节「对《PCL 存储库合理使用指南》的遵守情况」，把上面这张表公开写出来。
 
 **铁律**：以后任何以「减少打扰」「优化体验」为名的改动，都不得削弱 `McLaunchPrecheck` 的正版购买劝导与赞助劝导。《合理使用指南》第 4 条要求「与上游一致或更激进」，弱化即违约——常量、配置项、静态标志都不行。
+
+\---
+
+## 第 10 章　自助安装 Java
+
+### 10.1 为什么另起一条路
+
+启动游戏时缺 Java，原本走的是 `Modules/Minecraft/ModJava.cs:435` 的 `JavaFileList()`：读 Mojang 的 piston-meta，把一份 JRE 拆成上百个文件逐个下载。网络差的时候这一步极慢，请求一失败整条链路就断，用户看到的是「Java 下载失败」而游戏根本起不来。
+
+2026-10-30 改成：**直接取 Adoptium 的 Eclipse Temurin JRE 安装包（.msi），装进系统后由 Windows 自己维护卸载与升级。** 一个 30 MB 左右的 MSI，一次请求，一次校验，交给 msiexec。
+
+放在「工具 → 百宝箱」里，独立成卡，不参与启动流程：装不装、装哪个版本，都由用户自己点。
+
+支持的版本：8 / 11 / 17 / 21 / 25（`ModJavaInstall.SupportedFeatures`）。
+
+### 10.2 取包：API、镜像与校验
+
+`PCL-Harness Edition/Modules/Minecraft/ModJavaInstall.cs`：
+
+* `ApiTemplate`：`https://api.adoptium.net/v3/assets/latest/{0}/hotspot?architecture=x64&image_type=jre&os=windows&vendor=eclipse`
+* **必须带 `User-Agent`**，否则一律 403。
+* 返回是数组，取 `[0]`：`binary.installer.name`（文件名）、`.link`（下载地址）、`.size`（字节）、`.checksum`（即 sha256），版本在 `release_name`（如 `jdk8u504-b01`）与 `version.semver`（如 `8.0.504+1`）。
+* 下载源顺序 `MirrorRoots`：清华 `mirrors.tuna.tsinghua.edu.cn/Adoptium` → 南大 `mirror.nju.edu.cn/Adoptium` → Adoptium 官方直链。
+  **镜像优先、官方兜底**：镜像按完整版本号拼路径，缺某个版本时是毫秒级 404，立刻换下一个源；
+  官方直链在部分国内网络要卡满 30 秒超时才失败，所以排在最后。
+  镜像滞后一版时（21 是 `21.0.12.1_1` 而官方已 `21.0.13_9`）就拿不到镜像，直接落到官方直链。
+* 下载完算 sha256 比对 `checksum`，不一致就删掉重来。
+
+实测体积（2026-10-30）：8u504+1 30.5 MB、11.0.32+101 30.1 MB、17.0.20+101 30.2 MB、21.0.13+9 33.4 MB、25.0.5+8 40.8 MB。
+
+### 10.3 三种装法
+
+|入口|流程|
+|-|-|
+|下载并安装|教程弹窗（30 秒倒计时，读不完点不动）→ 同版本已装时先问升级 → 选路径 → 下载与校验 → `Process.Start(msiexec /i <msi>)` 带向导，用户自己点下一步|
+|静默安装|红色授权须知 → 升级确认 → 选路径 → 下载与校验 → 走提权通道 `msiexec /i <msi> /qn /norestart [INSTALLDIR=...]`|
+|卸载|已安装列表每行的「卸载」→ 红色确认 → `msiexec /x {ProductCode} /qn /norestart`|
+
+提权复用仓库已有的 `PromoteService`：同一个 exe 以 `promote <主进程PID>` 启动，经命名管道 `PCLHE_PM@{pid}` 收发命令，命令格式是「操作名 参数」。所以只要在 `PCL.Core/Utils/OS/JavaInstallPromote.cs` 里加一个带 `[PromoteOperation("名字")]` 的静态方法就能被收集执行，不必改基础设施：
+
+`@csharp
+[PromoteOperation("java-install-msi")]   public static string? InstallMsi(string? arg)   // arg = 安装包路径|安装目录
+[PromoteOperation("java-uninstall-msi")] public static string? UninstallMsi(string? arg) // arg = {ProductCode}
+`@
+
+返回值统一是单行 JSON `{ok,code,rebootRequired?,message?}`，`3010`（`ERROR_SUCCESS_REBOOT_REQUIRED`）算成功。调用侧 `RunInstallViaPromote` / `RunUninstallViaPromote` 返回 `null` 表示用户取消了 UAC，不能当失败报错。
+
+### 10.4 装到哪里
+
+三选一，弹窗默认项按磁盘情况决定（`CreatePathContext`）：
+
+* 系统默认：`%ProgramFiles%\Eclipse Adoptium\jre-<ver>-hotspot`
+* 放进启动器文件夹：`<exe目录>\PCL\Adoptium JRE\jre-<feature>`（参考 PCL2 的 `PCL\Adoptium JRE`）
+* 自定义文件夹
+
+`RecommendSystem = !HasOtherDrive()`：只有一块硬盘时推荐系统默认，多盘时推荐启动器文件夹。`HasOtherDrive()` 拿 `Environment.SpecialFolder.Windows` 的盘符跟所有 `DriveType.Fixed` 比对，**不假设系统盘是 C**（`GetSystemInstallDir` 同样用 `SpecialFolder.ProgramFiles`，没有硬编码 `C:`）。
+
+**必须提醒用户选空文件夹。** Adoptium 的 MSI 带 `Upgrade` 表，装新版时 `RemoveExistingProducts` 会把旧版连同整个旧 `INSTALLDIR` 目录树删掉；装在盘符根或用户自己放了文件的目录上，会一起消失。界面上这条是红字。
+
+### 10.5 它不写 JavaSoft，所以必须自己登记
+
+Adoptium 的 MSI **不写** `HKLM\SOFTWARE\JavaSoft`，也不写 `HKLM\SOFTWARE\Eclipse Adoptium`，只写控制面板的卸载登记表：
+
+`@
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{ProductCode}            （64 位）
+HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{ProductCode}（32 位）
+`@
+
+里面有 `DisplayName`（`Eclipse Temurin JRE with Hotspot 21.0.13+9 (x64)`）、`DisplayVersion`（`21.0.13.101`）、`InstallLocation`。而 `Scanner/RegistryJavaScanner.cs` 只读 JavaSoft / Azul / Liberica，**扫不到它**。
+
+于是装完之后必须自己登记：`ModJavaInstall.RegisterInstalledDirectory(dir)` 用 `bin\java.exe` 走 `ModJava.Javas.AddOrGet`、置 `IsEnabled = true`、存配置。
+
+另一个坑：`InstallLocation` 是安装那一刻写死的，用户后来把文件夹挪走它不会更新。所以已装列表显示时 `LocationExists` 会为 `false`、字体调淡；状态行则优先用真实扫描结果，两者对不上时给 `Tools.Java.StatusStale`。
+
+### 10.6 装完要自动反馈
+
+手动路径走的是带向导的 msiexec，启动器只能等。`WatchManualInstall` 在后台线程每 1.5 秒看一次 `<安装目录>\bin\java.exe`：
+
+* 出现 → `OnManualInstallDone`：登记 + `ScanJavaAsync(force: true)` + 刷新界面 + 提示「已安装并启用」
+* 30 分钟内没出现、且 msiexec 进程已退出 → 再等一轮复查（有时退出瞬间文件刚落地），仍没有就退回 `FindInstalled(feature)`（用户可能在向导里改了路径），最后才提示「安装已取消」
+
+静默路径是同步的：`RunInstallViaPromote` 返回后直接登记、扫描、刷新，不需要轮询。
+
+### 10.7 界面
+
+`Pages/PageTools/PageToolsTest.xaml` 的「自助安装 Java」卡片：版本下拉 + 最新版本信息行 + 四个按钮（下载并安装 / 静默安装 / 重新扫描 / 查询最新版本，放同一个 `WrapPanel` 里，窄窗口自动换行）+ 状态行 + 「已安装的 Adoptium JRE」列表（每条带「卸载」）+ 说明小字。
+
+下载进度：没有进度条，用一行文字刷新。`DownloadInstaller` 起一个 400ms 的后台线程读 `DownloadFile.DownloadedBytes / TotalSize`，文本变化时才 `ModBase.RunInUi` 写 `TextJavaStatus`。下载线程和这个进度线程要一起收尾，`done.Wait` 之后 `Cancel()` + `Join(2000)`。
+
+四语文案在 `PCL.Core/App/Localization/Languages/{zh-CN,zh-TW,en-US,en-GB}.xaml`，`Tools.Java.*` 一整套 key。**这个目录不是 `PCL-Harness Edition/Languages/`**，改错了不会报错，只会发现界面上的字没变。
+
+### 10.8 五个坑
+
+1. **Adoptium API 不带 User-Agent 就是 403**，不是超时也不是 404。
+2. **`ModMain.MyMsgBox` 只返回 `int`**。要往弹窗里传对象，用后来加的 `content` 参数（`MyMsgBoxConverter.Content`），别去改返回值。
+3. **后台线程不能读 `ComboBox.SelectedIndex`**。`RefreshJavaInstalled()` 开头要 `Dispatcher.CheckAccess()` 切回 UI 线程，否则偶发 `InvalidOperationException`，且只在特定时序复现。
+4. **XAML 里换行写 `&#10;`**，写成 `&amp;#10;` 会显示字面量；同一元素重复属性会让 XAML 编译直接失败。
+5. **`MyIconButton.Click` 与 `MyButton.Click` 签名不同**：前者 `(object, EventArgs)`，后者 `(object, MouseButtonEventArgs)`。混用编译能过，运行时事件不触发。
+
+### 10.9 还没做的事
+
+* 机房真机的五版本端到端实测（本机已装 8/17/21/25，装不下 11；验证只做到「查询 → 下载 → sha256 校验 → 唤起安装器」）
+* 静默安装的 `INSTALLDIR` 覆盖是否在所有版本都生效（21 已验证，其余未测）
+* 镜像回落顺滑度（需要构造官方 404 才能触发）
+
+---
+
+## 第 11 章　界面字号规范
+
+### 11.1 起因
+
+两个反馈（2026-10-30）：卡片标题偏小、与正文拉不开层次；「内存优化」这类功能在卡片里堆成一段，扫不出结构。
+
+### 11.2 规范
+
+|层级|字号|其余|
+|-|-|-|
+|卡片标题|16（2026-10-30 已回调 15，见 2.13）|Bold，微软雅黑（`Microsoft YaHei, Microsoft YaHei UI, Segoe UI`）|
+|卡片内小节标题|15|Bold，Opacity 0.92，样式 `CardSectionTitle`|
+|正文|13.5|Opacity 0.75|
+|说明小字|13 / 12.5|Opacity 0.6 / 0.55|
+|红色警示|13.5|`ColorBrushRedLight` = `#D93025`|
+
+卡片标题在 `Controls/MyCard.cs:123-130` 的 `Init()` 里建（不是 XAML），改字号要改那处。小节标题是 `Application.xaml:173-178` 的新样式：
+
+`@xml
+<Style TargetType="TextBlock" x:Key="CardSectionTitle" BasedOn="{StaticResource BasedOnTextBlock}">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Opacity" Value="0.92" />
+</Style>
+`@
+
+用法：`<TextBlock Text="{DynamicResource ...}" Style="{StaticResource CardSectionTitle}" Margin="0,8,0,0" />`
+
+### 11.3 红字
+
+`ColorBrushRedLight` 由偏橙的浅红改成 `#D93025`（Google Red 600）。用户原话是「所有红字颜色再加深一点，偏橙不够醒目」。全站红色警示都走这个 key（共 7 处引用），不要在某处直接写 `Red` 或 `#FF0000`——深色主题下刺眼且与其他警示不一致。
+
+### 11.4 适用范围与进度
+
+已套用：百宝箱整页（内存优化三个小节、自助安装 Java 卡片）、首页三张提示卡。
+待逐步套用：设置页、下载页、实例设置页等还有大量「一节一段话」的卡片，尚未统一。
+
+### 11.5 操作按钮的配色语义
+
+`Controls/MyButton.xaml.cs` 的 `ColorState` 原来只有 `Normal / Highlight / Red / Solid`，红色只用于「危险、不可逆」。
+2026-10-30 为了在同一屏里表达操作强度，补了两档，`Application.xaml` 同时补了六个颜色资源：
+
+|`ColorType`|描边与字色（常态 / 悬停）|语义|
+|-|-|-|
+|`Red`|`ColorBrushRedDark` / `ColorBrushRedLight`|危险、需要管理员授权、会删东西|
+|`Green`|`ColorBrushGreenDark` `#1F8A41` / `ColorBrushGreenLight` `#2E9E4F`|低风险、建议先执行|
+|`Blue`|`ColorBrushBlueDark` `#155CB0` / `ColorBrushBlueLight` `#1F6FD0`|常规推荐操作|
+|`Solid`|`GetSolidBackgroundResourceKey()`|页面内的主行动|
+
+`MyButton.xaml` 的文字颜色绑定在 `Parent.BorderBrush` 上，描边与字色永远同色，不需要单独设 `Foreground`。
+悬停底色抽成了 `GetHoverBackgroundResourceKey()`（`Solid` → 实心底、`Red/Green/Blue` → 对应 `*Back`、其余 → `ColorBrush7`），
+`Button_MouseEnter()` 直接调用，不再写嵌套三元。
+
+### 11.6 百宝箱两张卡的排布
+
+* **内存优化**：统计信息与「刷新」同一行（`*` + `Auto` 两列 Grid），三个小节统一「左侧文字 + 右侧按钮」的两列 Grid，
+  顺序按风险从低到高：轻量（绿）→ 游戏内（蓝）→ 深度（红）。小节介绍用 `&#10;` 按标点断行——轻量断在「。」和「；」、
+  游戏内断在「。」、深度断在「。」——避免一行文字拖满整卡。
+* **自助安装 Java**：行序是「下载源 → Java 版本 → 四个按钮」。下载源排在版本之前，因为它是「从哪拿包」的前提；
+  两个 `MyComboBox` 同为 `Width="160" Height="26"`，两侧说明同为 `FontSize="13.5"`；
+  下载源说明在「；」后断行，并单独解释它和「设置 → 下载」里 Minecraft 资源的官方源/镜像源不是一回事。
 
 ---
 
@@ -1090,7 +1314,7 @@ ac2a6e7  fix(ui): stop the window from snapping back while being resized
 2cbf5c8  fix(auth): report protocol errors as hints instead of stack traces
 73c354e  fix(memory): give the new P/Invokes an explicit entry point
 36e3fcf  chore(release): publish the whole output and bump to 0.1.1
-11f0356  ci(release): let a v* tag trigger the publish workflow
+11f0356  ci(release): let a v\\\* tag trigger the publish workflow
 80f1af2  ci(release): use github.event.inputs for the manual path
 e2ebb58  ci(release): inline the release variables
 47e53a4  ci(release): stop using replace(), which Actions does not have
@@ -1102,12 +1326,12 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 `d08c1a7` 里两件事一起做：
 
-- **壁纸自适应方式**补进 PCL2 新版的双向九宫格（详见 2.9）：索引 `9..17` 保持长宽比，
-  并修掉「启动加载壁纸后从未应用模式」的旧 bug（VB 到 C# 移植时把 `Setup.Load` 翻成了空读）。
-  验证方式是用临时诊断输出打运行时属性（`suit=9` 得到 `Uniform + Center/Center`，
-  `suit=10` 得到 `Uniform + Left/Top`），比截图取色可靠得多。
-- **退出时关闭陶瓦**（详见 5.4）：补上 `ShutdownAsync()` 的调用点，避免 detached 的
-  `terracotta --hmcl2` 子进程在关闭启动器后继续占着 EasyTier 网卡与端口。
+* **壁纸自适应方式**补进 PCL2 新版的双向九宫格（详见 2.9）：索引 `9..17` 保持长宽比，
+并修掉「启动加载壁纸后从未应用模式」的旧 bug（VB 到 C# 移植时把 `Setup.Load` 翻成了空读）。
+验证方式是用临时诊断输出打运行时属性（`suit=9` 得到 `Uniform + Center/Center`，
+`suit=10` 得到 `Uniform + Left/Top`），比截图取色可靠得多。
+* **退出时关闭陶瓦**（详见 5.4）：补上 `ShutdownAsync()` 的调用点，避免 detached 的
+`terracotta --hmcl2` 子进程在关闭启动器后继续占着 EasyTier 网卡与端口。
 
 翻译债的补齐（`c78264b`，见附录 B）也是同一天提交的。
 
@@ -1115,104 +1339,105 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 这一天的三笔提交都属界面打磨，起因是维护者反馈「窗口四角没被边框框住，像漏风」「下载按钮的配色和 PCL2 不一样」「开始下载那几个字太细」以及「窗口缺少层次感」。
 
-- **壁纸铺满**（`48284dd`）：九宫格 9~17 档（保持长宽比系列）由 `Stretch.Uniform` 改为
-  `Stretch.UniformToFill`，窗口比例与原图不一致时改为裁切而不是留黑边；四种语言的提示文案
-  同步改写为「铺满窗口……超出部分被裁切」。
-- **窗口描边与层次**（`fefc3b9`）：新增内缩 1px 的 `PanEdge` 描边层——原先贴外缘的描边弧会被
-  DWM 的系统圆角削掉半像素，看起来就是四角断线；内缩之后角弧圆心与系统裁剪圆心同心。同时把
-  `FormMain.xaml.cs` 的裁剪矩形由 `(0,0,w,h)` 改成 `(1,1,w-2,h-2)`，两者才真正对齐。
-  标题栏下沿另加一道 `#26000000 → #00000000` 的渐隐投影，用来分开标题栏与内容区。
-- **下载按钮实心态**（`13640a6`）：`MyExtraTextButton` 新增 `SolidTheme` 实心态——浅色模式
-  `#0b5bcb` 蓝底白字、深色模式黑底白字（初版取 `#121216`，2026-10-24 改为标题栏色 `#20242C`），悬停各自变亮，并经
-  `ThemeService.ColorModeChanged` 跟随启动器深浅模式切换；按钮文字改为幼圆加粗。
+* **壁纸铺满**（`48284dd`）：九宫格 9\~17 档（保持长宽比系列）由 `Stretch.Uniform` 改为
+`Stretch.UniformToFill`，窗口比例与原图不一致时改为裁切而不是留黑边；四种语言的提示文案
+同步改写为「铺满窗口……超出部分被裁切」。
+* **窗口描边与层次**（`fefc3b9`）：新增内缩 1px 的 `PanEdge` 描边层——原先贴外缘的描边弧会被
+DWM 的系统圆角削掉半像素，看起来就是四角断线；内缩之后角弧圆心与系统裁剪圆心同心。同时把
+`FormMain.xaml.cs` 的裁剪矩形由 `(0,0,w,h)` 改成 `(1,1,w-2,h-2)`，两者才真正对齐。
+标题栏下沿另加一道 `#26000000 → #00000000` 的渐隐投影，用来分开标题栏与内容区。
+* **下载按钮实心态**（`13640a6`）：`MyExtraTextButton` 新增 `SolidTheme` 实心态——浅色模式
+`#0b5bcb` 蓝底白字、深色模式黑底白字（初版取 `#121216`，2026-10-24 改为标题栏色 `#20242C`），悬停各自变亮，并经
+`ThemeService.ColorModeChanged` 跟随启动器深浅模式切换；按钮文字改为幼圆加粗。
 
 描边一项的验证方式值得单独记下来：先按 DPI 感知分别取「窗口自绘内容」与「屏幕合成图」，逐像素
 比对四角，证明原描边其实已经闭合（两者差异仅 81 像素，总计约 129 万），据此判定问题出在观感
 （`#3A4049` 在深色标题栏上对比度低、1.25 倍缩放下 1px 弧线不显眼）而不是漏画，这才转向
 「内缩重画 + 加层次」这条路。
+
 ### 2026-10-24　浮钮深色配色、去 PCL-CE 化与首轮缺陷清扫
 
 这一天分三段：界面收尾、上游切割核验、以及按审查报告做的缺陷修复。
 
-- **浮钮深色配色**（`d12ef93`）：`MyExtraTextButton` 的实心态此前只有浅色一套（`#0b5bcb` 蓝底白字），
-  其余四处浮钮甚至没标 `SolidTheme`，走的是不参与深浅切换的主题色组 `ColorBrush3`（`#1370f3`），
-  所以在深色窗口下仍是蓝底——这才是「深色模式没生效」的根因。现在深色底直接取窗口标题栏色：
-  静止 `#20242C`（等于 `ColorBrushTitleBar`）、悬停 `#3A4049`（等于 `ColorBrushTitleBarEdge`），
-  浅色组保持不变。同时去掉模板里那圈白色渐变描边，做法是只清 `PanColor.BorderBrush`、
-  不动 `BorderThickness`——Border 的厚度参与布局，直接设 0 会让图标与文字整体位移 2px。
-- **DNS 换成阿里公共 DoH**（`3ae8a3f`）：`DnsQuery.cs` 的竞速列表里原先有一个 PCL-CE 的端点
-  `doh.pysio.online`，换成 `dns.alidns.com`。同一次核验还确认了另外三处早已是不可达的死代码：
-  EasyTier 下载地址、Natayark 数据拉取、Natayark OAuth 入口（分别被 `#pragma warning disable CS0162`
-  与方法开头的 `return;` 挡住）；CI 也不再注入 CurseForge Key 与 Sentry DSN，所以遥测在 Release
-  构建里直接走「未找到 Sentry DSN」返回，完全不上报。关于页「特别鸣谢」里的 Pysio 条目属署名，保留。
-- **首轮缺陷清扫**（`92fd5b1` `3b1c2e1` `ff44ebc` `c5945d3` `0af653f` `ad69a87` `11a4a6a` `9e5c20b`）：
-  按审查报告修了 19 处。最值的一组都在崩溃链上，而且它们的后果是同一个——**崩溃弹窗根本弹不出来**：
-  `ModWatcher.cs:729` 的 `CurrentLogFiles.Last()` 位于 `analyzer.Output(...)` 的实参求值阶段，
-  集合为空时异常发生在调用之前，弹窗永远不显示（改用 `LastOrDefault() ?? ""`）；
-  `CrashLogPreparer` 的 `All` 用链式 `??` 拼接，`game` 非空时整段短路掉 `debug`，
-  只出现在 debug 日志里的线索被系统性忽略。此外还有若干处：实例重命名现在会迁移 23 项
-  以实例路径为键的状态（此前改名即丢失描述、收藏、卡片类型）；`PromoteTempFile` 的覆盖语义
-  （原先「目标已存在」的守卫与 `File.Move(..., true)` 的覆盖意图互相打架，导致新下载的文件
-  永远替换不掉旧文件）；崩溃报告导出改为先写临时文件再原子替换；崩溃日志导入补上 tar/tgz；
-  `--gpu` 缺参数时不再无声退出；游戏日志页的 `frmLogRight` 判空写错等。
+* **浮钮深色配色**（`d12ef93`）：`MyExtraTextButton` 的实心态此前只有浅色一套（`#0b5bcb` 蓝底白字），
+其余四处浮钮甚至没标 `SolidTheme`，走的是不参与深浅切换的主题色组 `ColorBrush3`（`#1370f3`），
+所以在深色窗口下仍是蓝底——这才是「深色模式没生效」的根因。现在深色底直接取窗口标题栏色：
+静止 `#20242C`（等于 `ColorBrushTitleBar`）、悬停 `#3A4049`（等于 `ColorBrushTitleBarEdge`），
+浅色组保持不变。同时去掉模板里那圈白色渐变描边，做法是只清 `PanColor.BorderBrush`、
+不动 `BorderThickness`——Border 的厚度参与布局，直接设 0 会让图标与文字整体位移 2px。
+* **DNS 换成阿里公共 DoH**（`3ae8a3f`）：`DnsQuery.cs` 的竞速列表里原先有一个 PCL-CE 的端点
+`doh.pysio.online`，换成 `dns.alidns.com`。同一次核验还确认了另外三处早已是不可达的死代码：
+EasyTier 下载地址、Natayark 数据拉取、Natayark OAuth 入口（分别被 `#pragma warning disable CS0162`
+与方法开头的 `return;` 挡住）；CI 也不再注入 CurseForge Key 与 Sentry DSN，所以遥测在 Release
+构建里直接走「未找到 Sentry DSN」返回，完全不上报。关于页「特别鸣谢」里的 Pysio 条目属署名，保留。
+* **首轮缺陷清扫**（`92fd5b1` `3b1c2e1` `ff44ebc` `c5945d3` `0af653f` `ad69a87` `11a4a6a` `9e5c20b`）：
+按审查报告修了 19 处。最值的一组都在崩溃链上，而且它们的后果是同一个——**崩溃弹窗根本弹不出来**：
+`ModWatcher.cs:729` 的 `CurrentLogFiles.Last()` 位于 `analyzer.Output(...)` 的实参求值阶段，
+集合为空时异常发生在调用之前，弹窗永远不显示（改用 `LastOrDefault() ?? ""`）；
+`CrashLogPreparer` 的 `All` 用链式 `??` 拼接，`game` 非空时整段短路掉 `debug`，
+只出现在 debug 日志里的线索被系统性忽略。此外还有若干处：实例重命名现在会迁移 23 项
+以实例路径为键的状态（此前改名即丢失描述、收藏、卡片类型）；`PromoteTempFile` 的覆盖语义
+（原先「目标已存在」的守卫与 `File.Move(..., true)` 的覆盖意图互相打架，导致新下载的文件
+永远替换不掉旧文件）；崩溃报告导出改为先写临时文件再原子替换；崩溃日志导入补上 tar/tgz；
+`--gpu` 缺参数时不再无声退出；游戏日志页的 `frmLogRight` 判空写错等。
 
 审查里另有 4 条刻意未改，都属于「改对不难、改错代价大」的类型：`LoaderDownload` 的单文件失败
 策略、`ModLoader` 回调在 UI 线程做重活、`McInstance.PathIndie` getter 的副作用、`ModDownloadLib`
 里硬编码的「安装」长度 3。它们与此前挂着的 `ModLaunch.cs:1056` 锁内等待同型，等能跑通场景再动。
 
----
+\---
 
 ## 附录 B　已知限制与待办
 
 ### 外部依赖，代码侧无法推进
 
-- **微软正版登录**：Minecraft 服务端返回 `Invalid app registration`。
-  需要在 Minecraft 侧完成应用登记，或用已获授权的客户端 ID。
-- **LittleSkin 第三方登录**：独立 OAuth 应用（客户端 ID `1637`）已在 LittleSkin 建好，
-  但**设备代码流白名单尚未申请**（需发邮件到 `support@littleskin.in`）。
-  代码已于 2026-10-24 切到 `1637`，权限改为 `PlayerProfiles.Read` + `MinecraftToken.Create`
-  （角色在启动器内选择）。白名单批下来之前用 1637 登录会失败，属预期现象；
-  临时可用性可通过环境变量 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游应用。
+* **微软正版登录**：Minecraft 服务端返回 `Invalid app registration`。
+需要在 Minecraft 侧完成应用登记，或用已获授权的客户端 ID。
+* **LittleSkin 第三方登录**：独立 OAuth 应用（客户端 ID `1637`）已在 LittleSkin 建好，
+但**设备代码流白名单尚未申请**（需发邮件到 `support@littleskin.in`）。
+代码已于 2026-10-24 切到 `1637`，权限改为 `PlayerProfiles.Read` + `MinecraftToken.Create`
+（角色在启动器内选择）。白名单批下来之前用 1637 登录会失败，属预期现象；
+临时可用性可通过环境变量 `PCL\\\_OAUTH\\\_CLIENT\\\_ID\\\_LITTLESKIN\\\_CN=1514` 指回上游应用。
 
 ### 已明确延后的工作
 
-- **内存优化的深度改进**：用户要求以后再做，并希望它作为仓库内的**独立项目**维护，
-  在 GitHub 上补充「已实测可用 / 不保证完全无问题」之类的说明。
-- **字体选择界面的配色与按钮字体微调**：用户表示「感觉也可以了」。
-- **首轮巡检里唯一未修的一条**：`lock (ModJava.javaLock)` 内等待 Java 下载并弹模态框
-  （`ModLaunch.cs:1056`，锁内 1102-1130）。要改得同时动 `ModDownloadLib.cs:716` 与 `:1740`
-  两个调用方的取值时机，属结构性调整，未跑通场景前风险大于收益。
+* **内存优化的深度改进**：用户要求以后再做，并希望它作为仓库内的**独立项目**维护，
+在 GitHub 上补充「已实测可用 / 不保证完全无问题」之类的说明。
+* **字体选择界面的配色与按钮字体微调**：用户表示「感觉也可以了」。
+* **首轮巡检里唯一未修的一条**：`lock (ModJava.javaLock)` 内等待 Java 下载并弹模态框
+（`ModLaunch.cs:1056`，锁内 1102-1130）。要改得同时动 `ModDownloadLib.cs:716` 与 `:1740`
+两个调用方的取值时机，属结构性调整，未跑通场景前风险大于收益。
 
 ### 翻译债（已清完）
 
 补全前的实际缺口比早先的记录更大：`zh-TW` / `en-GB` 各缺 **76** 个 key、`en-US` 缺 **20** 个
-（早先统计漏了 `Minecraft.Download.Error.*` 6 个与 `Tools.GameLink.*` 14 个这两组）。
-缺口集中在 `Instance.Resource.Mod.JarInJar.*` 35 个、`Tools.GameLink.*` 14 个、
-`Crash.Report.JarInJarMod.*` 9 个、`Setup.GameManage.Download.*` 9 个、
-`Minecraft.Download.Error.*` 6 个、`Launch.Skin.Cape.Name.*` 3 个。
+（早先统计漏了 `Minecraft.Download.Error.\\\*` 6 个与 `Tools.GameLink.\\\*` 14 个这两组）。
+缺口集中在 `Instance.Resource.Mod.JarInJar.\\\*` 35 个、`Tools.GameLink.\\\*` 14 个、
+`Crash.Report.JarInJarMod.\\\*` 9 个、`Setup.GameManage.Download.\\\*` 9 个、
+`Minecraft.Download.Error.\\\*` 6 个、`Launch.Skin.Cape.Name.\\\*` 3 个。
 
 本次补齐方式：
 
-- `en-US` 20 条全新英译；`en-GB` 的 76 条里，56 条直接沿用 `en-US` 并做英式化
-  （`analyse` / `behaviour` / `colour` 等），其余 20 条与 `en-US` 新译同步；
-  `zh-TW` 76 条按既有译法手译，术语沿用文件内的用词统计：
-  模組 / 依賴 / 前置 / 內嵌 / 安裝器 / 逾時 / 停用（非「禁用」）/ 連線 / 大廳 /
-  日誌 / 協議 / 資料夾 / 實例 / 區域網 / 建立者（房主）/ 預設 / 網路。
-- 插入按「注释分组 + 组内字母序」定位：语言文件整体并非严格单调（`en-US` 124 处、
-  `en-GB` 96 处、`zh-TW` 99 处逆序），全局排序会打乱分组。
-- 校验：四语言 key 数对齐到 **3126**、XML 可解析、无重复 key、`{0}`/`{1}`/`{2}`
-  占位符与 `zh-CN` 逐条一致、UTF-8 无 BOM + CRLF 原样保留；
-  `dotnet build -c Release` 0 错误。
-- `fr-FR` / `ja-JP` / `es-ES` 仍只有零星条目（`zh-CN` 回退），不在本次范围。
+* `en-US` 20 条全新英译；`en-GB` 的 76 条里，56 条直接沿用 `en-US` 并做英式化
+（`analyse` / `behaviour` / `colour` 等），其余 20 条与 `en-US` 新译同步；
+`zh-TW` 76 条按既有译法手译，术语沿用文件内的用词统计：
+模組 / 依賴 / 前置 / 內嵌 / 安裝器 / 逾時 / 停用（非「禁用」）/ 連線 / 大廳 /
+日誌 / 協議 / 資料夾 / 實例 / 區域網 / 建立者（房主）/ 預設 / 網路。
+* 插入按「注释分组 + 组内字母序」定位：语言文件整体并非严格单调（`en-US` 124 处、
+`en-GB` 96 处、`zh-TW` 99 处逆序），全局排序会打乱分组。
+* 校验：四语言 key 数对齐到 **3126**、XML 可解析、无重复 key、`{0}`/`{1}`/`{2}`
+占位符与 `zh-CN` 逐条一致、UTF-8 无 BOM + CRLF 原样保留；
+`dotnet build -c Release` 0 错误。
+* `fr-FR` / `ja-JP` / `es-ES` 仍只有零星条目（`zh-CN` 回退），不在本次范围。
 
 ### 版本状态
 
-- 最新 Tag：`v0.1.1`（prerelease）
-- 可用包：`PCL_HE_Beta_x64.zip`（78 MB，自包含单文件）、`PCL_HE_Beta_ARM64.zip`（73 MB）
-- 代码签名为自签名，分发后仍会触发 SmartScreen
-- `main` 上另有三笔未发布的界面打磨提交（见附录 A 的 2026-10-23 一节），尚未打 tag
+* 最新 Tag：`v0.1.1`（prerelease）
+* 可用包：`PCL\\\_HE\\\_Beta\\\_x64.zip`（78 MB，自包含单文件）、`PCL\\\_HE\\\_Beta\\\_ARM64.zip`（73 MB）
+* 代码签名为自签名，分发后仍会触发 SmartScreen
+* `main` 上另有三笔未发布的界面打磨提交（见附录 A 的 2026-10-23 一节），尚未打 tag
 
----
+\---
 
 ## 附录 C　会话交接记录（2026-10-24 凌晨）
 
@@ -1220,35 +1445,38 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 ### C.1　启动即崩溃的根治（维护者报「PCL-HE 启动不了」）
 
-**现象**：进程起后 6~16 秒自行退出，`PCL/Log` 下不产生任何新日志，退出码 `-532462766`（`0xE0434352`，CLR 未处理异常）。
+**现象**：进程起后 6\~16 秒自行退出，`PCL/Log` 下不产生任何新日志，退出码 `-532462766`（`0xE0434352`，CLR 未处理异常）。
 
 **定位手法（可复用）**：
-- 用 `.ps1` 脚本把 exe 的 stdout/stderr 重定向到文件再读，**bash 内联 PowerShell 会把 `$` 变量吃掉，必须写成脚本文件执行**。
-- Windows 事件日志的 `.NET Runtime`（ID 1026）能拿到完整托管堆栈；WER 的 `Report.wer` 只有签名、没有堆栈。
 
-堆栈指向 `Lifecycle._CreateService` → `LifecycleContext.Fatal` → `_FatalExit` → `ForceShutdown` → `Shutdown` 抛 `InvalidOperationException`；真正的错在更早：`SingleInstanceService` 实例化失败，底层是 `Paths..cctor()` 抛 `ArgumentNullException: Value cannot be null. (Parameter 'path1')`。
+* 用 `.ps1` 脚本把 exe 的 stdout/stderr 重定向到文件再读，**bash 内联 PowerShell 会把 `$` 变量吃掉，必须写成脚本文件执行**。
+* Windows 事件日志的 `.NET Runtime`（ID 1026）能拿到完整托管堆栈；WER 的 `Report.wer` 只有签名、没有堆栈。
+
+堆栈指向 `Lifecycle.\\\_CreateService` → `LifecycleContext.Fatal` → `\\\_FatalExit` → `ForceShutdown` → `Shutdown` 抛 `InvalidOperationException`；真正的错在更早：`SingleInstanceService` 实例化失败，底层是 `Paths..cctor()` 抛 `ArgumentNullException: Value cannot be null. (Parameter 'path1')`。
 
 **根因一（真正的错）**：`Basics` 与 `Paths` 构成静态初始化循环 —— `Basics` 的静态字段初始化会间接触发 `Paths` 的静态构造，而 `Paths.DefaultDirectory => Basics.ExecutableDirectory` 又回头读 `Basics`；同一线程重入时 CLR 不等构造完成、直接返回默认值，于是拿到 `null`，`Path.Combine(null, "PCL")` 抛异常；因为它发生在静态构造函数里，整个 `Paths` 类型报废。
 
-**根因二（把错误掩盖了）**：`PCL.Core/App/IoC/LifecycleFlow.cs:181` 的 `Shutdown` 第一句是 `if (CurrentState == LifecycleState.BeforeLoading) throw new InvalidOperationException();`，而 `PCL.Core/App/IoC/LifecycleContext.cs:40` 的 `if (item.ActionLevel == ActionLevel.MsgBoxFatal) _FatalExit();` 恰恰在 BeforeLoading 阶段触发 —— 于是「记录致命错误」这个动作本身把进程抛死，原始错误一行日志都没留下。同一个 lambda 的另两条回调（`:44`、`:64`）都带 `CurrentState != LifecycleState.BeforeLoading` 守卫，只有这条漏了。
+**根因二（把错误掩盖了）**：`PCL.Core/App/IoC/LifecycleFlow.cs:181` 的 `Shutdown` 第一句是 `if (CurrentState == LifecycleState.BeforeLoading) throw new InvalidOperationException();`，而 `PCL.Core/App/IoC/LifecycleContext.cs:40` 的 `if (item.ActionLevel == ActionLevel.MsgBoxFatal) \\\_FatalExit();` 恰恰在 BeforeLoading 阶段触发 —— 于是「记录致命错误」这个动作本身把进程抛死，原始错误一行日志都没留下。同一个 lambda 的另两条回调（`:44`、`:64`）都带 `CurrentState != LifecycleState.BeforeLoading` 守卫，只有这条漏了。
 
 **修法**（`30973b5 fix(core): break the static init cycle that killed startup`，3 文件）：
-- `PCL.Core/App/Paths.cs`：`DefaultDirectory` 改为自算，彻底切断对 `Basics` 的依赖 —— `public static string DefaultDirectory => _defaultDirectory ??= GetExecutableDirectory();`，新增 `private static string? _defaultDirectory;` 与 `private static string GetExecutableDirectory()`（先取 `Environment.ProcessPath` 的目录，失败退到 `AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar)`）。
-- `PCL.Core/App/IoC/LifecycleFlow.cs` 的 `_FatalExit()`：改为 `if (CurrentState == LifecycleState.BeforeLoading) _Exit(-1); else ForceShutdown(-1);`。
-- `PCL.Core/App/IoC/LifecycleService.cs` 的 `_CreateService` catch：补 `Console.Error.WriteLine` 诊断。
+
+* `PCL.Core/App/Paths.cs`：`DefaultDirectory` 改为自算，彻底切断对 `Basics` 的依赖 —— `public static string DefaultDirectory => \\\_defaultDirectory ??= GetExecutableDirectory();`，新增 `private static string? \\\_defaultDirectory;` 与 `private static string GetExecutableDirectory()`（先取 `Environment.ProcessPath` 的目录，失败退到 `AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar)`）。
+* `PCL.Core/App/IoC/LifecycleFlow.cs` 的 `\\\_FatalExit()`：改为 `if (CurrentState == LifecycleState.BeforeLoading) \\\_Exit(-1); else ForceShutdown(-1);`。
+* `PCL.Core/App/IoC/LifecycleService.cs` 的 `\\\_CreateService` catch：补 `Console.Error.WriteLine` 诊断。
 
 **实测**：部署后 12 秒 `EXITED=False`，stderr 完全干净。
 
 ### C.2　缺陷清扫总账（两轮共 20 处，全部编译 0 错误并推送）
 
 首轮 19 处见 2026-10-24 一节；第二轮新增 1 处：
-- `PCL-Harness Edition/Pages/PageInstance/PageInstanceInstall.xaml.cs`（`90c8ad2`）：隔离警告原先按全局档位 `Config.Launch.IndieSolutionV2 == 0 || == 2` 判断，而该档位有 5 档（默认 4），1/3 档下会漏警告、2 档下对快照版实例会多警告。改为按 `McInstance.PathIndie` 与 `PathInstance` 的实际比对判断。
-- 判定链（重要）：`PathIndie`（`PCL-Harness Edition/Modules/Minecraft/McInstance.cs:65-115`）按三级优先算 —— ①老 `IndieV1` 迁移；②实例目录下 `mods` 有文件或 `saves` 有子目录则自动隔离；③才轮到全局档位 switch（0=关闭 / 1=仅可装 Mod / 2=仅非正式版 / 3=前两者 / _=全部）。**该 getter 有副作用**：`:110 Config.Instance.IndieV2[PathInstance] = ShouldBeIndie();` 会把结果写进缓存；**返回值语义是反的** —— 被隔离时返回 `PathInstance`，未隔离时返回 `ModFolder.mcFolderSelected`。
-- 刻意未动：`PCL-Harness Edition/Pages/PageDownload/PageDownloadInstall.xaml.cs:2330-2340`（新建实例）仍按全局档位判断 —— 那时实例目录还没创建，不该替它写缓存。
+
+* `PCL-Harness Edition/Pages/PageInstance/PageInstanceInstall.xaml.cs`（`90c8ad2`）：隔离警告原先按全局档位 `Config.Launch.IndieSolutionV2 == 0 || == 2` 判断，而该档位有 5 档（默认 4），1/3 档下会漏警告、2 档下对快照版实例会多警告。改为按 `McInstance.PathIndie` 与 `PathInstance` 的实际比对判断。
+* 判定链（重要）：`PathIndie`（`PCL-Harness Edition/Modules/Minecraft/McInstance.cs:65-115`）按三级优先算 —— ①老 `IndieV1` 迁移；②实例目录下 `mods` 有文件或 `saves` 有子目录则自动隔离；③才轮到全局档位 switch（0=关闭 / 1=仅可装 Mod / 2=仅非正式版 / 3=前两者 / \_=全部）。**该 getter 有副作用**：`:110 Config.Instance.IndieV2\\\[PathInstance] = ShouldBeIndie();` 会把结果写进缓存；**返回值语义是反的** —— 被隔离时返回 `PathInstance`，未隔离时返回 `ModFolder.mcFolderSelected`。
+* 刻意未动：`PCL-Harness Edition/Pages/PageDownload/PageDownloadInstall.xaml.cs:2330-2340`（新建实例）仍按全局档位判断 —— 那时实例目录还没创建，不该替它写缓存。
 
 ### C.3　待办（按优先级）
 
-1. ~~**发版 v0.1.2-Alpha**（维护者定在 10-24 中午或下午）~~ —— **2026-10-24 21:12 已完成**：7 个提交推送到 `main`（`a606c7d` 内存优化子项目 → `d8f78c9` 启动挂钩 → `3c39913` 便携与独立文件名 → `ce393d0` 界面修复 → `0e33569` 合规切割 → `89ffdbf` CI 四产物 → `c5ed56c` 发版准备），annotated tag `v0.1.2-Alpha` 推送后 `Release publish` 与 `Build (CI)` 两个工作流全部 success，GitHub 上已生成 prerelease，含四个产物：`PCL-HE_v0.1.2-Alpha_win-{x64,arm64}_{self-contained,framework-dependent}.zip` 及各自 `.sigstore.json`。本地下载复核：自包含包内 `PCL-HE.exe` 87.4 MB（zip 77.8 MB）、精简包内 `PCL-HE.exe` 24.7 MB（zip 11.6 MB），两者均含 `CONFIG/README.txt` 便携目录，无 pdb 夹带。发布说明已由 git-cliff 自动生成改为 `docs/RELEASE-NOTES-v0.1.2-Alpha.md` 全文（中上英下，单独一节详述内存优化重做），自动生成的提交明细折叠在文末。原始步骤记录如下：改 `PCL-Harness Edition/metadata.json` 的 version 对象（`base` 由 `0.1.1` 升 `0.1.2`、`suffix` 填 `Alpha`、**`code` 由 `2` 递增到 `3`**）→ 提交 → `git tag v0.1.2-Alpha` → `git push origin v0.1.2-Alpha`。`code` 即 `ModBase.versionCode`（`PCL-Harness Edition/Modules/Base/ModBase.cs:47`），被 `FormMain.xaml.cs:70` 与 `UpgradeSub`/`DowngradeSub` 用来判断版本升降，**不递增老用户升级后收不到提示**。CI 由 `.github/workflows/release-publish.yml` 监听 `push tags 'v*'`，Beta 配置发 prerelease，x64 与 ARM64 双矩阵。
+1. <b>~~发版 v0.1.2-Alpha~~</b><del>（维护者定在 10-24 中午或下午）</del> —— **2026-10-24 21:12 已完成**：7 个提交推送到 `main`（`a606c7d` 内存优化子项目 → `d8f78c9` 启动挂钩 → `3c39913` 便携与独立文件名 → `ce393d0` 界面修复 → `0e33569` 合规切割 → `89ffdbf` CI 四产物 → `c5ed56c` 发版准备），annotated tag `v0.1.2-Alpha` 推送后 `Release publish` 与 `Build (CI)` 两个工作流全部 success，GitHub 上已生成 prerelease，含四个产物：`PCL-HE\\\_v0.1.2-Alpha\\\_win-{x64,arm64}\\\_{self-contained,framework-dependent}.zip` 及各自 `.sigstore.json`。本地下载复核：自包含包内 `PCL-HE.exe` 87.4 MB（zip 77.8 MB）、精简包内 `PCL-HE.exe` 24.7 MB（zip 11.6 MB），两者均含 `CONFIG/README.txt` 便携目录，无 pdb 夹带。发布说明已由 git-cliff 自动生成改为 `docs/RELEASE-NOTES-v0.1.2-Alpha.md` 全文（中上英下，单独一节详述内存优化重做），自动生成的提交明细折叠在文末。原始步骤记录如下：改 `PCL-Harness Edition/metadata.json` 的 version 对象（`base` 由 `0.1.1` 升 `0.1.2`、`suffix` 填 `Alpha`、**`code` 由 `2` 递增到 `3`**）→ 提交 → `git tag v0.1.2-Alpha` → `git push origin v0.1.2-Alpha`。`code` 即 `ModBase.versionCode`（`PCL-Harness Edition/Modules/Base/ModBase.cs:47`），被 `FormMain.xaml.cs:70` 与 `UpgradeSub`/`DowngradeSub` 用来判断版本升降，**不递增老用户升级后收不到提示**。CI 由 `.github/workflows/release-publish.yml` 监听 `push tags 'v\\\*'`，Beta 配置发 prerelease，x64 与 ARM64 双矩阵。
 2. 实机测试：正版登录取 XSTS/accessToken（微软白名单尚未提交，**当前不可用属预期**）、LittleSkin 设备代码流、Modrinth 与 CurseForge 各下一个模组验证速度与安装。
 3. 实机验收浮钮深色配色（深色底 `#20242C`、悬停 `#3A4049`、图标固定白色 `ColorBrushSolidFore`）与操作按钮字体（2026-10-24 已回退为系统默认字体 + 常规字重，幼圆方案废弃：幼圆只有单一字重，`FontWeight=Bold` 由 WPF 合成加粗，小字号中文会糊成一团）。
 4. 剩余审查项（都涉并发时序，**发版后再单独排一轮**）：`PCL-Harness Edition/Modules/Network/Loaders/LoaderDownload.cs:77-83`（单文件失败即取消整批）、`PCL-Harness Edition/Modules/Base/ModLoader.cs:294`（安装回调在 UI 线程做重活）、`PCL-Harness Edition/Pages/PageDownload/ModDownloadLib.cs:716-746` 与 `:1740-1769`（在 `lock (ModJava.javaLock)` 内等 Java 下载并可能弹模态框）、`PCL-Harness Edition/Modules/Minecraft/ModLocalComp.cs:2244-2275`（属性 getter 内同步阻塞等哈希）、`PCL-Harness Edition/Modules/Network/Management/NetManager.cs` 与 `Models/DownloadFile.cs`（下载登记字段无锁）。
@@ -1257,48 +1485,48 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 ### C.4　环境与操作要点
 
-- 编译：`export DOTNET_ROOT="C:\\Users\\kingd\\.dotnet"` 后执行 `/c/Users/kingd/.dotnet/dotnet.exe build "Plain Craft Launcher 2.slnx" -c Release`（workdir 为 `PCL-HE`）。**PATH 里的 `/c/Program Files/dotnet` 没有 SDK，必须显式用 `.dotnet` 那个**。
-- 部署：`powershell.exe -NoProfile -ExecutionPolicy Bypass -File deploy.ps1`（workdir `PCL-HE`）。运行目录必须在 workspace 之外（`C:\\Users\\kingd\\PCL-HE`），否则 DSH 沙箱会给进程套 AppContainer 限制导致启动即退。
-- 拉起：`powershell.exe -NoProfile -Command 'Start-Process -FilePath "C:\\Users\\kingd\\PCL-HE\\PCL-HE.exe" -WorkingDirectory "C:\\Users\\kingd\\PCL-HE"'`（bash 里不能用双引号包 PowerShell，`$env` 会被吞）。
-- `git push` 报 `Internal Server Error` 或 `Failed to connect to github.com:443 after 21xxx ms` 都是**临时网络故障，重试即可，不是凭证问题**。
-- 提交风格：Conventional Commits + 英文标题。
-- 本机 `secrets.json` 位于 `~/AppData/Local/PCLHE/secrets.json`，只有一个键 `CURSEFORGE_API_KEY`（Key 不进仓库、不进 CI）。
-- 界面改动后必须**重新编译 + deploy.ps1 部署**才可见，源文件改动不等于运行中的程序已变。
-- `glob` 工具对含空格路径（如 `PCL-Harness Edition/LICEN*`）与 `.github/workflows/*` 返回空，需用 bash `ls`。
+* 编译：`export DOTNET\\\_ROOT="C:\\\\\\\\Users\\\\\\\\kingd\\\\\\\\.dotnet"` 后执行 `/c/Users/kingd/.dotnet/dotnet.exe build "Plain Craft Launcher 2.slnx" -c Release`（workdir 为 `PCL-HE`）。**PATH 里的 `/c/Program Files/dotnet` 没有 SDK，必须显式用 `.dotnet` 那个**。
+* 部署：`powershell.exe -NoProfile -ExecutionPolicy Bypass -File deploy.ps1`（workdir `PCL-HE`）。运行目录必须在 workspace 之外（`C:\\\\\\\\Users\\\\\\\\kingd\\\\\\\\PCL-HE`），否则 DSH 沙箱会给进程套 AppContainer 限制导致启动即退。
+* 拉起：`powershell.exe -NoProfile -Command 'Start-Process -FilePath "C:\\\\\\\\Users\\\\\\\\kingd\\\\\\\\PCL-HE\\\\\\\\PCL-HE.exe" -WorkingDirectory "C:\\\\\\\\Users\\\\\\\\kingd\\\\\\\\PCL-HE"'`（bash 里不能用双引号包 PowerShell，`$env` 会被吞）。
+* `git push` 报 `Internal Server Error` 或 `Failed to connect to github.com:443 after 21xxx ms` 都是**临时网络故障，重试即可，不是凭证问题**。
+* 提交风格：Conventional Commits + 英文标题。
+* 本机 `secrets.json` 位于 `\\\~/AppData/Local/PCLHE/secrets.json`，只有一个键 `CURSEFORGE\\\_API\\\_KEY`（Key 不进仓库、不进 CI）。
+* 界面改动后必须**重新编译 + deploy.ps1 部署**才可见，源文件改动不等于运行中的程序已变。
+* `glob` 工具对含空格路径（如 `PCL-Harness Edition/LICEN\\\*`）与 `.github/workflows/\\\*` 返回空，需用 bash `ls`。
 
 ### C.5　仓库状态（交接时刻）
 
-- `origin/main` 的 `HEAD` = `90c8ad2`，未推送计数 0，工作区干净。
-- 仓库现有 tag：`ci-workflows`、`v0.1.1`；当前 `git describe` 为 `v0.1.1-28-g90c8ad2`。
-- `PCL-HE/SECURITY.md` 已新建（中英双语，报告走 GitHub 私密漏洞通道，处理方式写明「尽力而为、非 SLA」）。
-- 三版 README 已补「本机自签名可免 SmartScreen」的第三条解除方式。
-- v0.1.1 的 GitHub release notes 已改写为中英双语精简版（中文在上，已通过 API 写回）。
+* `origin/main` 的 `HEAD` = `90c8ad2`，未推送计数 0，工作区干净。
+* 仓库现有 tag：`ci-workflows`、`v0.1.1`；当前 `git describe` 为 `v0.1.1-28-g90c8ad2`。
+* `PCL-HE/SECURITY.md` 已新建（中英双语，报告走 GitHub 私密漏洞通道，处理方式写明「尽力而为、非 SLA」）。
+* 三版 README 已补「本机自签名可免 SmartScreen」的第三条解除方式。
+* v0.1.1 的 GitHub release notes 已改写为中英双语精简版（中文在上，已通过 API 写回）。
 
----
+\---
 
 ## 附录 D　会话交接记录（2026-10-30 凌晨）
 
 ### D.1　本轮完成的事
 
-- **配色体系重做**（详见 2.10）：浅色默认换成青金石蓝 `#0E1C45`，替补项为黛蓝 `#5668AA`、
-  天空蓝、死机蓝；深色只保留砚石黑一项并用 `IsEnabled="False"` 锁定。龙猫蓝（CatBlue）不再提供。
-  标题栏改为跟随深浅模式：浅色 `#0E1C45` / `#1C3168`，深色 `#20242C` / `#3A4049`。
-- **「新建档案」图标修复**（详见 2.11）：`MyIconButton.MeasureOverride` 现在会把约束压成正方形再测量子元素。
-- **窗口描边 1.5 → 1**、**游戏内存区单选框左对齐**（详见 2.12）。
+* **配色体系重做**（详见 2.10）：浅色默认换成青金石蓝 `#0E1C45`，替补项为黛蓝 `#5668AA`、
+天空蓝、死机蓝；深色只保留砚石黑一项并用 `IsEnabled="False"` 锁定。龙猫蓝（CatBlue）不再提供。
+标题栏改为跟随深浅模式：浅色 `#0E1C45` / `#1C3168`，深色 `#20242C` / `#3A4049`。
+* **「新建档案」图标修复**（详见 2.11）：`MyIconButton.MeasureOverride` 现在会把约束压成正方形再测量子元素。
+* **窗口描边 1.5 → 1**、**游戏内存区单选框左对齐**（详见 2.12）。
 
 ### D.2　必须记住的坑
 
-- 主题组配置在**共享配置源**：便携模式是 `<exe目录>\CONFIG\config.v1.json`，
-  不是 `PCL\config.pclhe.v1.yml`。改错文件不会报错，只是**静默不生效**。
-- 换行符不统一：`PCL.Core\**\*.cs`、`Pages\PageSetup\*.xaml*` 与四份语言文件是 **CRLF**，
-  `PCL-Harness Edition\Controls\*.xaml*` 是 **LF**。批量替换脚本必须按文件实测换行再写回，
-  否则 git diff 会变成整文件重写。
-- `edit` 工具会丢 BOM。本次全部改用 python 脚本按 `utf-8-sig` 读写，保持原编码。
+* 主题组配置在**共享配置源**：便携模式是 `<exe目录>\\\\CONFIG\\\\config.v1.json`，
+不是 `PCL\\\\config.pclhe.v1.yml`。改错文件不会报错，只是**静默不生效**。
+* 换行符不统一：`PCL.Core\\\\\\\*\\\*\\\\\\\*.cs`、`Pages\\\\PageSetup\\\\\\\*.xaml\\\*` 与四份语言文件是 **CRLF**，
+`PCL-Harness Edition\\\\Controls\\\\\\\*.xaml\\\*` 是 **LF**。批量替换脚本必须按文件实测换行再写回，
+否则 git diff 会变成整文件重写。
+* `edit` 工具会丢 BOM。本次全部改用 python 脚本按 `utf-8-sig` 读写，保持原编码。
 
 ### D.3　交接时的待办
 
 1. **内存优化深度改造**：代码已落地（`PCL.MemoryOptimizer` 子项目 + 两档清理 + 启动前挂钩），
-   等维护者实测（计划 2026-10-30 下午）。
+等维护者实测（计划 2026-10-30 下午）。
 2. **便携模式**：本机配置已存在、不便验证，维护者计划下周去机房拷一份干净本体验证。
 3. **LittleSkin 设备代码流实测**：计划 2026-10-30 晚。
 4. **CI 四产物**：`v0.1.2-Alpha` 已跑通，后续版本需要**打标签**才会真正触发。
@@ -1306,10 +1534,11 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 
 ### D.4　操作记录（本轮实测到的细节）
 
-- 截图验证脚本：`SetWindowPos(h, HWND_TOPMOST, 0, 0, 1247, 771, 0x0040)` +
-  `SetForegroundWindow` + `CopyFromScreen(0, 0)`；点击用 `SetCursorPos` + `mouse_event`。
-  **必须先置顶**，否则截图会被 DSH 客户端窗口挡住。
-- 启动器首页没有左侧导航栏，要点「设置」标签（约 `683, 26`）之后才有；
-  「个性化」在左侧约 `42, 300`。
-- 关进程用 `powershell -Command "Get-Process PCL-HE | Stop-Process -Force"`，
-  MSYS 下的 `taskkill /F` 会把 `/F` 当路径处理而失败。
+* 截图验证脚本：`SetWindowPos(h, HWND\\\_TOPMOST, 0, 0, 1247, 771, 0x0040)` +
+`SetForegroundWindow` + `CopyFromScreen(0, 0)`；点击用 `SetCursorPos` + `mouse\\\_event`。
+**必须先置顶**，否则截图会被 DSH 客户端窗口挡住。
+* 启动器首页没有左侧导航栏，要点「设置」标签（约 `683, 26`）之后才有；
+「个性化」在左侧约 `42, 300`。
+* 关进程用 `powershell -Command "Get-Process PCL-HE | Stop-Process -Force"`，
+MSYS 下的 `taskkill /F` 会把 `/F` 当路径处理而失败。
+
