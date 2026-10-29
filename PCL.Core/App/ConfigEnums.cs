@@ -34,10 +34,26 @@ public enum ColorMode
 /// </summary>
 public enum ColorTheme
 {
+    // 上游配色，保留槽位以便历史配置继续解析，PCL-HE 的界面上不再提供
     SkyBlue = 0,
     CatBlue = 1,
     DeathBlue = 2,
-    HmclBlue = 3
+    HmclBlue = 3,
+
+    /// <summary>
+    /// 青金石蓝，PCL-HE 的浅色配色。
+    /// </summary>
+    LapisBlue = 4,
+
+    /// <summary>
+    /// 黛蓝，PCL-HE 的浅色替补配色（#5668AA）。
+    /// </summary>
+    LapisMist = 6,
+
+    /// <summary>
+    /// 砚石黑，PCL-HE 的深色配色，黑白灰渐变。
+    /// </summary>
+    Inkstone = 5
 }
 
 /// <summary>

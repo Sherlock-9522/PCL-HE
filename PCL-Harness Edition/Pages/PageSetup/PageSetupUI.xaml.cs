@@ -12,9 +12,20 @@ namespace PCL;
 
 public partial class PageSetupUI
 {
-    public string[] ThemeColors => Basics.IsAprilFool 
-        ? [Lang.Text("Setup.Ui.Theme.Color.SkyBlue"), Lang.Text("Setup.Ui.Theme.Color.CatBlue"), Lang.Text("Setup.Ui.Theme.Color.CrashBlue"), Lang.Text("Setup.Ui.Theme.Color.Hmcl")]
-        : [Lang.Text("Setup.Ui.Theme.Color.SkyBlue"), Lang.Text("Setup.Ui.Theme.Color.CatBlue"), Lang.Text("Setup.Ui.Theme.Color.CrashBlue")];
+    // 浅色配色：青金石蓝为默认，黛蓝、天空蓝、死机蓝为替补；深色配色只有砚石黑一项并锁定。
+    // 下拉索引与枚举值不再一一对应，因此按 LightColorOrder 做映射。
+    private static readonly ColorTheme[] LightColorOrder =
+        [ColorTheme.LapisBlue, ColorTheme.LapisMist, ColorTheme.SkyBlue, ColorTheme.DeathBlue];
+
+    public string[] LightThemeColors =>
+    [
+        Lang.Text("Setup.Ui.Theme.Color.LapisBlue"),
+        Lang.Text("Setup.Ui.Theme.Color.LapisMist"),
+        Lang.Text("Setup.Ui.Theme.Color.SkyBlue"),
+        Lang.Text("Setup.Ui.Theme.Color.CrashBlue")
+    ];
+
+    public string[] DarkThemeColors => [Lang.Text("Setup.Ui.Theme.Color.Inkstone")];
     
     public new bool isLoaded;
 
@@ -50,8 +61,14 @@ public partial class PageSetupUI
             SliderLauncherOpacity.Value = Config.Preference.Theme.WindowOpacity;
             CheckLauncherLogo.Checked = Config.Preference.ShowStartupLogo;
             ComboDarkMode.SelectedIndex = (int)Config.Preference.Theme.ColorMode;
-            ComboDarkColor.SelectedIndex = (int)Config.Preference.Theme.DarkColor;
-            ComboLightColor.SelectedIndex = (int)Config.Preference.Theme.LightColor;
+            // 旧配置里残留的上游配色（天空蓝、龙猫蓝、死机蓝）在这里迁到 PCL-HE 自己的配色，
+            // 否则下拉只有一项、索引对不上，界面会显示空白。
+            if (Array.IndexOf(LightColorOrder, Config.Preference.Theme.LightColor) < 0)
+                Config.Preference.Theme.LightColor = ColorTheme.LapisBlue;
+            if (Config.Preference.Theme.DarkColor != ColorTheme.Inkstone)
+                Config.Preference.Theme.DarkColor = ColorTheme.Inkstone;
+            ComboLightColor.SelectedIndex = Array.IndexOf(LightColorOrder, Config.Preference.Theme.LightColor);
+            ComboDarkColor.SelectedIndex = 0;
             CheckShowLaunchingHint.Checked = Config.Preference.ShowLaunchingHint;
 
             // 字体设置
@@ -665,7 +682,14 @@ public partial class PageSetupUI
     private void ThemeColor_Change(object senderRaw, SelectionChangedEventArgs e)
     {
         var sender = (MyComboBox)senderRaw;
-        SetByTag(sender.Tag?.ToString(), sender.SelectedIndex);
+        // 浅色下拉有多个替补项，索引不再等于枚举值，按 LightColorOrder 映射；深色下拉锁定为砚石黑。
+        var tag = sender.Tag?.ToString();
+        var theme = tag == "UiLightColor"
+            ? sender.SelectedIndex >= 0 && sender.SelectedIndex < LightColorOrder.Length
+                ? LightColorOrder[sender.SelectedIndex]
+                : ColorTheme.LapisBlue
+            : ColorTheme.Inkstone;
+        SetByTag(tag, theme);
         ThemeManager.ThemeRefresh();
     }
 

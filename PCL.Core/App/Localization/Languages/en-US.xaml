@@ -3269,6 +3269,9 @@
     <sys:String x:Key="Setup.Ui.Theme.Color.CatBlue">LTCat Blue</sys:String>
     <sys:String x:Key="Setup.Ui.Theme.Color.CrashBlue">Crash Blue</sys:String>
     <sys:String x:Key="Setup.Ui.Theme.Color.Hmcl">HMCL</sys:String>
+    <sys:String x:Key="Setup.Ui.Theme.Color.Inkstone">Inkstone</sys:String>
+    <sys:String x:Key="Setup.Ui.Theme.Color.LapisMist">Indigo Blue</sys:String>
+    <sys:String x:Key="Setup.Ui.Theme.Color.LapisBlue">Lapis Blue</sys:String>
     <sys:String x:Key="Setup.Ui.Theme.Color.SkyBlue">Sky Blue</sys:String>
     <sys:String x:Key="Setup.Ui.Theme.Dark">Dark</sys:String>
     <sys:String x:Key="Setup.Ui.Theme.DarkColor">Dark theme color</sys:String>

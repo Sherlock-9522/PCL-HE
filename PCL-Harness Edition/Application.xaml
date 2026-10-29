@@ -85,7 +85,9 @@
             <SolidColorBrush x:Key="ColorBrushInfoDark">#ffffff</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushInfo">#000000</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushDebug">#95a5a6</SolidColorBrush>
-            <!-- 标题栏与窗口边框：固定深色，不参与主题色计算，保证任何配色下都有明暗对比 -->
+            <!-- 标题栏与窗口边框虽不参与配色主题的色相计算，但会跟着深浅色模式切换：
+                 这里的值只是深色模式的初始值，运行时由 ThemeService.ApplyTitleBarResources() 覆写
+                 （浅色模式换成 HE 自有的青金石蓝 #26619C），不要把它当成固定色。 -->
             <SolidColorBrush x:Key="ColorBrushTitleBar">#20242C</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushTitleBarEdge">#3A4049</SolidColorBrush>
             <SolidColorBrush x:Key="ColorBrushTitleBadge">#F5FFFFFF</SolidColorBrush>

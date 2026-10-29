@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Media;
 using PCL.Core.App;
 using PCL.Core.App.Configuration;
 using PCL.Core.App.IoC;
@@ -95,6 +96,7 @@ public sealed partial class ThemeService
     {
         ApplyGrayResources();
         ApplyColorResources();
+        ApplyTitleBarResources();
         ColorModeChanged?.Invoke(IsDarkMode, CurrentTheme);
         _AprilFoolLogic();
     }
@@ -148,22 +150,35 @@ public sealed partial class ThemeService
     /// <summary>
     /// 获取当前色彩主题对应的各种参数。
     /// </summary>
-    public static (int Hue, double LightAdjust, double ChromaAdjust) GetCurrentThemeArgs()
+    public static (int Hue, double LightAdjust, double ChromaAdjust, double AccentLightAdjust, double AccentChromaAdjust) GetCurrentThemeArgs()
     {
         var theme = CurrentTheme;
         return theme switch
         {
-            ColorTheme.SkyBlue => (235, 0.36, 0.2),
-            ColorTheme.CatBlue => (255, 0, -0.2),
-            ColorTheme.DeathBlue => (268, -0.05, -0.1),
-            ColorTheme.HmclBlue => (275, -0.03, -0.35),
+            ColorTheme.SkyBlue => (235, 0.36, 0.2, 0, 0),
+            ColorTheme.CatBlue => (255, 0, -0.2, 0, 0),
+            ColorTheme.DeathBlue => (268, -0.05, -0.1, 0, 0),
+            ColorTheme.HmclBlue => (275, -0.03, -0.35, 0, 0),
+            // 青金石蓝（#0E1C45）：色相落在正蓝，只把强调色（Color2~4）额外压暗压灰。
+            // 全局 LightAdjust 保持 0，浅色模式的浅底（Color5~8）才不会被连带压暗。
+            ColorTheme.LapisBlue => (266, 0, 0, -0.627, -0.526),
+            // 黛蓝（#5668AA）：同一色相系里更浅一档的替补配色。
+            ColorTheme.LapisMist => (271, 0, 0, -0.18, -0.369),
+            // 砚石黑：把彩度整体归零，只剩深浅不同的中性灰，就是黑白灰渐变。
+            ColorTheme.Inkstone => (255, 0, -1, 0, 0),
 #if DEBUG
-            _ => ((int)theme, 0, 0)
+            _ => ((int)theme, 0, 0, 0, 0)
 #else
             _ => throw new IndexOutOfRangeException($"Invalid theme index: {(int)theme}")
 #endif
         };
     }
+
+    /// <summary>
+    /// 先应用全局调整，再叠加只作用于强调色的调整。
+    /// </summary>
+    private static double _AdjustAccent(double value, double adjustment, double accentAdjustment) =>
+        _AdjustLinear(_AdjustLinear(value, adjustment), accentAdjustment);
 
     private static double _AdjustLinear(double value, double adjustment)
     {
@@ -199,11 +214,13 @@ public sealed partial class ThemeService
         LabColor.FromLch(tone.LForeground).ToCatColor("Memory", false),
     ];
 
-    private static CatColorResource[] _CalculateColors(ToneProfile tone, (int hue, double lightAdj, double chromaAdj) args) => [
+    private static CatColorResource[] _CalculateColors(
+        ToneProfile tone,
+        (int hue, double lightAdj, double chromaAdj, double accentLightAdj, double accentChromaAdj) args) => [
         LabColor.FromLch(_AdjustLinear(tone.L1, args.lightAdj * 0.1), _AdjustLinear(tone.C1, args.chromaAdj * 0.25), args.hue).ToCatColor("1"),
-        LabColor.FromLch(_AdjustLinear(tone.L2, args.lightAdj), _AdjustLinear(tone.C2, args.chromaAdj), args.hue).ToCatColor("2"),
-        LabColor.FromLch(_AdjustLinear(tone.L3, args.lightAdj), _AdjustLinear(tone.C3, args.chromaAdj), args.hue).ToCatColor("3"),
-        LabColor.FromLch(_AdjustLinear(tone.L4, args.lightAdj), _AdjustLinear(tone.C4, args.chromaAdj), args.hue).ToCatColor("4"),
+        LabColor.FromLch(_AdjustAccent(tone.L2, args.lightAdj, args.accentLightAdj), _AdjustAccent(tone.C2, args.chromaAdj, args.accentChromaAdj), args.hue).ToCatColor("2"),
+        LabColor.FromLch(_AdjustAccent(tone.L3, args.lightAdj, args.accentLightAdj), _AdjustAccent(tone.C3, args.chromaAdj, args.accentChromaAdj), args.hue).ToCatColor("3"),
+        LabColor.FromLch(_AdjustAccent(tone.L4, args.lightAdj, args.accentLightAdj), _AdjustAccent(tone.C4, args.chromaAdj, args.accentChromaAdj), args.hue).ToCatColor("4"),
         LabColor.FromLch(_AdjustLinear(tone.L5, args.lightAdj), _AdjustLinear(tone.C5, args.chromaAdj), args.hue).ToCatColor("5"),
         LabColor.FromLch(_AdjustLinear(tone.L6, args.lightAdj), _AdjustLinear(tone.C6, args.chromaAdj), args.hue).ToCatColor("6"),
         LabColor.FromLch(_AdjustLinear(tone.L7, args.lightAdj), _AdjustLinear(tone.C7, args.chromaAdj), args.hue).ToCatColor("7"),
@@ -242,5 +259,22 @@ public sealed partial class ThemeService
     {
         var colors = _CalculateColors(CurrentTone, GetCurrentThemeArgs());
         foreach (var c in colors) c.Apply();
+    }
+
+    /// <summary>
+    /// 应用标题栏配色。
+    /// 深色模式沿用固定的深灰蓝（#20242C），浅色模式换成 HE 自有的深青金石蓝（#0E1C45），
+    /// 让标题栏跟着深浅模式一起切换，而不是永远停在深色。
+    /// </summary>
+    public static void ApplyTitleBarResources()
+    {
+        var res = Lifecycle.CurrentApplication.Resources;
+        var (titleBar, edge) = IsDarkMode
+            ? (Color.FromRgb(0x20, 0x24, 0x2C), Color.FromRgb(0x3A, 0x40, 0x49))
+            : (Color.FromRgb(0x0E, 0x1C, 0x45), Color.FromRgb(0x1C, 0x31, 0x68));
+        res["ColorObjectTitleBar"] = titleBar;
+        res["ColorBrushTitleBar"] = new SolidColorBrush(titleBar);
+        res["ColorObjectTitleBarEdge"] = edge;
+        res["ColorBrushTitleBarEdge"] = new SolidColorBrush(edge);
     }
 }
