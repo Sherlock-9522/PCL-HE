@@ -874,6 +874,23 @@ git -c credential.helper= \\\\
 轮流试 `20.200.245.247` / `20.27.177.113` / `20.233.83.145` / `20.26.156.215`，
 每次失败的 IP 都不一样，属瞬时抖动而非封锁。
 
+**2026-10-30 补充（关键）**：默认的 `openssl` TLS 后端会被**按 SNI 重置**。
+`github.com` 与 `api.github.com` 解析到同一网段（`20.205.243.166` / `20.205.243.168`），
+TCP 443 都通，但 openssl 连 `github.com` 一律 `Recv failure: Connection was reset`，
+而 `api.github.com` 正常。换 Windows 原生 SChannel 后端即可推通：
+
+```bash
+git config http.sslBackend schannel        # 已写入本仓库
+git -c http.curloptResolve=github.com:443:20.233.83.145 push origin main
+# 输出：15077d9..70325f0  main -> main
+```
+
+注意两点：① 本机 Git 只支持 `schannel` 一个后端（`http.sslBackend=openssl` 会报
+`Unsupported SSL backend`），所以不是「切换」而是显式声明；② 同样的 IP，
+openssl 下是 reset、schannel 下是成功——差别在 TLS 指纹，不在 IP，因此不要再靠轮试 IP 硬撞。
+另外 `ssh.github.com:443` 是通的（SSH 协议可建连，但本机密钥未登记到 GitHub 账号）。
+
+
 **判定成功不能用管道返回值**：`if git push ... | tail -3` 恒为真（`tail` 返回 0）。
 必须 `grep -qE "main -> main|Everything up-to-date"`，或事后用 `ls-remote` 校验 SHA。
 
