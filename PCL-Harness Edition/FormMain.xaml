@@ -281,7 +281,7 @@
         <!-- 窗口描边：视觉圆角半径由这里决定（CornerRadius=7），Margin=0 使其与 PanBack 外框完全重合。
              描边环占半径 6~7；内容裁剪半径取 6 且 Rect 内缩 1px，故内容外缘恰好等于描边内缘，
              标题栏与壁纸不会再从描边外侧露出（此前的溢出正来自两者圆心/半径不齐）。 -->
-        <Border x:Name="PanEdge" Margin="0" CornerRadius="7" BorderThickness="1.5"
+        <Border x:Name="PanEdge" Margin="0" CornerRadius="7" BorderThickness="1"
                 BorderBrush="{DynamicResource ColorBrushTitleBarEdge}" IsHitTestVisible="False" />
     </Grid>
 </Window>

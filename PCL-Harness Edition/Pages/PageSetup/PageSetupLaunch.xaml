@@ -182,11 +182,11 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <local:MyRadioBox Text="{DynamicResource Setup.Launch.Memory.Auto}" Width="110" Checked="True" x:Name="RadioRamType0"
+                        <local:MyRadioBox Text="{DynamicResource Setup.Launch.Memory.Auto}" Width="110" HorizontalAlignment="Left" Checked="True" x:Name="RadioRamType0"
                                           Tag="LaunchRamType/0" Margin="0,0,20,9" Check="RadioBoxChange"
                                           ToolTip="{DynamicResource Setup.Launch.Memory.Auto.ToolTip}" ToolTipService.Placement="Left"
                                           ToolTipService.HorizontalOffset="-10" ToolTipService.VerticalOffset="-10" />
-                        <local:MyRadioBox Grid.Row="1" Text="{DynamicResource Common.Option.Customize}" x:Name="RadioRamType1" Tag="LaunchRamType/1"
+                        <local:MyRadioBox Grid.Row="1" Text="{DynamicResource Common.Option.Customize}" HorizontalAlignment="Left" x:Name="RadioRamType1" Tag="LaunchRamType/1"
                                           Margin="0,0,20,9" Check="RadioBoxChange" />
                         <local:MyCheckBox Grid.Row="2" Height="28" Text="{DynamicResource Setup.Launch.MemoryOptimize}" x:Name="CheckMemoryOptimizeBeforeLaunch"
                                           Tag="LaunchMemoryOptimizeBeforeLaunch" Change="CheckBoxChange" Margin="0,0,20,9">

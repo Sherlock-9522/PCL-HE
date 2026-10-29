@@ -143,7 +143,9 @@ public class SvgIcon : FrameworkElement
 
         var model = _GetModel();
         if (model is null || model.Elements.Count == 0 || RenderSize.Width <= 0D || RenderSize.Height <= 0D)
+        {
             return;
+        }
 
         var target = _CalculateTargetRect(new Size(model.Width, model.Height), RenderSize, Stretch);
         if (target.Width <= 0D || target.Height <= 0D)

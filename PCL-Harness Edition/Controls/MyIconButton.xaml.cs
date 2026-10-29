@@ -32,10 +32,14 @@ public partial class MyIconButton
 
     protected override Size MeasureOverride(Size constraint)
     {
+        // 按钮是正圆角的正方形：先把约束压成正方形再测量子元素。
+        // 否则当父容器给出「宽远大于高」的有限约束时（例如被 HorizontalAlignment=Center 的卡片包着），
+        // SvgIcon 会把整段可用宽度吃掉（225.996 × 13.996），图标就被画到 24 × 24 的按钮之外，看起来像没加载。
+        var square = double.IsNaN(Width) && !double.IsNaN(Height) && Height > 0D && !double.IsInfinity(Height);
+        if (square)
+            constraint = new Size(Height, Height);
         var measured = base.MeasureOverride(constraint);
-        if (double.IsNaN(Width) && !double.IsNaN(Height) && Height > 0D && !double.IsInfinity(Height))
-            return new Size(Height, Height);
-        return measured;
+        return square ? new Size(Height, Height) : measured;
     }
 
     public MyIconButton()

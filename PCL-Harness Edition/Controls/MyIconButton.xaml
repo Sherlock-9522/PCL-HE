@@ -15,7 +15,7 @@
             <svgIcon:SvgIcon x:Name="ShapeSvgIcon"
                          Stretch="Uniform"
                          Visibility="Collapsed"
-                         IconBrush="{Binding Fill, ElementName=Path}" />
+                         IconBrush="{DynamicResource ColorBrush4}" />
         </Grid>
         <Border.RenderTransform>
             <ScaleTransform />
