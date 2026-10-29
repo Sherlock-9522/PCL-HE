@@ -218,8 +218,10 @@ if (WindowState == WindowState.Maximized)
 - `CELogo` 反色：白底黑字
 
 **默认深色**：`PCL.Core/App/Config.cs:266` 的 `ColorMode` 默认值 `System` → `Dark`。
-**注意这一项存在用户配置文件里**，已有用户需要手动改 `%APPDATA%\PCLHE\config.v1.json` 的
-`"UiDarkMode"` 才能看到新的默认外观。
+**注意这一项存在共享配置里**，已有用户需要手动改 `"UiDarkMode"` 才能看到新的默认外观。
+路径分两种：便携模式（exe 同目录存在 `CONFIG` 文件夹）落在 `<exe目录>\CONFIG\config.v1.json`，
+否则落在 `%APPDATA%\PCLHE\config.v1.json`。**它不是 `PCL\config.pclhe.v1.yml`**（后者是
+`ConfigSource.Local` 的本地配置源），改错文件不会生效，详见 2.10 末尾的踩坑。
 
 **黑白渐变**：改 `ToneProfileConfig.cs` 的 `DefaultDark`，关键在于把 `C5` / `C7` 归零
 （让 `L5`/`L7` 决定的背景渐变变中性灰），同时保持 `C2`~`C4` 的色相，按钮和高亮才不会一起变灰。
@@ -291,6 +293,89 @@ _ = Config.Preference.Background.WallpaperSuitMode; // 纯粹的空读，没有�
 `ImgBack.ActualWidth` / `VisualTreeHelper.GetDpi`），实测 `suit=9` 得到
 `Uniform + Center/Center`、`suit=10` 得到 `Uniform + Left/Top`，
 内容区随窗口变化（`1062x635` 逻辑像素，系统缩放 1.25）。验证完即删掉诊断代码。
+
+### 2.10 配色体系重做：青金石蓝 / 黛蓝 / 砚石黑
+
+需求演进：先要「剥去龙猫蓝及其配色，浅色换成我们自己的青金石蓝（还可以再深一点），
+深色改成我们自己的配色名（黑白灰渐变，名字由你来起），并且只保留一种深色配色」，
+随后定稿为「浅色默认 `#0E1C45`，`#5668AA`、天空蓝、死机蓝作为替补项，龙猫蓝不再提供；
+深色只留砚石黑并锁定」。
+
+**枚举**（`PCL.Core/App/ConfigEnums.cs:35`）：
+
+```csharp
+public enum ColorTheme
+{
+    SkyBlue = 0, CatBlue = 1, DeathBlue = 2, HmclBlue = 3,  // 上游槽位，只供历史配置解析
+    LapisBlue = 4,   // 青金石蓝 #0E1C45，浅色默认
+    Inkstone = 5,    // 砚石黑，深色唯一选项，黑白灰渐变
+    LapisMist = 6    // 黛蓝 #5668AA，浅色替补
+}
+```
+
+**参数化**：`ThemeService.GetCurrentThemeArgs()`（`PCL.Core/UI/Theme/ThemeService.cs:153`）返回
+五元组 `(Hue, LightAdjust, ChromaAdjust, AccentLightAdjust, AccentChromaAdjust)`，新增的
+`_AdjustAccent()`（`:178`）把 accent 两项只作用在 `Color2~4` 上。
+**为什么单独拆一套 accent 参数**：`LightAdjust` 是全局作用于 `L1~L8` 的，
+想把强调色压到 `#0E1C45` 需要系数 `-0.63`，而这会把浅色模式的浅底
+（`L6~L8` = 0.92 / 0.94 / 0.96）一起压成 0.34~0.36 的中灰，整个浅色 UI 直接烂掉。
+拆出 accent 之后，浅底不动、只有按钮 / 链接 / 高亮变深。
+
+**系数怎么算出来的**：用 python 复刻 OKLCH ↔ sRGB 换算，先拿上游 CatBlue 校准
+（Color4 的 tone 是 `L=0.65, C=0.168`，叠加 `(255, 0, -0.2)` 得 `#5291DF`，与运行时日志里的
+`brush=#FF5291DF` 完全一致，说明公式可信），再由目标色反解 accent 系数：
+
+| 配色 | 目标色 | OKLCH | Hue | AccentLight | AccentChroma |
+| --- | --- | --- | --- | --- | --- |
+| 青金石蓝 | `#0E1C45` | L 0.2422 / C 0.0796 / H 266.3 | 266 | -0.627 | -0.526 |
+| 黛蓝 | `#5668AA` | L 0.5330 / C 0.1060 / H 270.9 | 271 | -0.180 | -0.369 |
+| 砚石黑 | — | 彩度归零 | 255 | 0 | -1（全局） |
+
+**标题栏**：`ThemeService.ApplyTitleBarResources()`（`:267`，在 `_RefreshAll()` 里被调用）
+深色 `#20242C` / `#3A4049`，浅色 `#0E1C45` / `#1C3168`。
+`Application.xaml:88-92` 里的值只是启动瞬间的初始值，运行时总会被覆写。
+
+**下拉**：`PageSetupUI.xaml.cs` 新增 `LightColorOrder = [LapisBlue, LapisMist, SkyBlue, DeathBlue]`，
+下拉索引不再等于枚举值，`ThemeColor_Change` 按数组映射、`Reload()` 用 `Array.IndexOf` 反查；
+`ComboDarkColor` 加 `IsEnabled="False"` 锁定砚石黑。语言 key 新增
+`Setup.Ui.Theme.Color.LapisMist`（黛蓝 / 黛藍 / Indigo Blue），四份语言文件都已补齐。
+
+**踩坑（务必记住）**：主题组配置走的是**共享配置源**。便携模式下它是
+`<exe目录>\CONFIG\config.v1.json`，**不是** `PCL\config.pclhe.v1.yml`。
+我一度把 `UiDarkMode: Dark` 写进 yml，重启后界面依旧浅色，日志
+`[主题|theme] 当前状态: Light, LapisBlue` 才暴露问题——yml 里那一行根本没被读取。
+以后再调主题相关配置，先看 `CONFIG/config.v1.json`。
+
+验证：浅色下拉展开为「青金石蓝 / 黛蓝 / 天空蓝 / 死机蓝」四项、深色下拉灰显锁定砚石黑；
+浅色模式标题栏实测为 `#0E1C45`。
+
+### 2.11 「新建档案」图标消失：MeasureOverride 漏了输入约束
+
+现象：账号卡片下方的「新建档案」按钮变成一个空的圆角框，图标完全不画。
+
+根因：`MyIconButton` 是「`Height` 固定、`Width` 自适应」的正圆角正方形按钮，
+原来的 `MeasureOverride` 只把**返回值**改成 `Height×Height`，没有约束传给子元素。
+当父容器给出「宽远大于高」的有限约束（账号卡片被 `HorizontalAlignment=Center` 包着）时，
+`SvgIcon` 会吃满整段可用宽度——日志实测 `svgSize=225.996,13.996`——
+图标被画到 24×24 的按钮之外，看起来就成了「没加载」。
+
+修法（`PCL-Harness Edition/Controls/MyIconButton.xaml.cs:32`）：当
+`double.IsNaN(Width) && !double.IsNaN(Height) && Height > 0` 时，先把 `constraint`
+压成 `new Size(Height, Height)` 再调 `base.MeasureOverride`。
+
+**教训：`MeasureOverride` 里要同时约束「传给子元素的输入」和「自己返回的输出」，只改返回值不够。**
+
+### 2.12 描边粗细与控件对齐
+
+- 窗口最外圈描边：`FormMain.xaml` 的 `PanEdge` 由 `1.5` 改为 `1`。
+  用户的「边框可以再细一点」指的是**窗口描边**，不是某个按钮的框，第一次理解错了。
+- 游戏内存区「自动配置 / 自定义」两个单选框错位：`PageSetupLaunch.xaml:185` 的
+  `RadioRamType0` 写了 `Width="110"`，而 `MyRadioBox` 默认 `HorizontalAlignment=Stretch`；
+  WPF 里「固定宽度 + Stretch」会退化为居中，于是这 110 宽的框在约 200 宽的单元格里居中，
+  而没写宽度的 `RadioRamType1` 按内容自适应仍然贴左，两者肉眼差了近 40px。
+  修法是给两者都补 `HorizontalAlignment="Left"`。
+- 图标对比度：`MyIconButton.xaml:18` 的 `IconBrush="{Binding Fill, ElementName=Path}"`
+  改成 `{DynamicResource ColorBrush4}`。
 
 ---
 
@@ -428,9 +513,16 @@ private const string BuiltInMSOAuthClientId = "fe6a35b0-86b0-4e23-b234-e80a01b0b
 `Plain Craft Launcher (PCL) - Harness Edition`、回调 `https://open.littleskin.cn/oauth/callback`），
 不再是上游 PCL-CE 的 `1514`——授权页不会再显示「登录至 PCL CE」。
 
-**白名单还没申请**（要发邮件到 `support@littleskin.in`）。
-切到 1637 后、白名单批下来之前**登不上是预期现象**（未登记的设备代码流应用会被拒）。
-临时可用性可以设环境变量 `PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游应用。
+**白名单已于 2026-10-26 获批**：`support@littleskin.in` 的 Steven Qiu 回复确认
+`client_id: 1637` 已加入设备代码流白名单。此前「登不上」的预期现象已解除。
+
+但**初次申请一律先设为「测试模式」**（回复原文：「初次申请设备代码流白名单的应用
+将会被设为测试模式。测试模式下的应用仅供测试使用，只有应用的创建者可以授予应用权限」）。
+也就是说 1637 目前**只有维护者本人的 LittleSkin 账号能授权**，其他玩家登录会被拒——
+这是预期，不是缺陷。要投入正式使用，须回复那封邮件申请解除测试模式。
+
+在此之前如需让第三方临时可用，仍可设环境变量
+`PCL_OAUTH_CLIENT_ID_LITTLESKIN_CN=1514` 指回上游 PCL-CE 的应用。
 
 **权限选择**：LittleSkin 文档明确 `Yggdrasil.PlayerProfiles.Read` 与 `.Select` **不可同时申请**，
 同时用会在设备代码流里报 `invalid_scope`。本项目选 **`Read`**：设备代码流不再强制用户在网页
@@ -1181,3 +1273,43 @@ b439f00  build(ci): publish a self-contained binary so the download just runs
 - `PCL-HE/SECURITY.md` 已新建（中英双语，报告走 GitHub 私密漏洞通道，处理方式写明「尽力而为、非 SLA」）。
 - 三版 README 已补「本机自签名可免 SmartScreen」的第三条解除方式。
 - v0.1.1 的 GitHub release notes 已改写为中英双语精简版（中文在上，已通过 API 写回）。
+
+---
+
+## 附录 D　会话交接记录（2026-10-30 凌晨）
+
+### D.1　本轮完成的事
+
+- **配色体系重做**（详见 2.10）：浅色默认换成青金石蓝 `#0E1C45`，替补项为黛蓝 `#5668AA`、
+  天空蓝、死机蓝；深色只保留砚石黑一项并用 `IsEnabled="False"` 锁定。龙猫蓝（CatBlue）不再提供。
+  标题栏改为跟随深浅模式：浅色 `#0E1C45` / `#1C3168`，深色 `#20242C` / `#3A4049`。
+- **「新建档案」图标修复**（详见 2.11）：`MyIconButton.MeasureOverride` 现在会把约束压成正方形再测量子元素。
+- **窗口描边 1.5 → 1**、**游戏内存区单选框左对齐**（详见 2.12）。
+
+### D.2　必须记住的坑
+
+- 主题组配置在**共享配置源**：便携模式是 `<exe目录>\CONFIG\config.v1.json`，
+  不是 `PCL\config.pclhe.v1.yml`。改错文件不会报错，只是**静默不生效**。
+- 换行符不统一：`PCL.Core\**\*.cs`、`Pages\PageSetup\*.xaml*` 与四份语言文件是 **CRLF**，
+  `PCL-Harness Edition\Controls\*.xaml*` 是 **LF**。批量替换脚本必须按文件实测换行再写回，
+  否则 git diff 会变成整文件重写。
+- `edit` 工具会丢 BOM。本次全部改用 python 脚本按 `utf-8-sig` 读写，保持原编码。
+
+### D.3　交接时的待办
+
+1. **内存优化深度改造**：代码已落地（`PCL.MemoryOptimizer` 子项目 + 两档清理 + 启动前挂钩），
+   等维护者实测（计划 2026-10-30 下午）。
+2. **便携模式**：本机配置已存在、不便验证，维护者计划下周去机房拷一份干净本体验证。
+3. **LittleSkin 设备代码流实测**：计划 2026-10-30 晚。
+4. **CI 四产物**：`v0.1.2-Alpha` 已跑通，后续版本需要**打标签**才会真正触发。
+5. 配色替补项是否继续扩充（维护者原话：「待后续再考虑是否需要添加其他替补项」）。
+
+### D.4　操作记录（本轮实测到的细节）
+
+- 截图验证脚本：`SetWindowPos(h, HWND_TOPMOST, 0, 0, 1247, 771, 0x0040)` +
+  `SetForegroundWindow` + `CopyFromScreen(0, 0)`；点击用 `SetCursorPos` + `mouse_event`。
+  **必须先置顶**，否则截图会被 DSH 客户端窗口挡住。
+- 启动器首页没有左侧导航栏，要点「设置」标签（约 `683, 26`）之后才有；
+  「个性化」在左侧约 `42, 300`。
+- 关进程用 `powershell -Command "Get-Process PCL-HE | Stop-Process -Force"`，
+  MSYS 下的 `taskkill /F` 会把 `/F` 当路径处理而失败。

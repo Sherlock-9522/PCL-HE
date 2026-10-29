@@ -356,3 +356,6 @@ secrets.json
 **/secrets.json
 secrets.local.json
 *.secrets.json
+
+# 历史文档的本地备份（不进仓库）
+docs/*.md.bak-*
