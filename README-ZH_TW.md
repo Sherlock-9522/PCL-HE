@@ -94,6 +94,31 @@ dotnet build "Plain Craft Launcher 2.slnx" -c Release
 
 需要徹底消除的話，只能為發佈產物購買程式碼簽章憑證。一般 OV 憑證簽好後，一開始仍會回報「發行者未知」，要等下載量累積出信譽；能立刻通過的是 EV 憑證。
 
+## 🦠 防毒軟體誤報
+
+`PCL-HE.dll` 不含程式碼簽章，因此在 VirusTotal 上會被個別引擎以啟發式規則誤判。最近一次完整檢測（`PCL-HE.dll`，23.57 MB，SHA-256 `bc1dddadd9a83278fd08e292a6300c06fe288d0413301b6dcb30bd3cba9a45dd`）的結果是 **2/69 檢出**：
+
+| 引擎 | 結論 |
+| --- | --- |
+| SecureAge | Malicious |
+| VBA32 | Trojan.MSIL.Kicker.gen |
+
+其餘 67 家——包含 Microsoft Defender、Kaspersky、ESET-NOD32、Bitdefender、Malwarebytes、Sophos、Symantec、Trend Micro、Fortinet、火絨（Huorong）、騰訊（Tencent）、CrowdStrike、SentinelOne 等——全部**未檢出**；ClamAV 與幾家行動端引擎顯示 Timeout 或「無法處理此檔案類型」，不計入檢出。VirusTotal 給這個檔案的標籤是 `peexe` / `64bits` / `overlay` / `obfuscated`。
+
+這兩條檢出大概率來自封裝方式而不是行為：
+
+- 發布產物是**單檔自包含**發布（`EnableCompressionInSingleFile`），整個 .NET 執行階段被壓縮進一個 exe，檔案尾端因此帶 `overlay` 區段，靜態引擎很難乾淨解析，容易被歸類為「加殼 / 混淆」；
+- `MSIL.Kicker` 是 .NET 單檔程式最常見的家族標籤之一，屬於「載入器特徵」，不是針對本專案行為的定性；
+- SecureAge 與 VBA32 本身誤報率偏高，2/69 這個量級對未簽章的 .NET 單檔程式屬於常態。
+
+如果您不放心：
+
+1. **核對雜湊**——下載後計算 SHA-256，與上方數值比對，一致就代表檔案沒有被中途替換；
+2. **自行建置**——原始碼完全公開，依上一節方式編譯，產物同樣只會出現這類啟發式誤報；
+3. **加入白名單**——確認來源後，在本機防毒軟體中排除 `PCL-HE.exe` 與其資料目錄。
+
+本專案不上傳任何使用者資料（遙測已全部切斷），不常駐背景程序（聯機用的陶瓦程序隨功能啟停），也不修改系統設定——唯一的提權操作是您在記憶體最佳化裡主動點擊「深度清理」時的那一次 UAC。
+
 ## 🔐 關於正版登入目前的狀況
 
 正版登入使用 **Microsoft 裝置程式碼流程**（Device Code Flow）：啟動器顯示一組 8 位驗證碼，你在 <https://www.microsoft.com/link> 輸入並授權，整個過程不需要在啟動器裡填密碼。

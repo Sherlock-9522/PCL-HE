@@ -92,6 +92,31 @@ To get past it:
 
 Removing the prompt entirely requires buying a code signing certificate for the release artifacts. An ordinary OV certificate still reports "unknown publisher" at first until download volume builds up reputation; only an EV certificate clears it immediately.
 
+## 🦠 Antivirus false positives
+
+`PCL-HE.dll` carries no code signature, so a couple of engines flag it heuristically on VirusTotal. The latest full scan (`PCL-HE.dll`, 23.57 MB, SHA-256 `bc1dddadd9a83278fd08e292a6300c06fe288d0413301b6dcb30bd3cba9a45dd`) reported **2/69 detections**:
+
+| Engine | Verdict |
+| --- | --- |
+| SecureAge | Malicious |
+| VBA32 | Trojan.MSIL.Kicker.gen |
+
+The other 67 vendors — including Microsoft Defender, Kaspersky, ESET-NOD32, Bitdefender, Malwarebytes, Sophos, Symantec, Trend Micro, Fortinet, Huorong, Tencent, CrowdStrike and SentinelOne — report **no detection**; ClamAV and a few mobile engines returned Timeout or “unable to process file type” and do not count as detections. VirusTotal tags the file `peexe` / `64bits` / `overlay` / `obfuscated`.
+
+Both hits very likely come from the packaging rather than from behaviour:
+
+- the release is a **self-contained single file** build (`EnableCompressionInSingleFile`), so the whole .NET runtime is compressed into one exe and the file carries an `overlay` section that static engines struggle to parse — an easy “packed / obfuscated” signal;
+- `MSIL.Kicker` is one of the most common family labels for .NET single-file applications: a loader heuristic, not a statement about what this project does;
+- SecureAge and VBA32 are known to over-report, and 2/69 is unremarkable for an unsigned .NET single-file binary.
+
+If you want to be sure:
+
+1. **Check the hash** — compute the SHA-256 after downloading and compare it with the value above; a match means the file was not swapped on the way;
+2. **Build it yourself** — the source is fully public; build it as described in the previous section and you will get the same kind of heuristic hits;
+3. **Whitelist it** — once you trust the source, exclude `PCL-HE.exe` and its data folder in your antivirus.
+
+This project uploads no user data (telemetry is fully cut), keeps no background process running (the Terracotta process starts and stops with the feature), and changes no system setting — the only elevation is the single UAC prompt you trigger yourself when you press “Deep clean” in the memory optimizer.
+
 ## 🔐 About Microsoft login: current status
 
 Signing in with a Microsoft account uses the **Device Code Flow**: the launcher shows an 8-character code, you enter it at <https://www.microsoft.com/link> and approve, and the launcher never asks for your password.
